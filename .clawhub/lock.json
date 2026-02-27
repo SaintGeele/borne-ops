@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "skills": {
+    "humanize-ai-text": {
+      "version": "1.0.1",
+      "installedAt": 1772183833672
+    },
+    "self-improving-agent": {
+      "version": "1.0.11",
+      "installedAt": 1772184075536
+    },
+    "find-skills": {
+      "version": "0.1.0",
+      "installedAt": 1772184239061
+    },
+    "notion": {
+      "version": "1.0.0",
+      "installedAt": 1772184387922
+    },
+    "nano-pdf": {
+      "version": "1.0.0",
+      "installedAt": 1772184416981
+    },
+    "auto-updater": {
+      "version": "1.0.0",
+      "installedAt": 1772184490986
+    },
+    "humanizer": {
+      "version": "1.0.0",
+      "installedAt": 1772187595136
+    }
+  }
+}
