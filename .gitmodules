@@ -1,0 +1,3 @@
+[submodule "skills/resend-skills"]
+	path = skills/resend-skills
+	url = https://github.com/resend/resend-skills
