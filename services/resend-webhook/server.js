@@ -1,11 +1,11 @@
 import express from "express";
 import fs from "fs";
 import path from "path";
-import { Resend } from "resend";
+import { Webhook } from "svix";
 
 const app = express();
 const port = process.env.PORT || 3001;
-const resend = new Resend(process.env.RESEND_API_KEY || "");
+const webhook = new Webhook(process.env.RESEND_WEBHOOK_SECRET || "");
 
 app.get("/health", (req, res) => {
   res.status(200).send("ok");
@@ -40,10 +40,10 @@ app.post(
     }) + "\n");
 
     try {
-      const result = resend.webhooks.verify({
-        payload,
-        headers,
-        webhookSecret: process.env.RESEND_WEBHOOK_SECRET,
+      const result = webhook.verify(payload, {
+        "svix-id": headers.id,
+        "svix-timestamp": headers.timestamp,
+        "svix-signature": headers.signature,
       });
 
       fs.appendFileSync(logPath, JSON.stringify({
