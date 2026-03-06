@@ -19,3 +19,4 @@ build/
 # Temporary files
 *.bak
 *.tmp
+secrets/
