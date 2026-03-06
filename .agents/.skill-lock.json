@@ -1,0 +1,15 @@
+{
+  "version": 3,
+  "skills": {
+    "notion": {
+      "source": "openclaw/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/openclaw/skills.git",
+      "skillPath": "skills/dimagious/notion-skill/SKILL.md",
+      "skillFolderHash": "7d14fb9e8094537b2781bc002e981a7059a32013",
+      "installedAt": "2026-03-01T22:47:52.404Z",
+      "updatedAt": "2026-03-01T22:47:52.404Z"
+    }
+  },
+  "dismissed": {}
+}

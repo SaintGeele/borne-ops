@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Borne Systems — Secure, Intelligent, Scalable Infrastructure</title>
+  <meta name="description" content="Borne Systems engineers secure, intelligent, scalable systems — AI automation, cybersecurity, systems engineering, and cloud infrastructure built with military-grade discipline.">
+  <meta name="theme-color" content="#060910">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Borne Systems — Secure, Intelligent, Scalable Infrastructure">
+  <meta property="og:description" content="We engineer secure, intelligent, scalable systems designed to endure.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.bornesystems.com">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23060910'/><text x='50' y='68' font-family='sans-serif' font-size='55' font-weight='bold' fill='%232BA8DB' text-anchor='middle'>B</text></svg>">
+</head>
+
+<body>
+
+  <!-- ========== MESH BACKGROUND (Canvas) ========== -->
+  <canvas id="mesh-bg" aria-hidden="true"></canvas>
+
+  <!-- ========== NAVIGATION ========== -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <div class="container">
+      <div class="nav__inner">
+        <a href="#" class="nav__logo">
+          <div class="nav__logo-mark">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M2 3h8l-3 5h6l-9 7 3-5H2l3-5H2z" fill="currentColor" opacity="0.9"/>
+            </svg>
+          </div>
+          <span>Borne Systems</span>
+        </a>
+
+        <div class="nav__status" aria-hidden="true">
+          <span class="nav__status-dot"></span>
+          <span class="nav__status-text">All Systems Operational</span>
+        </div>
+
+        <ul class="nav__links">
+          <li><a href="#capabilities" class="nav__link">Capabilities</a></li>
+          <li><a href="#services" class="nav__link">Services</a></li>
+          <li><a href="#proof" class="nav__link">Results</a></li>
+          <li><a href="#about" class="nav__link">About</a></li>
+          <li><a href="#contact" class="nav__cta">Start a Project</a></li>
+        </ul>
+
+        <button class="nav__toggle" aria-label="Toggle navigation" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ========== HERO ========== -->
+  <section class="hero" id="hero">
+    <div class="hero__bg">
+      <div class="hero__bg-grid"></div>
+      <div class="hero__bg-glow"></div>
+      <div class="hero__bg-glow-secondary"></div>
+      <div class="hero__noise"></div>
+    </div>
+
+    <div class="hero__content">
+      <div class="hero__label">
+        <span class="hero__label-dot"></span>
+        <span class="hero__label-text">Engineering resilience at scale</span>
+      </div>
+      <h1 class="hero__title">
+        <span class="hero__title-line">Secure.</span>
+        <span class="hero__title-line">Intelligent.</span>
+        <span class="hero__title-line"><span class="text-gradient-mixed">Built to Last.</span></span>
+      </h1>
+      <p class="hero__subtitle">
+        We engineer systems designed to endure — from <span class="mono-inline">AI-powered</span><br class="hide-mobile">
+        automation to hardened <span class="mono-inline">cloud infrastructure</span>.
+      </p>
+      <div class="hero__actions">
+        <a href="#contact" class="btn btn--primary">
+          Start a Project
+          <span class="btn__arrow">→</span>
+        </a>
+        <a href="#capabilities" class="btn btn--ghost">
+          Explore Capabilities
+        </a>
+      </div>
+
+      <!-- Subtle technical markers -->
+      <div class="hero__meta" aria-hidden="true">
+        <span class="hero__meta-item"><span class="meta-dot meta-dot--green"></span>uptime 99.97%</span>
+        <span class="hero__meta-divider">·</span>
+        <span class="hero__meta-item">v2.4.1</span>
+        <span class="hero__meta-divider">·</span>
+        <span class="hero__meta-item">latency &lt;12ms</span>
+      </div>
+    </div>
+
+    <div class="hero__scroll-indicator">
+      <div class="hero__scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ========== CAPABILITIES ========== -->
+  <section class="section capabilities" id="capabilities">
+    <div class="container">
+
+      <div class="section-label reveal">
+        <span class="section-label__marker"></span>
+        <span class="section-label__text">Core Capabilities</span>
+        <span class="section-label__version">SYS.01</span>
+      </div>
+
+      <h2 class="section-title reveal">
+        Four Disciplines.<br><span class="text-muted-heading">One Integrated Approach.</span>
+      </h2>
+
+      <div class="capabilities__grid">
+
+        <article class="cap-card reveal" style="--card-accent: var(--accent-cyan)">
+          <div class="cap-card__header">
+            <span class="cap-card__number">01</span>
+            <span class="cap-card__status"><span class="status-dot status-dot--active"></span>Active</span>
+          </div>
+          <h3 class="cap-card__title">AI Automation</h3>
+          <p class="cap-card__desc">
+            Intelligent workflows that learn, adapt, and execute. <span class="mono-inline">LLM pipelines</span>, autonomous agents, and decision engines replacing manual processes with precision.
+          </p>
+          <div class="cap-card__tags">
+            <span class="micro-tag">pipelines</span>
+            <span class="micro-tag">agents</span>
+            <span class="micro-tag">inference</span>
+          </div>
+        </article>
+
+        <article class="cap-card reveal" style="--card-accent: var(--accent-blue)">
+          <div class="cap-card__header">
+            <span class="cap-card__number">02</span>
+            <span class="cap-card__status"><span class="status-dot status-dot--active"></span>Active</span>
+          </div>
+          <h3 class="cap-card__title">Cybersecurity</h3>
+          <p class="cap-card__desc">
+            Defense-grade security posture — <span class="mono-inline">penetration testing</span>, vulnerability assessment, threat modeling, and hardened infrastructure from the ground up.
+          </p>
+          <div class="cap-card__tags">
+            <span class="micro-tag">posture</span>
+            <span class="micro-tag">hardening</span>
+            <span class="micro-tag">assessment</span>
+          </div>
+        </article>
+
+        <article class="cap-card reveal" style="--card-accent: var(--accent-cyan)">
+          <div class="cap-card__header">
+            <span class="cap-card__number">03</span>
+            <span class="cap-card__status"><span class="status-dot status-dot--active"></span>Active</span>
+          </div>
+          <h3 class="cap-card__title">Systems Engineering</h3>
+          <p class="cap-card__desc">
+            Architecture that endures — complex distributed systems built with <span class="mono-inline">military-grade</span> discipline, structured for reliability under load.
+          </p>
+          <div class="cap-card__tags">
+            <span class="micro-tag">architecture</span>
+            <span class="micro-tag">distributed</span>
+            <span class="micro-tag">resilience</span>
+          </div>
+        </article>
+
+        <article class="cap-card reveal" style="--card-accent: var(--accent-blue)">
+          <div class="cap-card__header">
+            <span class="cap-card__number">04</span>
+            <span class="cap-card__status"><span class="status-dot status-dot--active"></span>Active</span>
+          </div>
+          <h3 class="cap-card__title">Cloud Infrastructure</h3>
+          <p class="cap-card__desc">
+            Production-grade <span class="mono-inline">IaC deployments</span> — containerized microservices, CI/CD pipelines, and multi-cloud environments engineered for scale.
+          </p>
+          <div class="cap-card__tags">
+            <span class="micro-tag">deploy</span>
+            <span class="micro-tag">containers</span>
+            <span class="micro-tag">IaC</span>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SERVICES ========== -->
+  <section class="section services" id="services">
+    <div class="container">
+
+      <div class="section-label reveal">
+        <span class="section-label__marker"></span>
+        <span class="section-label__text">Services</span>
+        <span class="section-label__version">SYS.02</span>
+      </div>
+
+      <h2 class="section-title reveal">
+        How We<br>Deliver
+      </h2>
+
+      <div class="services__list">
+
+        <!-- Service 1 -->
+        <article class="service reveal">
+          <div class="service__left">
+            <span class="service__number">01</span>
+            <h3 class="service__title">
+              AI &amp; Automation<br>
+              <span class="text-gradient-cyan">Engineering</span>
+            </h3>
+          </div>
+          <div class="service__right">
+            <p class="service__desc">
+              We architect and deploy <span class="mono-inline">AI-powered</span> automation systems that eliminate bottlenecks and accelerate decision-making. From intelligent document processing to autonomous agent pipelines — custom-engineered to integrate with your existing API infrastructure.
+            </p>
+            <div class="service__tags">
+              <span class="tag">LLM Integration</span>
+              <span class="tag">Agent Pipelines</span>
+              <span class="tag">Process Automation</span>
+              <span class="tag">API Orchestration</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Service 2 -->
+        <article class="service reveal">
+          <div class="service__left">
+            <span class="service__number">02</span>
+            <h3 class="service__title">
+              Security Posture<br>
+              <span class="text-gradient-blue">&amp; Threat Defense</span>
+            </h3>
+          </div>
+          <div class="service__right">
+            <p class="service__desc">
+              Security isn't a feature — it's the foundation. Comprehensive <span class="mono-inline">security assessments</span>, penetration testing, and vulnerability analysis. Offensive expertise combined with defensive hardening across your entire attack surface.
+            </p>
+            <div class="service__tags">
+              <span class="tag">Penetration Testing</span>
+              <span class="tag">Vulnerability Analysis</span>
+              <span class="tag">Incident Response</span>
+              <span class="tag">Compliance</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Service 3 -->
+        <article class="service reveal">
+          <div class="service__left">
+            <span class="service__number">03</span>
+            <h3 class="service__title">
+              Cloud Infrastructure<br>
+              <span class="text-gradient-cyan">&amp; DevOps</span>
+            </h3>
+          </div>
+          <div class="service__right">
+            <p class="service__desc">
+              Production environments built for performance, reliability, and cost efficiency. <span class="mono-inline">AWS</span>, multi-cloud, containerized microservices, <span class="mono-inline">CI/CD</span> — infrastructure that scales seamlessly and recovers gracefully.
+            </p>
+            <div class="service__tags">
+              <span class="tag">AWS / Multi-Cloud</span>
+              <span class="tag">Kubernetes</span>
+              <span class="tag">Terraform / IaC</span>
+              <span class="tag">GitOps</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Service 4 -->
+        <article class="service reveal">
+          <div class="service__left">
+            <span class="service__number">04</span>
+            <h3 class="service__title">
+              Systems Architecture<br>
+              <span class="text-gradient-blue">&amp; Design</span>
+            </h3>
+          </div>
+          <div class="service__right">
+            <p class="service__desc">
+              Complex problems require structured thinking. System architectures that balance performance, maintainability, and security — engineered with <span class="mono-inline">fault-tolerant</span> patterns that work under pressure and scale with growth.
+            </p>
+            <div class="service__tags">
+              <span class="tag">Distributed Systems</span>
+              <span class="tag">API Design</span>
+              <span class="tag">Event-Driven</span>
+              <span class="tag">Microservices</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Service 5 -->
+        <article class="service reveal">
+          <div class="service__left">
+            <span class="service__number">05</span>
+            <h3 class="service__title">
+              Digital Product<br>
+              <span class="text-gradient-mixed">Development</span>
+            </h3>
+          </div>
+          <div class="service__right">
+            <p class="service__desc">
+              From concept to production deployment. Web applications, internal tooling, <span class="mono-inline">SaaS</span> platforms — built with clean architecture, comprehensive testing, and relentless attention to performance.
+            </p>
+            <div class="service__tags">
+              <span class="tag">Full-Stack</span>
+              <span class="tag">SaaS Platforms</span>
+              <span class="tag">Internal Tooling</span>
+              <span class="tag">Performance</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== PROOF / METRICS ========== -->
+  <section class="section proof" id="proof">
+    <div class="proof__bg-accent"></div>
+    <div class="container">
+
+      <div class="section-label reveal">
+        <span class="section-label__marker"></span>
+        <span class="section-label__text">Track Record</span>
+        <span class="section-label__version">SYS.03</span>
+      </div>
+
+      <h2 class="section-title reveal">
+        Measured<br>by Results
+      </h2>
+
+      <div class="proof__grid">
+        <div class="proof-stat reveal">
+          <div class="proof-stat__icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+          <div class="proof-stat__number text-gradient-cyan" data-count="99" data-suffix=".9%">0</div>
+          <p class="proof-stat__label">Infrastructure uptime<br>across all deployments</p>
+        </div>
+        <div class="proof-stat reveal">
+          <div class="proof-stat__icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <div class="proof-stat__number text-gradient-blue" data-count="50" data-suffix="+">0</div>
+          <p class="proof-stat__label">Systems engineered<br>and deployed to production</p>
+        </div>
+        <div class="proof-stat reveal">
+          <div class="proof-stat__icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="proof-stat__number text-gradient-cyan" data-count="8" data-suffix="+ yrs">0</div>
+          <p class="proof-stat__label">Systems engineering<br>experience in production</p>
+        </div>
+        <div class="proof-stat reveal">
+          <div class="proof-stat__icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="proof-stat__number text-gradient-blue">Zero</div>
+          <p class="proof-stat__label">Security breaches on<br>managed infrastructure</p>
+        </div>
+      </div>
+
+      <div class="proof__pillars">
+        <div class="pillar reveal">
+          <div class="pillar__line"></div>
+          <h4 class="pillar__title">Military-Grade Discipline</h4>
+          <p class="pillar__desc">
+            8+ years of military systems administration. Structure, accountability, and <span class="mono-inline">mission-first</span> execution across classified and unclassified environments.
+          </p>
+        </div>
+        <div class="pillar reveal">
+          <div class="pillar__line"></div>
+          <h4 class="pillar__title">Security-First Architecture</h4>
+          <p class="pillar__desc">
+            Every system designed with security as the foundation — <span class="mono-inline">zero-trust</span> principles, defense-in-depth, and continuous posture assessment.
+          </p>
+        </div>
+        <div class="pillar reveal">
+          <div class="pillar__line"></div>
+          <h4 class="pillar__title">Engineered to Scale</h4>
+          <p class="pillar__desc">
+            Architecture designed for <span class="mono-inline">10x growth</span>. Fault-tolerant, horizontally scalable, with automated failover and graceful degradation.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== ABOUT / FOUNDER ========== -->
+  <section class="section about" id="about">
+    <div class="container">
+
+      <div class="section-label reveal">
+        <span class="section-label__marker"></span>
+        <span class="section-label__text">About the Founder</span>
+        <span class="section-label__version">SYS.04</span>
+      </div>
+
+      <div class="about__layout">
+
+        <div class="about__visual reveal">
+          <div class="about__frame">
+            <div class="about__frame-grid" aria-hidden="true"></div>
+            <span class="about__monogram">GE</span>
+            <div class="about__frame-status" aria-hidden="true">
+              <span class="status-dot status-dot--active"></span>
+              <span>Available</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="about__content">
+          <h2 class="about__title reveal">
+            Discipline is the<br>
+            <span class="text-gradient-mixed">differentiator.</span>
+          </h2>
+          <p class="about__text reveal">
+            Borne Systems was founded by Geele Evans — a Marine Corps veteran, systems engineer, and <span class="mono-inline">OSCP</span> candidate with 8+ years of hands-on experience in military IT systems administration, cloud infrastructure, and cybersecurity operations.
+          </p>
+          <p class="about__text reveal">
+            The mission is simple: engineer systems that are <span class="mono-inline">secure by default</span>, intelligent by design, and scalable without compromise. Every deployment, every pipeline, every architecture — built to the same standard.
+          </p>
+
+          <div class="about__values reveal">
+            <div class="value">
+              <span class="value__label">Mission-First</span>
+              <span class="value__desc">Outcomes over activity. Delivery over process.</span>
+            </div>
+            <div class="value">
+              <span class="value__label">Security as Standard</span>
+              <span class="value__desc">The foundation, not a feature. Zero-trust by default.</span>
+            </div>
+            <div class="value">
+              <span class="value__label">Engineering Excellence</span>
+              <span class="value__desc">Clean code. Clean architecture. Clean deployments.</span>
+            </div>
+            <div class="value">
+              <span class="value__label">Continuous Improvement</span>
+              <span class="value__desc">Always iterating. Always hardening. Always learning.</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FINAL CTA ========== -->
+  <section class="section cta" id="contact">
+    <div class="cta__bg">
+      <div class="cta__glow"></div>
+    </div>
+    <div class="container">
+      <div class="cta__content reveal">
+        <div class="cta__badge" aria-hidden="true">
+          <span class="status-dot status-dot--active"></span>
+          <span>Accepting new projects</span>
+        </div>
+        <h2 class="cta__title">
+          Ready to build something<br>
+          <span class="text-gradient-mixed">that actually lasts?</span>
+        </h2>
+        <p class="cta__desc">
+          Let's talk about your infrastructure, your security posture,<br class="hide-mobile">
+          and how we can engineer it right.
+        </p>
+        <div class="cta__actions">
+          <a href="mailto:contact@bornesystems.com" class="btn btn--primary btn--large">
+            Get in Touch
+            <span class="btn__arrow">→</span>
+          </a>
+        </div>
+        <p class="cta__response-time" aria-hidden="true">
+          Typical response: &lt;24 hours
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+
+        <div class="footer__brand">
+          <div class="footer__brand-name">
+            <div class="nav__logo-mark nav__logo-mark--small">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M2 3h8l-3 5h6l-9 7 3-5H2l3-5H2z" fill="currentColor" opacity="0.9"/>
+              </svg>
+            </div>
+            Borne Systems
+          </div>
+          <p class="footer__brand-tagline">
+            Secure, intelligent, scalable infrastructure —<br>engineered to endure.
+          </p>
+          <div class="footer__system-info" aria-hidden="true">
+            <span class="mono-inline">v2.4.1</span>
+            <span class="footer__separator">·</span>
+            <span class="mono-inline">EST</span>
+            <span class="footer__separator">·</span>
+            <span class="status-dot status-dot--active status-dot--tiny"></span>
+            <span class="mono-inline">Operational</span>
+          </div>
+        </div>
+
+        <div class="footer__links-group">
+          <div class="footer__col">
+            <h4 class="footer__col-title">Services</h4>
+            <ul class="footer__links">
+              <li><a href="#services">AI Automation</a></li>
+              <li><a href="#services">Cybersecurity</a></li>
+              <li><a href="#services">Cloud Infrastructure</a></li>
+              <li><a href="#services">Systems Architecture</a></li>
+              <li><a href="#services">Product Development</a></li>
+            </ul>
+          </div>
+
+          <div class="footer__col">
+            <h4 class="footer__col-title">Company</h4>
+            <ul class="footer__links">
+              <li><a href="#about">About</a></li>
+              <li><a href="#capabilities">Capabilities</a></li>
+              <li><a href="#proof">Results</a></li>
+              <li><a href="#contact">Contact</a></li>
+            </ul>
+          </div>
+
+          <div class="footer__col">
+            <h4 class="footer__col-title">Connect</h4>
+            <ul class="footer__links">
+              <li><a href="mailto:contact@bornesystems.com">contact@bornesystems.com</a></li>
+              <li><a href="https://github.com/bornesystems" target="_blank" rel="noopener">GitHub</a></li>
+              <li><a href="https://linkedin.com/company/bornesystems" target="_blank" rel="noopener">LinkedIn</a></li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="footer__bottom">
+        <p class="footer__copy">&copy; <span data-year></span> Borne Systems LLC</p>
+        <div class="footer__socials">
+          <a href="https://github.com/bornesystems" class="footer__social" target="_blank" rel="noopener" aria-label="GitHub">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          </a>
+          <a href="https://linkedin.com/company/bornesystems" class="footer__social" target="_blank" rel="noopener" aria-label="LinkedIn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="script.js"></script>
+
+</body>
+</html>

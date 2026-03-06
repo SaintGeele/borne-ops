@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Borne Systems - Lead Research</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+    h1 { color: #333; text-align: center; }
+    .card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    label { display: block; margin-bottom: 5px; font-weight: 600; color: #555; }
+    input, select, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+    button { width: 100%; padding: 14px; background: #667eea; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
+    button:hover { background: #5568d3; }
+    .note { font-size: 12px; color: #888; margin-top: -10px; margin-bottom: 15px; }
+    .status-new { background: #d4edda; color: #155724; padding: 8px 12px; border-radius: 4px; display: inline-block; }
+  </style>
+</head>
+<body>
+  <h1>🔍 Lead Research Form</h1>
+  
+  <div class="card">
+    <h3>Add New Business</h3>
+    
+    <form id="leadForm">
+      <label>Business Name *</label>
+      <input type="text" name="business_name" required placeholder="e.g., Joe's Pizza">
+      
+      <label>Industry *</label>
+      <select name="industry" required>
+        <option value="">Select industry...</option>
+        <option value="restaurant">Restaurant</option>
+        <option value="auto_repair">Auto Repair</option>
+        <option value="hvac">HVAC</option>
+        <option value="plumber">Plumber</option>
+        <option value="salon">Salon/Barber</option>
+        <option value="pet">Pet Services</option>
+        <option value="home_cleaning">Home Cleaning</option>
+        <option value="landscaping">Landscaping</option>
+        <option value="medical">Medical/Dental</option>
+        <option value="law">Law Firm</option>
+        <option value="other">Other</option>
+      </select>
+      
+      <label>Area *</label>
+      <input type="text" name="area" required placeholder="e.g., Milford, CT">
+      
+      <label>Phone Number</label>
+      <input type="tel" name="phone" placeholder="(203) 555-1234">
+      
+      <label>Address</label>
+      <input type="text" name="address" placeholder="123 Main St">
+      
+      <label>Has Website?</label>
+      <select name="has_website">
+        <option value="No">No - Needs Website!</option>
+        <option value="Yes">Yes - Has Website</option>
+        <option value="Unknown">Not Sure</option>
+      </select>
+      
+      <label>Website URL</label>
+      <input type="url" name="website_url" placeholder="https://...">
+      
+      <label>Owner/Decision Maker Name</label>
+      <input type="text" name="owner_name" placeholder="e.g., Joe Smith">
+      
+      <label>Notes</label>
+      <textarea name="notes" rows="3" placeholder="Any additional info..."></textarea>
+      
+      <button type="submit">Add to Lead List</button>
+    </form>
+    
+    <div id="saved" style="display:none; text-align:center; padding:20px; color:green;">
+      ✓ Saved! <a href="#" onclick="document.getElementById('leadForm').reset(); document.getElementById('saved').style.display='none'; return false;">Add another</a>
+    </div>
+  </div>
+  
+  <div class="card">
+    <h3>Quick Stats</h3>
+    <p><strong>Total Leads:</strong> <span id="total">0</span></p>
+    <p><strong>Need Websites:</strong> <span id="need_websites">0</span></p>
+  </div>
+  
+  <script>
+    // Simple local storage for leads
+    const form = document.getElementById('leadForm');
+    let leads = JSON.parse(localStorage.getItem('borne_leads') || '[]');
+    
+    function updateStats() {
+      document.getElementById('total').textContent = leads.length;
+      document.getElementById('need_websites').textContent = leads.filter(l => l.has_website === 'No').length;
+    }
+    
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(form);
+      const lead = {
+        id: Date.now(),
+        business_name: formData.get('business_name'),
+        industry: formData.get('industry'),
+        area: formData.get('area'),
+        phone: formData.get('phone'),
+        address: formData.get('address'),
+        has_website: formData.get('has_website'),
+        website_url: formData.get('website_url'),
+        owner_name: formData.get('owner_name'),
+        notes: formData.get('notes'),
+        date_added: new Date().toISOString().split('T')[0],
+        status: 'New',
+        called: false
+      };
+      
+      leads.push(lead);
+      localStorage.setItem('borne_leads', JSON.stringify(leads));
+      
+      document.getElementById('saved').style.display = 'block';
+      updateStats();
+    });
+    
+    updateStats();
+  </script>
+</body>
+</html>

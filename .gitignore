@@ -1,0 +1,21 @@
+# Node
+node_modules/
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Logs
+*.log
+
+# Build artifacts
+dist/
+build/
+.cache/
+.tmp/
+
+# Temporary files
+*.bak
+*.tmp

@@ -1,0 +1,66 @@
+# Productivity Upgrade - Complete Cron Schedule
+# Add these to crontab with: crontab -e
+
+# =============================================================================
+# MORNING PREP (Before brief)
+# =============================================================================
+# Run 5 minutes before morning brief to prep personalized intel
+55 6 * * * cd /home/saint/.openclaw/workspace && source .venv/bin/activate && python3 scripts/morning_prep.py >> logs/morning-prep.log 2>&1
+
+# =============================================================================
+# MORNING BRIEF (7 AM - uses prep data)
+# =============================================================================
+0 7 * * * cd /home/saint/.openclaw/workspace && source .venv/bin/activate && python3 scripts/morning_brief.py >> logs/morning-brief.log 2>&1
+
+# =============================================================================
+# JOB SEARCH PIPELINE
+# =============================================================================
+# Daily job scanning at 9 AM and 6 PM
+0 9,18 * * * cd /home/saint/.openclaw/workspace && source .venv/bin/activate && python3 scripts/job_pipeline.py >> logs/job-pipeline.log 2>&1
+
+# =============================================================================
+# ACADEMIC DEADLINE GUARD
+# =============================================================================
+# Check deadlines hourly during waking hours (7 AM - 11 PM)
+0 7-23 * * * cd /home/saint/.openclaw/workspace && source .venv/bin/activate && python3 scripts/academic_guard.py >> logs/academic-guard.log 2>&1
+
+# =============================================================================
+# LEAD NURTURING
+# =============================================================================
+# Every 6 hours: 6 AM, 12 PM, 6 PM
+0 6,12,18 * * * cd /home/saint/.openclaw/workspace && source .venv/bin/activate && python3 scripts/lead_nurture.py >> logs/lead-nurture.log 2>&1
+
+# =============================================================================
+# TUTOR CHECK
+# =============================================================================
+# Daily tutor check at 8 PM
+0 20 * * * cd /home/saint/.openclaw/workspace && source .venv/bin/activate && python3 skills/tutor/scripts/tasks.py >> logs/tutor.log 2>&1
+
+# =============================================================================
+# OUTREACH REPORT
+# =============================================================================
+# Daily outreach report at 9 AM
+0 9 * * * cd /home/saint/.openclaw/workspace && source .venv/bin/activate && python3 scripts/outreach_report.py >> logs/outreach.log 2>&1
+
+# =============================================================================
+# HEARTBEAT CHECKS (Various)
+# =============================================================================
+# Midday nudge
+0 13 * * * cd /home/saint/.openclaw/workspace && echo "Midday check-in" >> logs/heartbeats.log 2>&1
+
+# Block reminders (for study schedule)
+50 9 * * * cd /home/saint/.openclaw/workspace && echo "Block 1 in 10 min" >> logs/heartbeats.log 2>&1
+50 13 * * * cd /home/saint/.openclaw/workspace && echo "Block 2 in 10 min" >> logs/heartbeats.log 2>&1
+50 17 * * * cd /home/saint/.openclaw/workspace && echo "Block 3 in 10 min" >> logs/heartbeats.log 2>&1
+
+# Sleep guard (after 11 PM)
+0 23 * * * cd /home/saint/.openclaw/workspace && echo "Sleep guard active" >> logs/heartbeats.log 2>&1
+
+# =============================================================================
+# SYSTEM MAINTENANCE
+# =============================================================================
+# Clean up old logs weekly (Sundays at 3 AM)
+0 3 * * 0 find /home/saint/.openclaw/logs -name "*.log" -mtime +7 -delete
+
+# Backup important configs daily at 2 AM
+0 2 * * * cd /home/saint/.openclaw/workspace && tar -czf backups/config-$(date +\%Y\%m\%d).tar.gz borne-tasks.json borne-courses.json memory/

@@ -1,0 +1,74 @@
+{
+  "parent": {
+    "type": "page_id",
+    "page_id": "PAGE_ID_PLACEHOLDER"
+  },
+  "title": [
+    {
+      "type": "text",
+      "text": {
+        "content": "OpenClaw Memories"
+      }
+    }
+  ],
+  "properties": {
+    "Memory": {
+      "title": {}
+    },
+    "Session": {
+      "rich_text": {}
+    },
+    "Context": {
+      "select": {
+        "options": [
+          {
+            "name": "academic",
+            "color": "blue"
+          },
+          {
+            "name": "professional",
+            "color": "green"
+          },
+          {
+            "name": "personal",
+            "color": "orange"
+          },
+          {
+            "name": "technical",
+            "color": "purple"
+          }
+        ]
+      }
+    },
+    "Type": {
+      "select": {
+        "options": [
+          {
+            "name": "conversation",
+            "color": "gray"
+          },
+          {
+            "name": "task",
+            "color": "yellow"
+          },
+          {
+            "name": "decision",
+            "color": "red"
+          },
+          {
+            "name": "insight",
+            "color": "blue"
+          }
+        ]
+      }
+    },
+    "Priority": {
+      "number": {
+        "format": "number"
+      }
+    },
+    "Timestamp": {
+      "date": {}
+    }
+  }
+}

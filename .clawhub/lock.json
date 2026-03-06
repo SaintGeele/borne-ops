@@ -28,6 +28,18 @@
     "humanizer": {
       "version": "1.0.0",
       "installedAt": 1772187595136
+    },
+    "youtube-watcher": {
+      "version": "1.0.0",
+      "installedAt": 1772388261940
+    },
+    "agentmail": {
+      "version": "1.1.1",
+      "installedAt": 1772609107003
+    },
+    "skill-guard": {
+      "version": "1.0.2",
+      "installedAt": 1772648167327
     }
   }
 }

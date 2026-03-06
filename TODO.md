@@ -1,0 +1,4 @@
+- [ ] Triage SAP appeals and study plan. I am waiting for the board to approve or deny
+- [ ] Catch up on class workload and overdue tasks 1
+- [ ] Plan a short job-search outreach for summer 3
+- [ ] Set fitness goals and a simple routine 2

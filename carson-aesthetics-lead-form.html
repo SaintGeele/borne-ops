@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us</title>
+  <style>
+    .borne-lead-form {max-width: 400px; margin: 0 auto; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;}
+    .borne-lead-form h3 {text-align: center; margin-bottom: 20px; color: #333;}
+    .borne-lead-form input, .borne-lead-form textarea, .borne-lead-form select {width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;}
+    .borne-lead-form button {width: 100%; padding: 14px; BACKGROUND: #e667b3; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s;}
+    .borne-lead-form button:hover {background: #e667b3dd;}
+    .borne-lead-form .honeypot {display: none;}
+    .borne-lead-form .success {display: none; padding: 20px; background: #d4edda; border-radius: 8px; color: #155724; text-align: center;}
+    .borne-lead-form .error {display: none; padding: 15px; background: #f8d7da; border-radius: 8px; color: #721c24; margin-bottom: 15px;}
+  </style>
+</head>
+<body>
+  <div class="borne-lead-form">
+    <h3>Book Your Free Consultation</h3>
+    <div class="error" id="error"></div>
+    <div class="success" id="success">Thanks! We'll be in touch soon.</div>
+    <form id="leadForm">
+      <input type="text" name="name" placeholder="Your Name *" required>
+      <input type="email" name="email" placeholder="Email Address *" required>
+      <input type="tel" name="phone" placeholder="Phone Number">
+      <input type="text" name="company" placeholder="Company Name">
+      <select name="service">
+        <option value="">What can we help with?</option>
+        <option value="ai-receptionist">AI Receptionist</option>
+        <option value="lead-automation">Lead Automation</option>
+        <option value="security">Security Services</option>
+        <option value="full-stack">Full Stack</option>
+        <option value="other">Other</option>
+      </select>
+      <textarea name="message" rows="4" placeholder="How can we help you?"></textarea>
+      <input type="text" name="website" class="honeypot" tabindex="-1" autocomplete="off">
+      <button type="submit">Request Consultation</button>
+    </form>
+  </div>
+  <script>
+    document.getElementById('leadForm').addEventListener('submit', async function(e) {{
+      e.preventDefault();
+      const form = e.target;
+      const errorEl = document.getElementById('error');
+      const successEl = document.getElementById('success');
+      const submitBtn = form.querySelector('button');
+      if (form.website.value) {{ errorEl.textContent = 'Error'; errorEl.style.display = 'block'; return; }}
+      submitBtn.disabled = true; submitBtn.textContent = 'Sending...';
+      const formData = {{name: form.name.value, email: form.email.value, phone: form.phone.value, company: form.company.value, service: form.service.value, message: form.message.value, business: 'Carson Aesthetics', source: 'https://carsonaesthetics.com'}};
+      try {{
+        const response = await fetch('YOUR_WEBHOOK_URL', {{method: 'POST', headers: {{'Content-Type': 'application/json'}}, body: JSON.stringify(formData)}});
+        if (response.ok) {{ form.style.display = 'none'; successEl.style.display = 'block'; }} else {{ throw new Error('Failed'); }}
+      }} catch (err) {{ errorEl.textContent = 'Please try again.'; errorEl.style.display = 'block'; submitBtn.disabled = false; submitBtn.textContent = 'Request Consultation'; }}
+    }});
+  </script>
+</body>
+</html>

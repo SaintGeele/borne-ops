@@ -1,0 +1,13 @@
+{
+  "name": "morning-brief",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node brief.mjs",
+    "test": "node brief.mjs --test"
+  },
+  "dependencies": {
+    "oauth-1.0a": "^2.2.6"
+  }
+}

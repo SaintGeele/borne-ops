@@ -1,0 +1,103 @@
+{
+  "timestamp": "2026-03-06T07:15:00-05:00",
+  "hostname": "srv1430138.hstgr.cloud",
+  "findings": [
+    {
+      "id": "FINDING-001",
+      "check": "exposed-services",
+      "severity": "critical",
+      "title": "SSH exposed to public internet on port 22",
+      "detail": "SSH daemon is listening on 100.67.83.108:22 and accepting connections from any IP. While SSH key authentication is configured, internet-facing SSH increases attack surface and risk of brute force or zero-day exploits.",
+      "remediation": "Restrict SSH to specific IPs via firewall (ufw allow from <trusted_ip> to any port 22) or use fail2ban. Consider moving SSH to a non-standard port.",
+      "auto_fixable": false
+    },
+    {
+      "id": "FINDING-002",
+      "check": "firewall",
+      "severity": "critical",
+      "title": "No firewall detected",
+      "detail": "Both iptables and ufw are unavailable or inactive. Host has multiple services exposed to the internet (ports 22, 80, 443, 443/udp) with no network-level filtering.",
+      "remediation": "Enable and configure ufw: ufw default deny incoming; ufw allow 22/tcp; ufw allow 80/tcp; ufw allow 443/tcp; ufw enable",
+      "auto_fixable": true
+    },
+    {
+      "id": "FINDING-003",
+      "check": "exposed-services",
+      "severity": "high",
+      "title": "HTTP (port 80) exposed to public internet",
+      "detail": "HTTP server listening on *:80 - accessible from any IP. Verify this is intentional web hosting.",
+      "remediation": "If not intentional, stop the web server. If intentional, ensure software is kept updated and consider restricting to specific IPs via firewall.",
+      "auto_fixable": false
+    },
+    {
+      "id": "FINDING-004",
+      "check": "exposed-services",
+      "severity": "high",
+      "title": "HTTPS (port 443) exposed to public internet",
+      "detail": "HTTPS server listening on *:443 - accessible from any IP. Ensure TLS is properly configured and software is up to date.",
+      "remediation": "If not intentional, stop the web server. Ensure TLS configuration is secure (disable TLS 1.0/1.1, use modern ciphers).",
+      "auto_fixable": false
+    },
+    {
+      "id": "FINDING-005",
+      "check": "exposed-services",
+      "severity": "high",
+      "title": "Unknown service on port 51567",
+      "detail": "TCP service listening on 100.67.83.108:51567 with no immediate identification. Process association could not be determined from ss output alone.",
+      "remediation": "Identify the process: ss -tlnp | grep 51567 or lsof -i :51567. Close if unnecessary.",
+      "auto_fixable": false
+    },
+    {
+      "id": "FINDING-006",
+      "check": "exposed-services",
+      "severity": "high",
+      "title": "UDP port 443 exposed to public internet",
+      "detail": "UDP service listening on *:443 - could be used for amplification attacks or is experimental QUIC/H3 traffic.",
+      "remediation": "Verify this is intentional. If not needed, disable the service exposing this port.",
+      "auto_fixable": false
+    },
+    {
+      "id": "FINDING-007",
+      "check": "localhost-binding",
+      "severity": "medium",
+      "title": "mDNS/LLMNR (port 5355) bound to 0.0.0.0",
+      "detail": "Service listening on 0.0.0.0:5355 (and :::5355) - this is mDNS/LLMNR responder. While local to the host network, binding to 0.0.0.0 could enable network-based attacks.",
+      "remediation": "If not needed, disable avahi-daemon. Otherwise, acceptable for a host-wide discovery service.",
+      "auto_fixable": false
+    },
+    {
+      "id": "FINDING-008",
+      "check": "ssh-config",
+      "severity": "low",
+      "title": "SSH known_hosts has overly permissive permissions",
+      "detail": "known_hosts file has permissions 644 (rw-r--r--) instead of 600 (rw-------). This allows other users to read the file.",
+      "remediation": "chmod 600 ~/.ssh/known_hosts",
+      "auto_fixable": true
+    },
+    {
+      "id": "FINDING-009",
+      "check": "ssh-config",
+      "severity": "low",
+      "title": "No authorized_keys file present",
+      "detail": "No ~/.ssh/authorized_keys file exists. SSH is configured for key-only auth but there are no authorized keys configured - this could lock the user out if password auth is also disabled.",
+      "remediation": "Ensure SSH keys are properly configured or password auth is intentionally disabled with a fallback access method.",
+      "auto_fixable": false
+    },
+    {
+      "id": "FINDING-010",
+      "check": "gateway",
+      "severity": "low",
+      "title": "OpenClaw gateway service not running",
+      "detail": "Gateway is in 'activating' state with last exit code 1. The service is configured but not functioning. However, it does bind to loopback only (127.0.0.1:18789), which is secure.",
+      "remediation": "Run 'openclaw gateway start' or check logs: journalctl --user -u openclaw-gateway.service -n 50",
+      "auto_fixable": true
+    }
+  ],
+  "summary": {
+    "critical": 2,
+    "high": 4,
+    "medium": 1,
+    "low": 3,
+    "total": 10
+  }
+}

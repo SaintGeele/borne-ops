@@ -1,0 +1,16 @@
+# OpenClaw Enhanced Memory Config
+# Applied for Albert's workflow optimization
+
+[compaction]
+enabled = true
+memoryFlush.enabled = true
+
+[memorySearch.experimental]
+sessionMemory = true
+sources = ["memory", "sessions"]
+
+# Memory optimization for daily iterations
+cleanup.cron.enabled = true
+cleanup.cron.interval = "daily"
+cleanup.cron.memoryRetention = "7d"
+pm.processing.sessions.enabled = true

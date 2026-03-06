@@ -1,0 +1,1 @@
+export PATH="${PATH:-}"; cd "$(pwd)"; echo "# Test Complete Morning Brief" > brief.md; ls -la brief.md

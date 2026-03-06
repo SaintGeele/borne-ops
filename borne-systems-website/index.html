@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Borne Systems — AI Automation & Cybersecurity</title>
+  <meta name="description" content="Borne is an end-to-end automation studio, helping small businesses run smarter with AI and sleep better with real cybersecurity.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* RESET & BASE */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    :root {
+      --bg: #0c0c0c;
+      --bg-soft: #141414;
+      --text: #f5f5f5;
+      --text-muted: #888;
+      --accent: #f5a623;
+      --border: #2a2a2a;
+      --font-main: 'Space Grotesk', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-main);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    /* TYPOGRAPHY */
+    h1, h2, h3 { font-weight: 600; letter-spacing: -0.02em; }
+    a { color: inherit; text-decoration: none; }
+    
+    /* NAV */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 24px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-logo { font-size: 14px; font-weight: 500; letter-spacing: 0.1em; }
+    .nav-link { font-size: 14px; color: var(--text-muted); position: relative; }
+    .nav-link::after {
+      content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 1px;
+      background: var(--text); transition: width 0.3s ease;
+    }
+    .nav-link:hover::after { width: 100%; }
+    
+    /* HERO SECTION */
+    .section {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 120px 48px;
+      position: relative;
+    }
+    
+    .section-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    
+    /* Left column - text */
+    .section-content {
+      max-width: 560px;
+    }
+    
+    .section-label {
+      font-size: 12px;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+    
+    .section-title {
+      font-size: clamp(36px, 5vw, 64px);
+      line-height: 1.1;
+      margin-bottom: 24px;
+    }
+    
+    .section-title .accent { color: var(--accent); }
+    
+    .section-desc {
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1.8;
+      max-width: 480px;
+    }
+    
+    /* Right column - visuals */
+    .section-visual {
+      position: relative;
+      height: 500px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 16px;
+    }
+    
+    .visual-card {
+      background: var(--bg-soft);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .visual-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .visual-card.primary {
+      grid-row: span 2;
+    }
+    
+    /* Pagination */
+    .section-pagination {
+      position: absolute;
+      right: 48px;
+      bottom: 48px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    
+    /* CTA Link */
+    .cta-link {
+      display: inline-block;
+      margin-top: 32px;
+      font-size: 14px;
+      position: relative;
+    }
+    .cta-link::after {
+      content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 1px;
+      background: var(--text-muted);
+    }
+    .cta-link:hover::after { background: var(--text); }
+    
+    /* FEATURED WORK SECTION */
+    .work-section {
+      background: var(--bg-soft);
+    }
+    
+    .work-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 48px;
+    }
+    
+    .work-card {
+      background: var(--bg);
+      border-radius: 4px;
+      padding: 32px;
+      transition: transform 0.3s ease;
+    }
+    .work-card:hover { transform: translateY(-4px); }
+    
+    .work-card-icon {
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+    
+    .work-card h3 {
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+    
+    .work-card p {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    
+    /* SERVICES - Two column like hero */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 48px;
+      margin-top: 48px;
+    }
+    
+    .service-item {
+      padding: 32px 0;
+      border-top: 1px solid var(--border);
+    }
+    
+    .service-num {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+    
+    .service-item h3 {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+    
+    .service-item p {
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+    
+    /* STATS */
+    .stats-section {
+      background: var(--accent);
+      padding: 80px 48px;
+    }
+    
+    .stats-grid {
+      display: flex;
+      justify-content: space-around;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 56px;
+      font-weight: 700;
+    }
+    
+    .stat-label {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+    
+    /* CONTACT */
+    .contact-form {
+      max-width: 480px;
+      margin-top: 48px;
+    }
+    
+    .form-group { margin-bottom: 24px; }
+    
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 16px;
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-family: var(--font-main);
+      font-size: 15px;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    
+    .btn-submit {
+      background: var(--text);
+      color: var(--bg);
+      border: none;
+      padding: 16px 32px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    /* FOOTER */
+    .footer {
+      padding: 48px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .footer-copy { font-size: 12px; color: var(--text-muted); }
+    
+    /* ANIMATIONS */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .section-inner,
+      .work-grid,
+      .services-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .section-visual { display: none; }
+      
+      .nav { padding: 24px; }
+      .section { padding: 120px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <span class="nav-logo">BORNE.</span>
+    <a href="#contact" class="nav-link">Get in touch</a>
+  </nav>
+
+  <!-- HERO / INTRO -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-content">
+        <span class="section-label reveal">AI-Powered Operations</span>
+        <h1 class="section-title reveal">
+          (We build)<br>
+          <span class="accent">business machines.</span>
+        </h1>
+        <p class="section-desc reveal">
+          Borne is an end-to-end automation studio, helping small businesses 
+          run smarter with AI and sleep better with real cybersecurity. 
+          Let's build something that lasts.
+        </p>
+        <a href="#services" class="cta-link reveal">How we do it →</a>
+      </div>
+      <div class="section-visual">
+        <!-- Simulated images using colored blocks for now -->
+        <div class="visual-card primary" style="background: linear-gradient(135deg, #2a2a2a, #1a1a1a); display: flex; align-items: center; justify-content: center;">
+          <span style="color: var(--text-muted); font-size: 14px;">AI Product</span>
+        </div>
+        <div class="visual-card" style="background: linear-gradient(135deg, #3a2a1a, #2a1a0a);"></div>
+        <div class="visual-card" style="background: linear-gradient(135deg, #1a2a2a, #0a1a1a);"></div>
+      </div>
+    </div>
+    <span class="section-pagination reveal">1 — 5</span>
+  </section>
+
+  <!-- WORK SECTION -->
+  <section class="section work-section">
+    <div class="section-inner">
+      <div class="section-content">
+        <span class="section-label reveal">Featured work</span>
+        <h2 class="section-title reveal">
+          Products we build<br>
+          <span class="accent">make real impact.</span>
+        </h2>
+      </div>
+    </div>
+    <div class="section-inner">
+      <div class="work-grid">
+        <div class="work-card reveal">
+          <div class="work-card-icon">🤖</div>
+          <h3>AI Receptionist</h3>
+          <p>24/7 voice AI that never misses a call. Natural conversations, appointment scheduling, lead capture.</p>
+        </div>
+        <div class="work-card reveal">
+          <div class="work-card-icon">🎯</div>
+          <h3>Lead Automation</h3>
+          <p>Automated follow-up sequences that nurture leads while you sleep. SMS, email, and CRM integration.</p>
+        </div>
+        <div class="work-card reveal">
+          <div class="work-card-icon">🛡️</div>
+          <h3>Security Audits</h3>
+          <p>Vulnerability assessments and penetration testing. Find gaps before hackers do.</p>
+        </div>
+      </div>
+    </div>
+    <span class="section-pagination reveal">2 — 5</span>
+  </section>
+
+  <!-- SERVICES SECTION -->
+  <section class="section" id="services">
+    <div class="section-inner">
+      <div class="section-content">
+        <span class="section-label reveal">What we do</span>
+        <h2 class="section-title reveal">
+          End-to-end.<br>
+          <span class="accent">Not half-measures.</span>
+        </h2>
+      </div>
+    </div>
+    <div class="section-inner">
+      <div class="services-grid">
+        <div class="service-item reveal">
+          <span class="service-num">01</span>
+          <h3>Product Strategy</h3>
+          <p>Why should your business exist online? What real problem do you solve? We help you find clear answers and build everything around them.</p>
+        </div>
+        <div class="service-item reveal">
+          <span class="service-num">02</span>
+          <h3>AI Automation</h3>
+          <p>We build AI systems that work while you don't. Voice agents, chatbots, automated workflows that scale without adding staff.</p>
+        </div>
+        <div class="service-item reveal">
+          <span class="service-num">03</span>
+          <h3>Security</h3>
+          <p>Security isn't optional. We audit, test, and harden your systems so you can sleep at night.</p>
+        </div>
+        <div class="service-item reveal">
+          <span class="service-num">04</span>
+          <h3>Growth</h3>
+          <p>Products grow by iterating. We help you build feedback loops and turn users into advocates.</p>
+        </div>
+      </div>
+    </div>
+    <span class="section-pagination reveal">3 — 5</span>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats-section">
+    <div class="stats-grid">
+      <div class="stat">
+        <span class="stat-value">50+</span>
+        <span class="stat-label">Leads in pipeline</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">3</span>
+        <span class="stat-label">Products in development</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">100%</span>
+        <span class="stat-label">Veteran owned</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="section" id="contact">
+    <div class="section-inner">
+      <div class="section-content">
+        <span class="section-label reveal">Get in touch</span>
+        <h2 class="section-title reveal">
+          Let's build<br>
+          <span class="accent">something that lasts.</span>
+        </h2>
+        <form class="contact-form reveal" action="mailto:geele.evans@gmail.com" method="POST" enctype="text/plain">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" name="name" placeholder="Your name" required>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="you@company.com" required>
+          </div>
+          <div class="form-group">
+            <label>Tell us what you're building</label>
+            <textarea name="message" rows="4" placeholder="We help small businesses..."></textarea>
+          </div>
+          <button type="submit" class="btn-submit">Submit</button>
+        </form>
+      </div>
+    </div>
+    <span class="section-pagination reveal">5 — 5</span>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <span class="footer-copy">© 2026 Borne Systems LLC. All rights reserved.</span>
+  </footer>
+
+  <script>
+    // Scroll reveal animation
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>

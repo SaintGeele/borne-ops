@@ -1,0 +1,123 @@
+# Borne Systems — Full Stack Docker Compose
+# Usage: docker compose -f docker-compose.borne.yml up -d
+# Customize: Copy this file, adjust env vars and volumes
+
+name: borne-systems
+
+services:
+  # ─── Reverse Proxy ───────────────────────────────
+  proxy:
+    image: nginx:alpine
+    container_name: borne-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+      - ./nginx/html:/usr/share/nginx/html:ro
+    depends_on:
+      web:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - borne-net
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ─── Web Frontend ────────────────────────────────
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: borne-web
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://borne:${DB_PASSWORD:-changeme}@db:5432/borne
+      - API_URL=http://api:8000
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - borne-net
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', r => process.exit(r.statusCode===200?0:1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+
+  # ─── API Backend ─────────────────────────────────
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: borne-api
+    environment:
+      - DATABASE_URL=postgresql://borne:${DB_PASSWORD:-changeme}@db:5432/borne
+      - REDIS_URL=redis://redis:6379
+      - SECRET_KEY=${SECRET_KEY:-change-this-in-production}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - borne-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+
+  # ─── Database ────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: borne-db
+    environment:
+      - POSTGRES_DB=borne
+      - POSTGRES_USER=borne
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-changeme}
+    volumes:
+      - borne-db-data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    restart: unless-stopped
+    networks:
+      - borne-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U borne"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Redis (cache/queue) ─────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: borne-redis
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - borne-redis-data:/data
+    restart: unless-stopped
+    networks:
+      - borne-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  borne-db-data:
+    driver: local
+  borne-redis-data:
+    driver: local
+
+networks:
+  borne-net:
+    driver: bridge
