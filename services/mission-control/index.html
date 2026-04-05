@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission Control v8 — Borne Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#020305;--bg:#07090F;--s1:#0D1018;--s2:#121620;--s3:#181D28;--s4:#1E2430;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--border3:rgba(255,255,255,0.18);
+  --text:#EDF1FA;--text2:#A0B0C8;--text3:#58697E;--text4:#2B3345;
+  --gold:#C9A84C;--gold-dim:rgba(201,168,76,0.13);
+  --green:#1EBF5A;--green-dim:rgba(30,191,90,0.11);
+  --red:#E5393A;--red2:#FF6B6B;--red-dim:rgba(229,57,58,0.11);
+  --blue:#2B7FFF;--blue2:#63A8FF;--blue-dim:rgba(43,127,255,0.11);
+  --orange:#FF6E00;--orange2:#FF9D4D;--orange-dim:rgba(255,110,0,0.11);
+  --purple:#7C3BEE;--purple2:#A78BFA;--purple-dim:rgba(124,59,238,0.11);
+  --teal:#00967C;--teal2:#2DD4BF;--teal-dim:rgba(0,150,124,0.11);
+  --cyan:#0099B0;--cyan2:#22D3EE;
+  --syne:'Syne',sans-serif;--mono:'DM Mono',monospace;--sans:'Inter',sans-serif;
+  --sidebar:72px;--r:12px;--r-sm:8px;
+}
+html{background:var(--black);}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;display:flex;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 40% at 50% -5%,rgba(43,127,255,0.04),transparent);pointer-events:none;z-index:0;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar);min-height:100vh;background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:16px 0;position:fixed;left:0;top:0;bottom:0;z-index:100;}
+.sb-logo{width:40px;height:40px;background:var(--gold-dim);border:1px solid rgba(201,168,76,0.3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--syne);font-size:16px;font-weight:800;color:var(--gold);margin-bottom:24px;flex-shrink:0;}
+.sb-nav{display:flex;flex-direction:column;gap:4px;flex:1;width:100%;padding:0 8px;}
+.sb-item{width:100%;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:10px;cursor:pointer;transition:all 0.15s;border:1px solid transparent;position:relative;}
+.sb-item:hover{background:var(--s2);border-color:var(--border);}
+.sb-item.active{background:var(--gold-dim);border-color:rgba(201,168,76,0.25);}
+.sb-item.active .sb-icon{color:var(--gold);}
+.sb-item.active .sb-label{color:var(--gold);}
+.sb-icon{font-size:18px;line-height:1;}
+.sb-label{font-family:var(--mono);font-size:7px;letter-spacing:0.08em;color:var(--text3);text-transform:uppercase;text-align:center;line-height:1.2;}
+.sb-item.active .sb-label{color:var(--gold);}
+.sb-divider{width:32px;height:1px;background:var(--border);margin:8px auto;}
+.sb-bottom{display:flex;flex-direction:column;gap:4px;width:100%;padding:0 8px;}
+.sb-alert-dot{position:absolute;top:6px;right:8px;width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 6px var(--red);display:none;}
+
+/* ── MAIN AREA ── */
+.main-area{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh;overflow:hidden;}
+
+/* ── TOP BAR ── */
+.topbar{background:rgba(7,9,15,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:60px;flex-shrink:0;position:sticky;top:0;z-index:80;}
+.tb-left{display:flex;align-items:center;gap:14px;}
+.tb-page-title{font-family:var(--syne);font-size:17px;font-weight:700;letter-spacing:-0.01em;}
+.tb-page-sub{font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:1px;}
+.tb-health{display:flex;align-items:center;gap:8px;background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:7px 13px;}
+.hring{position:relative;width:30px;height:30px;}
+.hring svg{transform:rotate(-90deg);}
+.hring-val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--syne);font-size:9px;font-weight:700;}
+.tb-hinfo{display:flex;flex-direction:column;}
+.tb-hlbl{font-family:var(--mono);font-size:8px;letter-spacing:0.12em;color:var(--text3);text-transform:uppercase;}
+.tb-hstatus{font-family:var(--syne);font-size:11px;font-weight:600;}
+.tb-right{display:flex;align-items:center;gap:8px;}
+.tb-clock{text-align:right;}
+.tb-time{font-family:var(--mono);font-size:13px;color:var(--text2);letter-spacing:0.04em;}
+.tb-date{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-top:2px;}
+.tbtn{background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:7px 12px;cursor:pointer;font-family:var(--mono);font-size:9px;color:var(--text2);display:flex;align-items:center;gap:5px;transition:all 0.15s;}
+.tbtn:hover{border-color:var(--border2);color:var(--text);background:var(--s3);}
+.tbtn .kbd{background:var(--s3);border:1px solid var(--border);border-radius:3px;padding:1px 4px;font-size:7px;color:var(--text3);}
+.notif-wrap{position:relative;}
+.nb-dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 5px var(--red);position:absolute;top:-2px;right:-2px;display:none;}
+
+/* ── PAGE CONTENT ── */
+.page-content{flex:1;overflow-y:auto;padding:28px;}
+.page-content::-webkit-scrollbar{width:4px;}
+.page-content::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* ── PAGE (each tab view) ── */
+.page{display:none;}
+.page.active{display:block;}
+
+/* ── BRIEF ── */
+.brief{background:linear-gradient(90deg,var(--s2),var(--s3) 60%,var(--s2));border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:var(--r);padding:16px 20px;margin-bottom:20px;display:flex;align-items:flex-start;gap:14px;}
+.brief-lbl{font-family:var(--mono);font-size:9px;letter-spacing:0.18em;color:var(--gold);text-transform:uppercase;margin-bottom:6px;}
+.brief-text{font-family:var(--sans);font-size:13px;color:var(--text2);line-height:1.7;}
+
+/* ── SECTION HEADER ── */
+.sh{display:flex;align-items:center;gap:12px;margin:24px 0 14px;}
+.sh-bar{width:3px;height:20px;border-radius:2px;flex-shrink:0;}
+.sh-title{font-family:var(--syne);font-size:14px;font-weight:700;}
+.sh-line{flex:1;height:1px;background:var(--border);}
+.sh-tag{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;}
+
+/* ── GRID LAYOUTS ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
+
+/* ── METRIC CARD ── */
+.mc{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:20px 22px;position:relative;overflow:hidden;transition:all 0.2s;}
+.mc:hover{background:var(--s2);border-color:var(--border2);transform:translateY(-1px);}
+.mc-accent{position:absolute;top:0;left:0;right:0;height:3px;}
+.mc-label{font-family:var(--mono);font-size:10px;letter-spacing:0.14em;color:var(--text3);text-transform:uppercase;margin-bottom:10px;}
+.mc-value{font-family:var(--syne);font-size:34px;font-weight:700;letter-spacing:-0.04em;line-height:1;margin-bottom:6px;}
+.mc-sub{font-family:var(--sans);font-size:12px;color:var(--text3);line-height:1.4;}
+
+/* ── BUDGET CARD ── */
+.bcard{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;}
+.bcard-lbl{font-family:var(--mono);font-size:10px;letter-spacing:0.14em;color:var(--text3);text-transform:uppercase;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
+.bcard-pct{font-family:var(--syne);font-size:12px;font-weight:700;}
+.bcard-track{height:6px;background:var(--s4);border-radius:3px;overflow:hidden;margin-bottom:12px;}
+.bcard-fill{height:100%;border-radius:3px;transition:width 1.3s cubic-bezier(0.4,0,0.2,1);}
+.bcard-val{font-family:var(--syne);font-size:26px;font-weight:700;line-height:1;}
+.bcard-cap{font-family:var(--sans);font-size:11px;color:var(--text3);margin-top:4px;}
+
+/* ── GOAL CARD ── */
+.goal-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;}
+.goal-lbl{font-family:var(--mono);font-size:10px;letter-spacing:0.14em;color:var(--text3);text-transform:uppercase;margin-bottom:10px;display:flex;justify-content:space-between;}
+.goal-pct{font-family:var(--syne);font-size:12px;font-weight:700;}
+.goal-track{height:8px;background:var(--s4);border-radius:4px;overflow:hidden;margin-bottom:10px;}
+.goal-fill{height:100%;border-radius:4px;transition:width 1.3s ease-out;}
+.goal-val{font-family:var(--syne);font-size:28px;font-weight:700;line-height:1;}
+.goal-target{font-family:var(--sans);font-size:11px;color:var(--text3);margin-top:4px;}
+
+/* ── PIPELINE CARD ── */
+.pcard{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:20px;position:relative;overflow:hidden;transition:all 0.2s;cursor:pointer;}
+.pcard:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,0.4);}
+.pcard-top{position:absolute;top:0;left:0;right:0;height:3px;}
+.pc-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.pc-name{font-family:var(--syne);font-size:13px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;}
+.pc-live{font-family:var(--mono);font-size:9px;padding:3px 9px;border-radius:20px;background:var(--green-dim);color:var(--green);border:1px solid rgba(30,191,90,0.2);}
+.pc-flow{display:flex;align-items:center;gap:4px;margin-bottom:14px;flex-wrap:wrap;}
+.pc-nd{font-family:var(--mono);font-size:9px;padding:3px 7px;border-radius:4px;color:var(--text2);background:var(--s3);border:1px solid var(--border);}
+.pc-ar{color:var(--text3);font-size:9px;}
+.pc-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.pc-sv{font-family:var(--syne);font-size:30px;font-weight:700;line-height:1;letter-spacing:-0.03em;}
+.pc-sl{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-top:4px;}
+
+/* ── CARD ── */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:border-color 0.2s;}
+.card:hover{border-color:var(--border2);}
+.card-hd{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.ct{display:flex;align-items:center;gap:8px;font-family:var(--syne);font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;}
+.card-meta{font-family:var(--mono);font-size:9px;color:var(--text3);}
+.card-ft{padding:8px 18px;border-top:1px solid var(--border);display:flex;justify-content:space-between;}
+.card-ft span{font-family:var(--mono);font-size:9px;color:var(--text3);}
+
+/* ── LIVE DOT ── */
+.ldot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 7px var(--green);animation:lp 2s infinite;flex-shrink:0;}
+@keyframes lp{0%,100%{opacity:1;box-shadow:0 0 7px var(--green);}50%{opacity:0.25;box-shadow:none;}}
+
+/* ── PILLS ── */
+.pills{display:flex;gap:3px;}
+.pill{font-family:var(--mono);font-size:9px;letter-spacing:0.06em;padding:3px 9px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;transition:all 0.15s;text-transform:uppercase;}
+.pill:hover{border-color:var(--border2);color:var(--text2);}
+.pill.active{background:var(--gold-dim);border-color:rgba(201,168,76,0.3);color:var(--gold);}
+
+/* ── FEED ── */
+.fscroll{overflow-y:auto;}
+.fscroll::-webkit-scrollbar{width:3px;}
+.fscroll::-webkit-scrollbar-thumb{background:var(--border2);}
+.fi{display:grid;grid-template-columns:12px 54px 72px 1fr 60px;gap:10px;align-items:center;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,0.025);transition:background 0.12s;cursor:pointer;}
+.fi:hover{background:rgba(255,255,255,0.022);}
+.fi-dot{width:6px;height:6px;border-radius:50%;margin:0 auto;}
+.fi-t{font-family:var(--mono);font-size:10px;color:var(--text3);}
+.fi-a{font-family:var(--mono);font-size:10px;font-weight:500;}
+.fi-m{font-family:var(--sans);font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4;}
+.fi-s{font-family:var(--mono);font-size:9px;text-align:right;text-transform:uppercase;}
+
+/* ── AGENT ROW ── */
+.ascroll{overflow-y:auto;}
+.ascroll::-webkit-scrollbar{width:3px;}
+.ascroll::-webkit-scrollbar-thumb{background:var(--border2);}
+.arow{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,0.025);transition:background 0.12s;cursor:pointer;}
+.arow:hover{background:rgba(255,255,255,0.022);}
+.a-l{display:flex;align-items:center;gap:12px;}
+.a-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.a-dot.on{background:var(--green);box-shadow:0 0 6px var(--green);animation:lp 2s infinite;}
+.a-dot.off{background:var(--text4);}
+.a-name{font-family:var(--syne);font-size:13px;font-weight:600;}
+.a-role{font-family:var(--sans);font-size:11px;color:var(--text3);margin-top:2px;}
+.a-r{display:flex;align-items:center;gap:7px;}
+.a-tag{font-family:var(--mono);font-size:8px;padding:2px 7px;border-radius:4px;text-transform:uppercase;}
+.a-model{font-family:var(--mono);font-size:9px;color:var(--text3);}
+
+/* ── CRON ROW ── */
+.crow{display:flex;align-items:center;justify-content:space-between;padding:11px 18px;border-bottom:1px solid rgba(255,255,255,0.025);}
+.crow-l{display:flex;align-items:center;gap:10px;}
+.crow-dot{width:6px;height:6px;border-radius:50%;}
+.crow-name{font-family:var(--sans);font-size:12px;color:var(--text2);}
+.crow-script{font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:2px;}
+.crow-sched{font-family:var(--mono);font-size:10px;color:var(--text3);}
+
+/* ── FUNNEL ROW ── */
+.frow{display:flex;align-items:center;gap:10px;padding:11px 18px;border-bottom:1px solid rgba(255,255,255,0.025);}
+.f-lbl{font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;width:70px;flex-shrink:0;}
+.f-track{flex:1;height:6px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.f-fill{height:100%;border-radius:3px;transition:width 1.1s ease-out;}
+.f-count{font-family:var(--syne);font-size:15px;font-weight:700;width:24px;text-align:right;flex-shrink:0;}
+
+/* ── LEAD AGING ── */
+.la{display:flex;align-items:center;justify-content:space-between;padding:11px 18px;border-bottom:1px solid rgba(255,255,255,0.025);}
+.la-name{font-family:var(--sans);font-size:12px;color:var(--text2);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.la-st{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:4px;text-transform:uppercase;margin:0 10px;flex-shrink:0;}
+.la-d{font-family:var(--syne);font-size:15px;font-weight:700;flex-shrink:0;}
+
+/* ── SEC ROW ── */
+.srow{display:flex;align-items:flex-start;gap:10px;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,0.025);}
+.sd{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.sm{font-family:var(--sans);font-size:12px;color:var(--text2);line-height:1.6;flex:1;}
+.st{font-family:var(--mono);font-size:9px;color:var(--text3);white-space:nowrap;}
+
+/* ── EMAIL BARS ── */
+.ebar{padding:12px 18px 4px;}
+.ebar-hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+.ebar-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;}
+.ebar-val{font-family:var(--syne);font-size:16px;font-weight:700;}
+.ebar-track{height:4px;background:var(--s3);border-radius:2px;margin-bottom:12px;overflow:hidden;}
+.ebar-fill{height:100%;border-radius:2px;transition:width 1.3s ease-out;}
+
+/* ── SYS ROW ── */
+.sysr{display:flex;align-items:center;justify-content:space-between;padding:11px 18px;border-bottom:1px solid rgba(255,255,255,0.025);}
+.sk{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;}
+.sv{font-family:var(--sans);font-size:12px;color:var(--text2);}
+.sv-lg{font-family:var(--syne);font-size:18px;font-weight:700;}
+
+/* ── KW ROW ── */
+.krow{display:flex;align-items:center;justify-content:space-between;padding:11px 18px;border-bottom:1px solid rgba(255,255,255,0.025);}
+.k-w{font-family:var(--sans);font-size:12px;color:var(--text2);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-right:10px;}
+.k-p{font-family:var(--syne);font-size:15px;font-weight:700;}
+.k-c{font-family:var(--mono);font-size:9px;padding:2px 5px;border-radius:3px;margin-left:4px;}
+
+/* ── SOCIAL ROW ── */
+.sprow{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,0.025);}
+.sp-n{font-family:var(--sans);font-size:12px;color:var(--text2);}
+.sp-b{font-family:var(--mono);font-size:9px;padding:3px 9px;border-radius:5px;}
+
+/* ── APPROVAL ── */
+.apr{display:flex;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid rgba(255,255,255,0.025);}
+.apr-ico{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.apr-body{flex:1;min-width:0;}
+.apr-title{font-family:var(--sans);font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4;}
+.apr-sub{font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:3px;}
+.apr-btns{display:flex;gap:5px;flex-shrink:0;}
+.apr-btn{font-family:var(--mono);font-size:9px;padding:5px 11px;border-radius:5px;border:none;cursor:pointer;transition:all 0.15s;text-transform:uppercase;}
+.apr-ok{background:var(--green-dim);color:var(--green);border:1px solid rgba(30,191,90,0.25);}
+.apr-no{background:var(--red-dim);color:var(--red2);border:1px solid rgba(229,57,58,0.25);}
+
+/* ── WORLD CLOCKS ── */
+.wc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);}
+.wc{background:var(--s1);padding:14px 18px;}
+.wc-city{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;}
+.wc-time{font-family:var(--syne);font-size:22px;font-weight:700;letter-spacing:-0.02em;}
+.wc-off{font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:3px;}
+
+/* ── FORECAST ── */
+.fc-row{display:flex;gap:10px;padding:14px 18px;}
+.fc-card{flex:1;background:var(--s2);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px;}
+.fc-p{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;}
+.fc-v{font-family:var(--syne);font-size:22px;font-weight:700;letter-spacing:-0.03em;}
+.fc-s{font-family:var(--sans);font-size:11px;color:var(--text3);margin-top:5px;line-height:1.4;}
+
+/* ── VPS BAR ── */
+.vbar{display:flex;align-items:center;gap:10px;padding:11px 18px;border-bottom:1px solid rgba(255,255,255,0.025);}
+.vbar-lbl{font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;width:50px;flex-shrink:0;}
+.vbar-track{flex:1;height:5px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.vbar-fill{height:100%;border-radius:3px;transition:width 1s ease-out;}
+.vbar-val{font-family:var(--syne);font-size:13px;font-weight:700;width:40px;text-align:right;flex-shrink:0;}
+
+/* ── CHART ── */
+.chart-pad{padding:14px 18px 10px;}
+
+/* ── AI COST ── */
+.ai-row{display:flex;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px solid rgba(255,255,255,0.025);}
+.ai-model{font-family:var(--mono);font-size:10px;color:var(--text2);width:120px;flex-shrink:0;}
+.ai-bar-wrap{flex:1;height:5px;background:var(--s3);border-radius:3px;overflow:hidden;}
+.ai-bar{height:100%;border-radius:3px;background:var(--orange);transition:width 1s ease-out;}
+.ai-val{font-family:var(--syne);font-size:13px;font-weight:700;color:var(--orange);width:48px;text-align:right;flex-shrink:0;}
+
+/* ── LOADING ── */
+.ld{display:flex;align-items:center;justify-content:center;height:56px;font-family:var(--mono);font-size:9px;letter-spacing:0.15em;color:var(--text3);text-transform:uppercase;}
+
+/* ── CMD BAR ── */
+.cmd-ov{position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:200;display:none;align-items:flex-start;justify-content:center;padding-top:130px;backdrop-filter:blur(8px);}
+.cmd-ov.open{display:flex;}
+.cmd-box{background:var(--s2);border:1px solid var(--border3);border-radius:14px;width:600px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,0.6);}
+.cmd-in-row{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--border);}
+.cmd-slash{font-family:var(--mono);font-size:18px;color:var(--gold);opacity:0.7;}
+.cmd-in{flex:1;background:transparent;border:none;outline:none;font-family:var(--mono);font-size:14px;color:var(--text);caret-color:var(--gold);}
+.cmd-in::placeholder{color:var(--text3);}
+.cmd-list{padding:6px 0 10px;}
+.cmd-item{display:flex;align-items:center;gap:10px;padding:10px 18px;cursor:pointer;transition:background 0.12s;}
+.cmd-item:hover,.cmd-item.sel{background:var(--s3);}
+.cmd-ico{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.cmd-lbl{font-family:var(--sans);font-size:13px;color:var(--text2);}
+.cmd-key{font-family:var(--mono);font-size:9px;color:var(--text3);margin-left:auto;}
+
+/* ── MODAL ── */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,0.86);z-index:150;display:none;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
+.modal-ov.open{display:flex;}
+.modal{background:var(--s2);border:1px solid var(--border2);border-radius:14px;width:560px;max-height:82vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 24px 70px rgba(0,0,0,0.6);}
+.modal-hd{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.modal-t{font-family:var(--syne);font-size:16px;font-weight:700;}
+.modal-x{background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:18px;padding:2px 6px;border-radius:4px;}
+.modal-x:hover{color:var(--text);}
+.modal-bd{padding:16px 20px;overflow-y:auto;flex:1;}
+.mrow{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.mk{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;}
+.mv{font-family:var(--sans);font-size:12px;color:var(--text2);text-align:right;max-width:300px;line-height:1.5;}
+
+/* ── NOTIF PANEL ── */
+.notif-panel{position:fixed;top:68px;right:24px;width:380px;background:var(--s2);border:1px solid var(--border2);border-radius:14px;z-index:130;display:none;box-shadow:0 20px 60px rgba(0,0,0,0.6);}
+.notif-panel.open{display:block;}
+.notif-hd{padding:14px 18px;border-bottom:1px solid var(--border);font-family:var(--syne);font-size:12px;font-weight:700;display:flex;justify-content:space-between;align-items:center;}
+.notif-clear{font-family:var(--mono);font-size:9px;color:var(--text3);cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;}
+.notif-clear:hover{color:var(--red2);}
+
+/* ── FOOTER ── */
+.page-footer{display:flex;justify-content:space-between;align-items:center;padding:16px 0 0;border-top:1px solid var(--border);margin-top:24px;}
+.ftag{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;color:var(--text3);text-transform:uppercase;}
+.ftag span{color:var(--gold);margin-right:3px;}
+.up-badge{font-family:var(--mono);font-size:9px;color:var(--green);background:var(--green-dim);border:1px solid rgba(30,191,90,0.2);padding:3px 10px;border-radius:20px;}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.fu{animation:fadeUp 0.3s ease-out forwards;opacity:0;}
+.fu:nth-child(1){animation-delay:0.04s}.fu:nth-child(2){animation-delay:0.08s}
+.fu:nth-child(3){animation-delay:0.12s}.fu:nth-child(4){animation-delay:0.16s}
+.fu:nth-child(5){animation-delay:0.20s}.fu:nth-child(6){animation-delay:0.24s}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1200px){.grid-5{grid-template-columns:repeat(3,1fr)}.grid-4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){.grid-3{grid-template-columns:1fr 1fr}.grid-2{grid-template-columns:1fr}}
+@media(max-width:680px){.sidebar{width:52px}.main-area{margin-left:52px}.sb-label{display:none}}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sb-logo">B</div>
+  <div class="sb-nav">
+    <div class="sb-item active" onclick="showPage('overview',this)">
+      <div class="sb-icon">🏠</div>
+      <div class="sb-label">Overview</div>
+    </div>
+    <div class="sb-item" onclick="showPage('financial',this)">
+      <div class="sb-icon">💰</div>
+      <div class="sb-label">Finance</div>
+    </div>
+    <div class="sb-item" onclick="showPage('pipelines',this)">
+      <div class="sb-icon">⚡</div>
+      <div class="sb-label">Pipelines</div>
+    </div>
+    <div class="sb-item" onclick="showPage('agents',this)">
+      <div class="sb-icon">🤖</div>
+      <div class="sb-label">Agents</div>
+    </div>
+    <div class="sb-item" onclick="showPage('intelligence',this)">
+      <div class="sb-icon">📊</div>
+      <div class="sb-label">Intel</div>
+    </div>
+    <div class="sb-item" onclick="showPage('content',this)">
+      <div class="sb-icon">✍️</div>
+      <div class="sb-label">Content</div>
+    </div>
+    <div class="sb-divider"></div>
+    <div class="sb-item" onclick="showPage('security',this)">
+      <div class="sb-icon">🔒</div>
+      <div class="sb-label">Security</div>
+      <div class="sb-alert-dot" id="sec-dot"></div>
+    </div>
+    <div class="sb-item" onclick="showPage('system',this)">
+      <div class="sb-icon">🖥️</div>
+      <div class="sb-label">System</div>
+    </div>
+    <div class="sb-item" onclick="showPage('office',this)">
+      <div class="sb-icon">⬡</div>
+      <div class="sb-label">Office</div>
+    </div>
+  </div>
+  <div class="sb-bottom">
+    <div class="sb-item" onclick="openCmd()" title="Command Bar (/)">
+      <div class="sb-icon">⌘</div>
+      <div class="sb-label">Command</div>
+    </div>
+    <div class="sb-item" onclick="toggleTheme()" title="Toggle Theme">
+      <div class="sb-icon">◐</div>
+      <div class="sb-label">Theme</div>
+    </div>
+    <div class="sb-item" onclick="toggleNotif()" title="Notifications">
+      <div class="sb-icon">🔔</div>
+      <div class="sb-label" id="nb-lbl">Alerts</div>
+      <div class="sb-alert-dot" id="nb-dot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN AREA -->
+<div class="main-area">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="tb-left">
+      <div>
+        <div class="tb-page-title" id="page-title">Overview</div>
+        <div class="tb-page-sub" id="page-sub">Borne Systems · Mission Control v8</div>
+      </div>
+      <div class="tb-health">
+        <div class="hring">
+          <svg width="30" height="30" viewBox="0 0 30 30">
+            <circle cx="15" cy="15" r="11" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="2.5"/>
+            <circle id="harc" cx="15" cy="15" r="11" fill="none" stroke="#1EBF5A" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="69.1" stroke-dashoffset="6.9"/>
+          </svg>
+          <div class="hring-val" id="hpct" style="color:var(--green)">—</div>
+        </div>
+        <div class="tb-hinfo">
+          <div class="tb-hlbl">Health</div>
+          <div class="tb-hstatus" id="hstatus" style="color:var(--green)">Healthy</div>
+        </div>
+      </div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-clock"><div class="tb-time" id="clock">—</div><div class="tb-date" id="dateval">—</div></div>
+      <button class="tbtn" onclick="loadData()">↺ Refresh</button>
+      <div class="notif-wrap">
+        <button class="tbtn" onclick="toggleNotif()">🔔 <span id="nb">0</span></button>
+        <div class="nb-dot" id="nb-dot2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE CONTENT -->
+  <div class="page-content">
+
+    <!-- ══ OVERVIEW PAGE ══ -->
+    <div class="page active" id="page-overview">
+      <div class="brief fu">
+        <div style="font-size:16px;flex-shrink:0;margin-top:2px">✦</div>
+        <div style="flex:1">
+          <div class="brief-lbl">BorneAI Daily Brief</div>
+          <div class="brief-text" id="brief-text">Loading briefing from BorneAI...</div>
+        </div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--text3);white-space:nowrap" id="brief-ts">—</div>
+      </div>
+
+      <div class="sh fu"><div class="sh-bar" style="background:var(--gold)"></div><div class="sh-title" style="color:var(--gold)">Goals</div><div class="sh-line"></div><div class="sh-tag">Monthly Targets</div></div>
+      <div class="grid-3 fu" style="margin-bottom:20px;">
+        <div class="goal-card"><div class="goal-lbl"><span>MRR Goal</span><span class="goal-pct" id="g-mrr-pct" style="color:var(--green)">0%</span></div><div class="goal-track"><div class="goal-fill" id="g-mrr" style="width:0%;background:var(--green)"></div></div><div class="goal-val" id="g-mrr-val" style="color:var(--green)">$0</div><div class="goal-target">of $10,000 target</div></div>
+        <div class="goal-card"><div class="goal-lbl"><span>Lead Goal</span><span class="goal-pct" id="g-lead-pct" style="color:var(--teal2)">0%</span></div><div class="goal-track"><div class="goal-fill" id="g-lead" style="width:0%;background:var(--teal2)"></div></div><div class="goal-val" id="g-lead-val" style="color:var(--teal2)">0</div><div class="goal-target">of 50 leads target</div></div>
+        <div class="goal-card"><div class="goal-lbl"><span>Content Goal</span><span class="goal-pct" id="g-content-pct" style="color:var(--purple2)">0%</span></div><div class="goal-track"><div class="goal-fill" id="g-content" style="width:0%;background:var(--purple2)"></div></div><div class="goal-val" id="g-content-val" style="color:var(--purple2)">0</div><div class="goal-target">of 30 pieces target</div></div>
+      </div>
+
+      <div class="sh fu"><div class="sh-bar" style="background:var(--blue)"></div><div class="sh-title">Key Metrics</div><div class="sh-line"></div></div>
+      <div class="grid-5 fu" style="margin-bottom:20px;">
+        <div class="mc"><div class="mc-accent" style="background:var(--gold)"></div><div class="mc-label">Monthly Burn</div><div class="mc-value" id="ov-burn" style="color:var(--gold)">—</div><div class="mc-sub" id="ov-burn-sub">—</div></div>
+        <div class="mc"><div class="mc-accent" style="background:var(--green)"></div><div class="mc-label">MRR</div><div class="mc-value" id="ov-mrr" style="color:var(--green)">$0</div><div class="mc-sub" id="ov-runway">—</div></div>
+        <div class="mc"><div class="mc-accent" style="background:var(--teal)"></div><div class="mc-label">Total Leads</div><div class="mc-value" id="ov-leads" style="color:var(--teal2)">—</div><div class="mc-sub" id="ov-leads-s">—</div></div>
+        <div class="mc"><div class="mc-accent" style="background:var(--purple)"></div><div class="mc-label">Open Tickets</div><div class="mc-value" id="ov-tickets" style="color:var(--purple2)">—</div><div class="mc-sub">support queue</div></div>
+        <div class="mc"><div class="mc-accent" style="background:var(--red)"></div><div class="mc-label">Security Risks</div><div class="mc-value" id="ov-risks" style="color:var(--red2)">—</div><div class="mc-sub">open items</div></div>
+      </div>
+        <div class="sh fu"><div class="sh-bar" style="background:var(--gold)"></div><div class="sh-title" style="color:var(--gold)">Token Expiry</div><div class="sh-line"></div></div>
+        <div class="grid-3 fu" style="margin-bottom:20px;max-width:100%;"><div class="mc" style="min-width:0"><div class="mc-accent" style="background:var(--orange)"></div><div class="mc-label">Instagram + Threads</div><div class="mc-value" id="tok-ig-val" style="color:var(--green);font-size:18px">—</div><div class="mc-sub">Expires May 29</div></div><div class="mc"><div class="mc-accent" style="background:var(--blue)"></div><div class="mc-label">LinkedIn</div><div class="mc-value" id="tok-li-val" style="color:var(--green)">—</div><div class="mc-sub">Expires May 30</div></div><div class="mc"><div class="mc-accent" style="background:var(--purple)"></div><div class="mc-label">Agentmail</div><div class="mc-value" style="color:var(--green)">Active</div><div class="mc-sub">Check every 30min</div></div></div>
+      </div>
+
+      <div class="sh fu"><div class="sh-bar" style="background:var(--green)"></div><div class="sh-title">Live Feed</div><div class="sh-line"></div></div>
+      <div class="card fu">
+        <div class="card-hd">
+          <div class="ct"><div class="ldot"></div>Event Feed</div>
+          <div class="pills">
+            <button class="pill active" onclick="setFilter('all',this)">All</button>
+            <button class="pill" onclick="setFilter('email',this)">Email</button>
+            <button class="pill" onclick="setFilter('support',this)">Support</button>
+            <button class="pill" onclick="setFilter('security',this)">Security</button>
+            <button class="pill" onclick="setFilter('ops',this)">Ops</button>
+          </div>
+        </div>
+        <div class="fscroll" id="feed" style="height:320px;"><div class="ld">Connecting...</div></div>
+        <div class="card-ft"><span id="fc">0 Events</span><span id="fu-t">—</span></div>
+      </div>
+
+      <div class="sh fu" style="margin-top:24px;"><div class="sh-bar" style="background:var(--gold)"></div><div class="sh-title" style="color:var(--gold)">Pending Approval</div><div class="sh-line"></div><span style="font-family:var(--mono);font-size:9px;color:var(--text3)" id="apr-count-ov">—</span></div>
+      <div class="card fu"><div id="approvals-panel-ov"><div class="ld">Loading...</div></div></div>
+
+      <div class="page-footer fu">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="ftag"><span>●</span>OpenClaw v1.0</div>
+          <div class="ftag"><span>●</span>Supabase RT · 22 Tables</div>
+          <div class="ftag"><span>●</span>Tailscale Secured</div>
+          <div class="up-badge">● Live · v8</div>
+        </div>
+        <div class="ftag" id="footer-ts">—</div>
+      </div>
+    </div>
+
+    <!-- ══ FINANCIAL PAGE ══ -->
+    <div class="page" id="page-financial">
+      <div class="sh fu"><div class="sh-bar" style="background:var(--gold)"></div><div class="sh-title" style="color:var(--gold)">Financial Overview</div><div class="sh-line"></div><div class="sh-tag" id="fin-ts">—</div></div>
+      <div class="grid-5 fu" style="margin-bottom:20px;">
+        <div class="mc"><div class="mc-accent" style="background:var(--gold)"></div><div class="mc-label">Monthly Burn</div><div class="mc-value" id="m-burn" style="color:var(--gold)">—</div><div class="mc-sub" id="m-burn-sub">—</div></div>
+        <div class="mc"><div class="mc-accent" style="background:var(--green)"></div><div class="mc-label">MRR</div><div class="mc-value" id="m-mrr" style="color:var(--green)">$0</div><div class="mc-sub" id="m-runway">—</div></div>
+        <div class="mc"><div class="mc-accent" style="background:var(--green)"></div><div class="mc-label">Net Position</div><div class="mc-value" id="m-net" style="color:var(--green)">—</div><div class="mc-sub">mrr minus burn</div></div>
+        <div class="mc"><div class="mc-accent" style="background:var(--orange)"></div><div class="mc-label">Today AI Cost</div><div class="mc-value" id="m-today" style="color:var(--orange)">—</div><div class="mc-sub">of $7 daily cap</div></div>
+        <div class="mc"><div class="mc-accent" style="background:var(--teal)"></div><div class="mc-label">AI Cost MTD</div><div class="mc-value" id="m-ai-mtd" style="color:var(--teal2)">—</div><div class="mc-sub">of $200 budget</div></div>
+      </div>
+
+      <div class="sh fu"><div class="sh-bar" style="background:var(--orange)"></div><div class="sh-title">Budget Tracking</div><div class="sh-line"></div></div>
+      <div class="grid-4 fu" style="margin-bottom:20px;">
+        <div class="bcard"><div class="bcard-lbl"><span>Daily AI Spend</span><span class="bcard-pct" id="bc-dp" style="color:var(--orange)">0%</span></div><div class="bcard-track"><div class="bcard-fill" id="bc-d" style="width:0%;background:var(--green)"></div></div><div class="bcard-val" id="bc-ds" style="color:var(--orange)">$0.00</div><div class="bcard-cap">of $7 cap</div></div>
+        <div class="bcard"><div class="bcard-lbl"><span>Monthly AI Budget</span><span class="bcard-pct" id="bc-mp" style="color:var(--gold)">0%</span></div><div class="bcard-track"><div class="bcard-fill" id="bc-m" style="width:0%;background:var(--gold)"></div></div><div class="bcard-val" id="bc-ms" style="color:var(--gold)">$0.00</div><div class="bcard-cap">of $200 budget</div></div>
+        <div class="bcard"><div class="bcard-lbl"><span>Cost Per Lead</span></div><div class="bcard-track"><div class="bcard-fill" id="bc-c" style="width:0%;background:var(--teal)"></div></div><div class="bcard-val" id="bc-cv" style="color:var(--teal2)">$0.00</div><div class="bcard-cap">acquisition cost</div></div>
+        <div class="bcard"><div class="bcard-lbl"><span>Session Uptime</span></div><div class="bcard-track"><div class="bcard-fill" style="width:100%;background:var(--green)"></div></div><div class="bcard-val" id="bc-u" style="color:var(--green)">0m</div><div class="bcard-cap">this session</div></div>
+      </div>
+
+      <div class="grid-2 fu" style="margin-bottom:20px;">
+        <div class="card">
+          <div class="card-hd"><div class="ct" style="color:var(--green)">Revenue & Burn</div><span class="card-meta">30 days</span></div>
+          <div class="chart-pad"><canvas id="rev-chart" height="110"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><div class="ct" style="color:var(--gold)">Revenue Forecast</div></div>
+          <div class="fc-row" id="forecast-panel"><div class="ld">Loading...</div></div>
+          <div class="card-hd" style="border-top:1px solid var(--border);border-bottom:none;margin-top:0;"><div class="ct" style="color:var(--gold)">Ledger</div></div>
+          <div id="ledger-panel"><div class="ld">Loading...</div></div>
+        </div>
+      </div>
+
+      <div class="card fu">
+        <div class="card-hd"><div class="ct" style="color:var(--orange)">AI Cost by Model</div></div>
+        <div id="ai-cost-panel"><div class="ld">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- ══ PIPELINES PAGE ══ -->
+    <div class="page" id="page-pipelines">
+      <div class="sh fu"><div class="sh-bar" style="background:var(--green)"></div><div class="sh-title">Pipeline Status</div><div class="sh-line"></div><div class="sh-tag">4 Active · All Live</div></div>
+      <div class="grid-2 fu" style="margin-bottom:20px;">
+        <div class="pcard" onclick="showPipeline('social')"><div class="pcard-top" style="background:var(--green)"></div><div class="pc-hd"><div class="pc-name" style="color:var(--green)">Social</div><div class="pc-live">Live</div></div><div class="pc-flow"><span class="pc-nd">Mercury</span><span class="pc-ar">›</span><span class="pc-nd">MrX</span><span class="pc-ar">›</span><span class="pc-nd">Inspector</span><span class="pc-ar">›</span><span class="pc-nd">Nova</span></div><div class="pc-stats"><div><div class="pc-sv" id="ps-t" style="color:var(--green)">—</div><div class="pc-sl">Content</div></div><div><div class="pc-sv" id="ps-p" style="color:var(--green)">—</div><div class="pc-sl">Published</div></div></div></div>
+        <div class="pcard" onclick="showPipeline('sales')"><div class="pcard-top" style="background:var(--orange)"></div><div class="pc-hd"><div class="pc-name" style="color:var(--orange)">Sales</div><div class="pc-live">Live</div></div><div class="pc-flow"><span class="pc-nd">Lead</span><span class="pc-ar">›</span><span class="pc-nd">Chase</span><span class="pc-ar">›</span><span class="pc-nd">Insight</span><span class="pc-ar">›</span><span class="pc-nd">Demo</span></div><div class="pc-stats"><div><div class="pc-sv" id="pl-t" style="color:var(--orange)">—</div><div class="pc-sl">Leads</div></div><div><div class="pc-sv" id="pl-n" style="color:var(--orange)">—</div><div class="pc-sl">New</div></div></div></div>
+        <div class="pcard" onclick="showPipeline('email')"><div class="pcard-top" style="background:var(--blue)"></div><div class="pc-hd"><div class="pc-name" style="color:var(--blue2)">Email</div><div class="pc-live">Live</div></div><div class="pc-flow"><span class="pc-nd">Send</span><span class="pc-ar">›</span><span class="pc-nd">Deliver</span><span class="pc-ar">›</span><span class="pc-nd">Open</span><span class="pc-ar">›</span><span class="pc-nd">Click</span></div><div class="pc-stats"><div><div class="pc-sv" id="pe-d" style="color:var(--blue2)">—</div><div class="pc-sl">Delivered</div></div><div><div class="pc-sv" id="pe-o" style="color:var(--blue2)">—</div><div class="pc-sl">Opened</div></div></div></div>
+        <div class="pcard" onclick="showPipeline('support')"><div class="pcard-top" style="background:var(--purple)"></div><div class="pc-hd"><div class="pc-name" style="color:var(--purple2)">Support</div><div class="pc-live">Live</div></div><div class="pc-flow"><span class="pc-nd">Form</span><span class="pc-ar">›</span><span class="pc-nd">Care</span><span class="pc-ar">›</span><span class="pc-nd">Triage</span><span class="pc-ar">›</span><span class="pc-nd">Resolve</span></div><div class="pc-stats"><div><div class="pc-sv" id="pt-o" style="color:var(--purple2)">—</div><div class="pc-sl">Open</div></div><div><div class="pc-sv" id="pt-r" style="color:var(--purple2)">—</div><div class="pc-sl">Resolved</div></div></div></div>
+      </div>
+
+      <div class="grid-2 fu">
+        <div class="card">
+          <div class="card-hd"><div class="ct" style="color:var(--blue2)">Email Performance</div></div>
+          <div id="email-panel"><div class="ld">Loading...</div></div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:14px;">
+            <div class="card-hd"><div class="ct" style="color:var(--orange)">Lead Funnel</div></div>
+            <div id="funnel-panel"><div class="ld">Loading...</div></div>
+          </div>
+          <div class="card">
+            <div class="card-hd"><div class="ct" style="color:var(--orange)">Lead Aging</div></div>
+            <div id="aging-panel" style="max-height:260px;overflow-y:auto;"><div class="ld">Loading...</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ AGENTS PAGE ══ -->
+    <div class="page" id="page-agents">
+      <div class="sh fu"><div class="sh-bar" style="background:var(--blue)"></div><div class="sh-title">Agent Roster</div><div class="sh-line"></div><div class="sh-tag" id="agent-sum">17 Agents</div></div>
+      <div class="card fu">
+        <div class="card-hd"><div class="ct">All Agents</div><div style="display:flex;gap:8px"><span id="ag-a" style="font-family:var(--mono);font-size:10px;color:var(--green)">—</span><span id="ag-i" style="font-family:var(--mono);font-size:10px;color:var(--text3)">—</span></div></div>
+        <div class="ascroll" id="agent-list" style="max-height:600px;"><div class="ld">Loading...</div></div>
+      </div>
+
+      <div class="sh fu" style="margin-top:24px;"><div class="sh-bar" style="background:var(--teal)"></div><div class="sh-title">Cron Jobs</div><div class="sh-line"></div></div>
+      <div class="card fu"><div id="cron-panel"><div class="ld">Loading...</div></div></div>
+    </div>
+
+    <!-- ══ INTELLIGENCE PAGE ══ -->
+    <div class="page" id="page-intelligence">
+      <div class="sh fu"><div class="sh-bar" style="background:var(--blue)"></div><div class="sh-title">Sales Intelligence</div><div class="sh-line"></div></div>
+      <div class="grid-2 fu" style="margin-bottom:20px;">
+        <div class="card">
+          <div class="card-hd"><div class="ct" style="color:var(--orange)">Outreach</div></div>
+          <div id="outreach-panel"><div class="ld">Loading...</div></div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><div class="ct" style="color:var(--purple2)">Response Time</div></div>
+          <div id="response-panel"><div class="ld">Loading...</div></div>
+        </div>
+      </div>
+
+      <div class="sh fu"><div class="sh-bar" style="background:var(--cyan)"></div><div class="sh-title" style="color:var(--cyan2)">SEO</div><div class="sh-line"></div></div>
+      <div class="card fu" style="margin-bottom:20px;">
+        <div class="card-hd"><div class="ct" style="color:var(--cyan2)">Keyword Rankings</div></div>
+        <div id="kw-panel"><div class="ld">Loading...</div></div>
+      </div>
+
+      <div class="sh fu"><div class="sh-bar" style="background:var(--blue)"></div><div class="sh-title" style="color:var(--blue2)">Email Analytics</div><div class="sh-line"></div></div>
+      <div class="card fu">
+        <div class="card-hd"><div class="ct" style="color:var(--blue2)">Email Performance</div></div>
+        <div id="email-panel2"><div class="ld">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- ══ CONTENT PAGE ══ -->
+    <div class="page" id="page-content">
+      <div class="sh fu"><div class="sh-bar" style="background:var(--green)"></div><div class="sh-title">Social Platforms</div><div class="sh-line"></div></div>
+      <div class="card fu" style="margin-bottom:20px;">
+        <div class="sprow"><span class="sp-n">Twitter / X</span><span class="sp-b" style="background:var(--green-dim);color:var(--green);border:1px solid rgba(30,191,90,0.2)">● Active</span></div>
+        <div class="sprow"><span class="sp-n">Instagram</span><span style="display:flex;align-items:center;gap:8px"><span class="sp-b" id="ig-status" style="background:var(--green-dim);color:var(--green);border:1px solid rgba(30,191,90,0.2)">● Active · Expires May 29</span><button onclick="refreshMeta()" style="background:var(--gold-dim);color:var(--gold);border:1px solid rgba(201,168,76,0.2);border-radius:5px;padding:3px 10px;font-family:var(--mono);font-size:10px;cursor:pointer;">↺ Refresh</button></span></div>
+        <div class="sprow"><span class="sp-n">Threads</span><span style="display:flex;align-items:center;gap:8px"><span class="sp-b" id="th-status" style="background:var(--green-dim);color:var(--green);border:1px solid rgba(30,191,90,0.2)">● Active · Expires May 29</span></span></div>
+        <div class="sprow"><span class="sp-n">LinkedIn</span><span style="display:flex;align-items:center;gap:8px"><span class="sp-b" id="li-status" style="background:var(--green-dim);color:var(--green);border:1px solid rgba(30,191,90,0.2)">● Active · Expires May 30</span><button onclick="refreshLinkedIn()" style="background:var(--gold-dim);color:var(--gold);border:1px solid rgba(201,168,76,0.2);border-radius:5px;padding:3px 10px;font-family:var(--mono);font-size:10px;cursor:pointer;">↺ Refresh</button></span></div>
+        <div class="sprow"><span class="sp-n">TikTok</span><span class="sp-b" style="background:var(--gold-dim);color:var(--gold);border:1px solid rgba(201,168,76,0.2)">⏳ Pending Setup</span></div>
+      </div>
+
+      <div class="sh fu"><div class="sh-bar" style="background:var(--green)"></div><div class="sh-title">Content Calendar</div><div class="sh-line"></div></div>
+      <div class="card fu" style="margin-bottom:20px;">
+        <div id="calendar-panel"><div class="ld">Loading...</div></div>
+      </div>
+
+      <div class="sh fu"><div class="sh-bar" style="background:var(--purple)"></div><div class="sh-title">Content Bank</div><div class="sh-line"></div><div class="sh-tag" id="content-count-lbl">—</div></div>
+      <div class="card fu">
+        <div id="content-panel"><div class="ld">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- ══ SECURITY PAGE ══ -->
+    <div class="page" id="page-security">
+      <div class="sh fu"><div class="sh-bar" style="background:var(--red)"></div><div class="sh-title" style="color:var(--red2)">Security Overview</div><div class="sh-line"></div></div>
+      <div class="grid-3 fu" style="margin-bottom:20px;">
+        <div class="mc"><div class="mc-accent" style="background:var(--red)"></div><div class="mc-label">Open Risks</div><div class="mc-value" id="sec-risks" style="color:var(--red2)">—</div><div class="mc-sub">security risks</div></div>
+        <div class="mc"><div class="mc-accent" style="background:var(--orange)"></div><div class="mc-label">CVEs Tracked</div><div class="mc-value" id="sec-cves" style="color:var(--orange)">—</div><div class="mc-sub">logged this month</div></div>
+        <div class="mc"><div class="mc-accent" style="background:var(--green)"></div><div class="mc-label">Knox Runs</div><div class="mc-value" style="color:var(--green)">Daily</div><div class="mc-sub">6am via cron</div></div>
+      </div>
+
+      <div class="grid-2 fu">
+        <div class="card">
+          <div class="card-hd"><div class="ct" style="color:var(--red2)"><div style="width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 6px var(--red)"></div>CVEs & Incidents</div></div>
+          <div id="sec-panel" style="max-height:400px;overflow-y:auto;"><div class="ld">Loading...</div></div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><div class="ct">Active Alerts</div><span id="nb2" style="font-family:var(--mono);font-size:10px;color:var(--red2)">—</span></div>
+          <div id="alerts-panel" style="max-height:400px;overflow-y:auto;"><div class="ld">Loading...</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SYSTEM PAGE ══ -->
+    <div class="page" id="page-system">
+      <div class="sh fu"><div class="sh-bar" style="background:var(--teal)"></div><div class="sh-title" style="color:var(--teal2)">System Status</div><div class="sh-line"></div></div>
+      <div class="card fu" style="margin-bottom:20px;">
+        <div class="card-hd"><div class="ct" style="color:var(--teal2)">VPS Monitor</div></div>
+        <div id="vps-panel"><div class="ld">Loading...</div></div>
+      </div>
+
+      <div class="sh fu"><div class="sh-bar" style="background:var(--teal)"></div><div class="sh-title">Configuration</div><div class="sh-line"></div></div>
+      <div class="card fu" style="margin-bottom:20px;">
+        <div id="sys-panel"><div class="ld">Loading...</div></div>
+      </div>
+
+      <div class="sh fu"><div class="sh-bar" style="background:var(--gold)"></div><div class="sh-title">World Clocks</div><div class="sh-line"></div></div>
+      <div class="card fu">
+        <div class="wc-grid">
+          <div class="wc"><div class="wc-city">New York EST</div><div class="wc-time" id="wc-est">—</div><div class="wc-off">UTC−5</div></div>
+          <div class="wc"><div class="wc-city">Los Angeles PST</div><div class="wc-time" id="wc-pst">—</div><div class="wc-off">UTC−8</div></div>
+          <div class="wc"><div class="wc-city">London GMT</div><div class="wc-time" id="wc-gmt">—</div><div class="wc-off">UTC+0</div></div>
+          <div class="wc"><div class="wc-city">Singapore SGT</div><div class="wc-time" id="wc-sgt">—</div><div class="wc-off">UTC+8</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="page" id="page-office" style="height:calc(100vh - 68px);padding:0;overflow:hidden;">
+      <iframe src="/office.html" style="width:100%;height:100%;border:none;" loading="lazy"></iframe>
+    </div>
+  </div><!-- end page-content -->
+</div><!-- end main-area -->
+
+<!-- COMMAND BAR -->
+<div class="cmd-ov" id="cmd-ov" onclick="if(event.target===this)closeCmd()">
+  <div class="cmd-box">
+    <div class="cmd-in-row">
+      <span class="cmd-slash">/</span>
+      <input class="cmd-in" id="cmd-input" placeholder="Search commands... (leads, email, security, agents, refresh...)" oninput="filterCmds(this.value)" onkeydown="handleCmdKey(event)">
+    </div>
+    <div class="cmd-list" id="cmd-list"></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-ov" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-hd"><div class="modal-t" id="modal-t">Detail</div><button class="modal-x" onclick="closeModal()">✕</button></div>
+    <div class="modal-bd" id="modal-b"></div>
+  </div>
+</div>
+
+<!-- NOTIF PANEL -->
+<div class="notif-panel" id="notif-panel">
+  <div class="notif-hd"><span>Notifications</span><span class="notif-clear" onclick="clearNotifs()">Clear all</span></div>
+  <div id="notif-list" style="max-height:420px;overflow-y:auto;"><div class="ld">No alerts</div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const SB_URL='https://bnxyaqfulsptequuzlay.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHlhcWZ1bHNwdGVxdXV6bGF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1ODMzNDQsImV4cCI6MjA5MDE1OTM0NH0.eLfvrMQRVFfjZrNs1M4I_jvKVGCwFIZ2AYPpJziEb88';
+const sb=supabase.createClient(SB_URL,SB_KEY);
+
+const PAGES={
+  overview:{title:'Overview',sub:'System health at a glance'},
+  financial:{title:'Financial',sub:'Revenue, burn, budget tracking'},
+  pipelines:{title:'Pipelines',sub:'Social, Sales, Email, Support'},
+  agents:{title:'Agents',sub:'Roster, models, cron jobs'},
+  intelligence:{title:'Intelligence',sub:'Sales, SEO, email analytics'},
+  content:{title:'Content',sub:'Social platforms, calendar, bank'},
+  security:{title:'Security',sub:'CVEs, incidents, alerts'},
+  system:{title:'System',sub:'VPS, config, world clocks'},
+  office:{title:'Agent Office',sub:'Live agent activity'},
+};
+
+const AGENTS=[
+  {name:'BorneAI',role:'Chief of Staff',model:'sonnet',pipeline:null,active:true,cost:0.12},
+  {name:'Atlas',role:'Orchestrator',model:'sonnet',pipeline:null,active:true,cost:0.08},
+  {name:'Mercury',role:'Strategist',model:'sonnet',pipeline:'social',active:false,cost:0.04},
+  {name:'MrX',role:'Writer',model:'sonnet',pipeline:'social',active:false,cost:0.06},
+  {name:'Inspector',role:'QA',model:'mini',pipeline:'social',active:true,cost:0.01},
+  {name:'Nova',role:'Social Mgr',model:'mini',pipeline:'social',active:true,cost:0.02},
+  {name:'Chase',role:'Sales Dev',model:'mini',pipeline:'sales',active:true,cost:0.02},
+  {name:'Insight',role:'Enrichment',model:'mini',pipeline:'sales',active:false,cost:0.01},
+  {name:'Ledger',role:'Finance',model:'mini',pipeline:'ops',active:false,cost:0.01},
+  {name:'Chronicle',role:'Logs',model:'nano',pipeline:'ops',active:true,cost:0.001},
+  {name:'Pulse',role:'Analytics',model:'mini',pipeline:'ops',active:true,cost:0.01},
+  {name:'Knox',role:'Security',model:'sonnet',pipeline:'security',active:false,cost:0.03},
+  {name:'Beacon',role:'SEO',model:'mini',pipeline:'seo',active:false,cost:0.01},
+  {name:'Care',role:'Support',model:'mini',pipeline:'support',active:true,cost:0.02},
+  {name:'Nexus',role:'Engineering',model:'codex',pipeline:null,active:false,cost:0.05},
+  {name:'Forge',role:'Website',model:'codex',pipeline:null,active:false,cost:0.03},
+  {name:'Ivy',role:'Research',model:'mini',pipeline:null,active:false,cost:0.01},
+];
+
+const CRONS=[
+  {name:'Nova Post',sched:'8, 13, 18h',script:'nova-agent.sh'},
+  {name:'Check Mentions',sched:'9, 13, 18h',script:'check-mentions.sh'},
+  {name:'Care Tickets',sched:'Every 30m',script:'care-tickets.js'},
+  {name:'Care Respond',sched:'Every 30m',script:'care-respond.js'},
+  {name:'Chase Leads',sched:'Every 30m',script:'monitor-leads.js'},
+  {name:'Content Sync',sched:'Every 30m',script:'sync-content-notion.js'},
+  {name:'Pulse Brief',sched:'7am daily',script:'pulse-agent.sh'},
+  {name:'Knox CVE',sched:'6am daily',script:'run-cve-monitor.js'},
+  {name:'Beacon SEO',sched:'Mon 6am',script:'beacon-keywords.js'},
+  {name:'S3 Backup',sched:'2am daily',script:'backup.sh'},
+];
+
+const COMMANDS=[
+  {icon:'🏠',label:'Go to Overview',key:'overview home',action:()=>showPage('overview',null)},
+  {icon:'💰',label:'Go to Financial',key:'finance money ledger',action:()=>showPage('financial',null)},
+  {icon:'⚡',label:'Go to Pipelines',key:'pipelines leads email',action:()=>showPage('pipelines',null)},
+  {icon:'🤖',label:'Go to Agents',key:'agents roster crons',action:()=>showPage('agents',null)},
+  {icon:'📊',label:'Go to Intelligence',key:'intelligence seo outreach',action:()=>showPage('intelligence',null)},
+  {icon:'✍️',label:'Go to Content',key:'content social calendar',action:()=>showPage('content',null)},
+  {icon:'🔒',label:'Go to Security',key:'security knox cve',action:()=>showPage('security',null)},
+  {icon:'🖥️',label:'Go to System',key:'system vps server',action:()=>showPage('system',null)},
+  {icon:'🔄',label:'Refresh all data',key:'refresh reload',action:()=>loadData()},
+  {icon:'🔔',label:'Show alerts',key:'alerts notifications',action:()=>toggleNotif()},
+  {icon:'📊',label:'Show lead pipeline',key:'leads funnel',action:()=>{showPage('pipelines',null);}},
+  {icon:'📧',label:'Show email stats',key:'email open rate',action:()=>{showPage('intelligence',null);}},
+];
+
+const PC={social:'var(--green)',sales:'var(--orange)',email:'var(--blue2)',support:'var(--purple2)',ops:'var(--gold)',security:'var(--red2)',seo:'var(--cyan2)'};
+const SC2={new:'var(--teal2)',warm:'var(--blue2)',hot:'var(--orange)',demo:'var(--gold)',proposal:'var(--purple2)',closed:'var(--green)'};
+let allEvents=[],curFilter='all',startTime=Date.now(),selIdx=0;
+
+function showPage(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(s=>s.classList.remove('active'));
+  const page=document.getElementById('page-'+id);
+  if(page)page.classList.add('active');
+  if(el)el.classList.add('active');
+  else{const items=document.querySelectorAll('.sb-item');items.forEach(i=>{if(i.getAttribute('onclick')&&i.getAttribute('onclick').includes("'"+id+"'"))i.classList.add('active');});}
+  const info=PAGES[id]||{title:id,sub:''};
+  document.getElementById('page-title').textContent=info.title;
+  document.getElementById('page-sub').textContent=info.sub;
+}
+
+function tAgo(ts){if(!ts)return'—';const s=Math.floor((Date.now()-new Date(ts))/1000);if(s<60)return s+'s';if(s<3600)return Math.floor(s/60)+'m';if(s<86400)return Math.floor(s/3600)+'h';return Math.floor(s/86400)+'d';}
+function sc(s){const m={'email.delivered':'var(--green)','email.opened':'var(--blue2)','email.bounced':'var(--red2)','email.clicked':'var(--purple2)',success:'var(--green)',open:'var(--orange)',error:'var(--red2)',info:'var(--blue2)',critical:'var(--red2)',high:'var(--orange)',medium:'var(--gold)',low:'var(--text3)'};return m[s]||'var(--text3)';}
+function evAgent(ev){if(ev.event_type)return'RESEND';if(ev.issue_type!==undefined)return'CARE';if(ev.agent)return ev.agent.toUpperCase().slice(0,8);return'SYS';}
+function evMsg(ev){if(ev.event_type)return`${ev.event_type.replace('email.','')}${ev.subject?' · '+ev.subject.slice(0,26):''}`;if(ev.issue_type!==undefined)return(ev.subject||'Ticket').slice(0,32);if(ev.finding)return ev.finding.slice(0,50);if(ev.action)return`${ev.action}${ev.target?' · '+ev.target.slice(0,20):''}`;return'—';}
+function evStatus(ev){if(ev.event_type)return ev.event_type.replace('email.','');if(ev.issue_type!==undefined)return ev.status||'open';if(ev.severity)return ev.severity;return'info';}
+function evPipeline(ev){if(ev.event_type)return'email';if(ev.issue_type!==undefined)return'support';if(ev.severity)return'security';return'ops';}
+function addEv(ev,pipeline,status){ev._id=ev.id||Math.random().toString(36).slice(2);ev._ts=ev.ts||ev.created_at||new Date().toISOString();ev._pipeline=pipeline;ev._status=status;allEvents.unshift(ev);if(allEvents.length>150)allEvents=allEvents.slice(0,150);}
+
+function renderFeed(){
+  const el=document.getElementById('feed');
+  const f=curFilter==='all'?allEvents:allEvents.filter(e=>e._pipeline===curFilter);
+  if(!f.length){el.innerHTML='<div class="ld">No events yet</div>';document.getElementById('fc').textContent='0 Events';return;}
+  el.innerHTML=f.map(ev=>{const st=evStatus(ev);const c=sc(ev._status||st);const ac=PC[ev._pipeline]||'var(--text3)';return`<div class="fi"><div class="fi-dot" style="background:${c}"></div><div class="fi-t">${tAgo(ev._ts)}</div><div class="fi-a" style="color:${ac}">${evAgent(ev)}</div><div class="fi-m">${evMsg(ev)}</div><div class="fi-s" style="color:${c}">${st.slice(0,8)}</div></div>`;}).join('');
+  document.getElementById('fc').textContent=f.length+' Events';
+  document.getElementById('fu-t').textContent='Live · '+new Date().toISOString().slice(11,19)+'Z';
+}
+function setFilter(f,btn){curFilter=f;document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));btn.classList.add('active');renderFeed();}
+
+function renderAgents(){
+  const el=document.getElementById('agent-list');
+  const mc={sonnet:'var(--blue2)',codex:'var(--purple2)',nano:'var(--text3)',mini:'var(--text3)'};
+  el.innerHTML=AGENTS.map(a=>{const c=a.pipeline?PC[a.pipeline]:'var(--text3)';return`<div class="arow" onclick="showAgent('${a.name}')"><div class="a-l"><div class="a-dot ${a.active?'on':'off'}"></div><div><div class="a-name">${a.name}</div><div class="a-role">${a.role}</div></div></div><div class="a-r">${a.pipeline?`<div class="a-tag" style="color:${c};background:${c}18;border:1px solid ${c}30">${a.pipeline}</div>`:''}<div class="a-model" style="color:${mc[a.model]||'var(--text3)'}">${a.model}</div><div style="font-family:var(--mono);font-size:9px;color:var(--orange)">~$${a.cost}/d</div></div></div>`;}).join('');
+  const ac=AGENTS.filter(a=>a.active).length;
+  document.getElementById('ag-a').textContent=ac+' Active';
+  document.getElementById('ag-i').textContent=(AGENTS.length-ac)+' Idle';
+  document.getElementById('agent-sum').textContent=AGENTS.length+' Agents';
+}
+
+function renderCrons(){document.getElementById('cron-panel').innerHTML=CRONS.map(c=>`<div class="crow"><div class="crow-l"><div class="crow-dot" style="background:var(--green);box-shadow:0 0 5px var(--green)"></div><div><div class="crow-name">${c.name}</div><div class="crow-script">${c.script}</div></div></div><div class="crow-sched">${c.sched}</div></div>`).join('');}
+
+function getModel(n){const m={BorneAI:'claude-sonnet-4-6',Atlas:'claude-sonnet-4-6',Knox:'claude-sonnet-4-6',MrX:'claude-sonnet-4-6',Mercury:'claude-sonnet-4-6',Nexus:'gpt-5.3-codex',Forge:'gpt-5.3-codex',Chronicle:'gpt-5-nano'};return m[n]||'minimax-m2.5';}
+
+async function showAgent(name){
+  const a=AGENTS.find(x=>x.name===name);if(!a)return;
+  const c=a.pipeline?PC[a.pipeline]:'var(--text3)';
+  document.getElementById('modal-t').textContent=a.name;
+  document.getElementById('modal-b').innerHTML=`<div class="mrow"><span class="mk">Role</span><span class="mv">${a.role}</span></div><div class="mrow"><span class="mk">Status</span><span class="mv" style="color:${a.active?'var(--green)':'var(--text3)'}">${a.active?'● Active':'○ Idle'}</span></div><div class="mrow"><span class="mk">Pipeline</span><span class="mv" style="color:${c}">${a.pipeline||'Executive'}</span></div><div class="mrow"><span class="mk">Model</span><span class="mv">${getModel(name)}</span></div><div class="mrow"><span class="mk">Est Cost/Day</span><span class="mv" style="color:var(--orange)">~$${a.cost}</span></div><div style="margin:14px 0 10px;font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:0.12em;text-transform:uppercase">Last 5 Actions</div><div id="act-${name}"><div class="ld">Loading...</div></div>`;
+  document.getElementById('modal').classList.add('open');
+  try{const{data}=await sb.from('activity_log').select('*').ilike('agent',`%${name.toLowerCase()}%`).order('created_at',{ascending:false}).limit(5);document.getElementById(`act-${name}`).innerHTML=(data&&data.length)?data.map(d=>`<div style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)"><div style="font-family:var(--sans);font-size:12px;color:var(--text2);line-height:1.5">${d.action||'—'}</div><div style="font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:3px">${tAgo(d.created_at||d.ts)}</div></div>`).join(''):'<div style="font-family:var(--sans);font-size:12px;color:var(--text3);text-align:center;padding:14px">No activity logged yet</div>';}catch(e){}
+}
+
+async function showPipeline(p){
+  const titles={social:'Social Pipeline',sales:'Sales Pipeline',email:'Email Pipeline',support:'Support Pipeline'};
+  document.getElementById('modal-t').textContent=titles[p];
+  document.getElementById('modal-b').innerHTML='<div class="ld">Loading...</div>';
+  document.getElementById('modal').classList.add('open');
+  try{
+    let data,html='';
+    if(p==='email'){({data}=await sb.from('email_events').select('*').order('ts',{ascending:false}).limit(20));html=(data||[]).map(e=>`<div class="mrow"><span class="mk" style="color:${sc(e.event_type)}">${(e.event_type||'').replace('email.','')}</span><span class="mv">${(e.recipient||'').slice(0,34)} · ${tAgo(e.ts)}</span></div>`).join('');}
+    else if(p==='support'){({data}=await sb.from('tickets').select('*').order('ts',{ascending:false}).limit(20));html=(data||[]).map(t=>`<div class="mrow"><span class="mk" style="color:${t.status==='open'?'var(--orange)':'var(--green)'}">${t.status||'—'}</span><span class="mv">${(t.subject||'').slice(0,40)} · ${tAgo(t.ts)}</span></div>`).join('');}
+    else if(p==='sales'){({data}=await sb.from('leads').select('*').order('ts',{ascending:false}).limit(20));html=(data||[]).map(l=>`<div class="mrow"><span class="mk" style="color:var(--orange)">${l.status||'new'}</span><span class="mv">${(l.name||'').slice(0,24)} · ${l.company||''} · ${tAgo(l.ts)}</span></div>`).join('');}
+    else if(p==='social'){({data}=await sb.from('content_bank').select('*').order('ts',{ascending:false}).limit(20));html=(data||[]).map(c=>`<div class="mrow"><span class="mk" style="color:var(--green)">${c.status||'—'}</span><span class="mv">${(c.title||'').slice(0,40)}</span></div>`).join('');}
+    document.getElementById('modal-b').innerHTML=html||'<div class="ld">No data yet</div>';
+  }catch(e){document.getElementById('modal-b').innerHTML='<div class="ld">Error loading</div>';}
+}
+
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+function toggleNotif(){document.getElementById('notif-panel').classList.toggle('open');}
+function clearNotifs(){document.getElementById('notif-list').innerHTML='<div class="ld">No alerts</div>';document.getElementById('nb').textContent='0';document.getElementById('nb-dot').style.display='none';document.getElementById('nb-dot2').style.display='none';}
+function toggleTheme(){document.body.classList.toggle('light');}
+function openCmd(){document.getElementById('cmd-ov').classList.add('open');document.getElementById('cmd-input').value='';filterCmds('');setTimeout(()=>document.getElementById('cmd-input').focus(),50);}
+function closeCmd(){document.getElementById('cmd-ov').classList.remove('open');}
+function filterCmds(q){
+  const filtered=COMMANDS.filter(c=>!q||c.key.includes(q.toLowerCase())||c.label.toLowerCase().includes(q.toLowerCase()));
+  selIdx=0;
+  document.getElementById('cmd-list').innerHTML=filtered.map((c,i)=>`<div class="cmd-item${i===0?' sel':''}" onclick="runCmd(${COMMANDS.indexOf(c)})"><div class="cmd-ico" style="background:var(--s3)">${c.icon}</div><div class="cmd-lbl">${c.label}</div><div class="cmd-key">${c.key.split(' ')[0]}</div></div>`).join('');
+}
+function runCmd(idx){COMMANDS[idx]?.action();closeCmd();}
+function handleCmdKey(e){
+  const items=document.querySelectorAll('.cmd-item');
+  if(e.key==='ArrowDown'){selIdx=Math.min(selIdx+1,items.length-1);items.forEach((el,i)=>el.classList.toggle('sel',i===selIdx));}
+  else if(e.key==='ArrowUp'){selIdx=Math.max(selIdx-1,0);items.forEach((el,i)=>el.classList.toggle('sel',i===selIdx));}
+  else if(e.key==='Enter'){const s=document.querySelector('.cmd-item.sel');if(s)s.click();}
+  else if(e.key==='Escape')closeCmd();
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='/'&&!e.target.matches('input,textarea')){e.preventDefault();openCmd();}
+  if(e.key==='r'&&!e.target.matches('input,textarea')&&!e.metaKey&&!e.ctrlKey)loadData();
+  if(e.key==='Escape'){closeCmd();closeModal();document.getElementById('notif-panel').classList.remove('open');}
+});
+
+function drawChart(labels,rev,burn){
+  const canvas=document.getElementById('rev-chart');if(!canvas)return;
+  const ctx=canvas.getContext('2d');const dpr=window.devicePixelRatio||1;
+  const W=canvas.parentElement.clientWidth-36,H=110;
+  canvas.width=W*dpr;canvas.height=H*dpr;canvas.style.width=W+'px';canvas.style.height=H+'px';
+  ctx.scale(dpr,dpr);ctx.clearRect(0,0,W,H);
+  if(!labels||!labels.length){ctx.fillStyle='rgba(255,255,255,0.08)';ctx.font='10px Inter';ctx.textAlign='center';ctx.fillText('No revenue data yet',W/2,H/2);return;}
+  const pad=24,bottom=H-18,top=10;
+  const allV=[...rev,...burn].filter(v=>v>0);const maxV=Math.max(...allV,1);
+  const stepX=(W-pad*2)/(labels.length-1||1);
+  function toY(v){return bottom-(v/maxV)*(bottom-top);}
+  ctx.strokeStyle='rgba(255,255,255,0.04)';ctx.lineWidth=1;
+  for(let i=0;i<=3;i++){const y=bottom-(i/3)*(bottom-top);ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(W-pad,y);ctx.stroke();}
+  function drawLine(data,color,fill){
+    ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.shadowColor=color;ctx.shadowBlur=10;
+    data.forEach((v,i)=>{const x=pad+i*stepX;const y=toY(v);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+    ctx.stroke();ctx.shadowBlur=0;
+    if(fill){ctx.lineTo(pad+(data.length-1)*stepX,bottom);ctx.lineTo(pad,bottom);ctx.closePath();const g=ctx.createLinearGradient(0,top,0,bottom);g.addColorStop(0,color+'28');g.addColorStop(1,color+'00');ctx.fillStyle=g;ctx.fill();}
+  }
+  drawLine(rev,'#1EBF5A',true);drawLine(burn,'#C9A84C',false);
+  ctx.fillStyle='rgba(255,255,255,0.12)';ctx.font='8px DM Mono';ctx.textAlign='center';ctx.shadowBlur=0;
+  labels.forEach((l,i)=>{if(i===0||i===labels.length-1||i%10===0)ctx.fillText(l.slice(5),pad+i*stepX,H-3);});
+}
+
+async function loadData(){
+  try{
+    const[em,ti,co,ri,rv,ex,cv,pa,kw,evEm,evTi,evSec,leads,actLog,brief,cbData]=await Promise.all([
+      sb.from('email_events').select('id',{count:'exact',head:true}),
+      sb.from('tickets').select('id',{count:'exact',head:true}).eq('status','open'),
+      sb.from('content_bank').select('id',{count:'exact',head:true}),
+      sb.from('security_risks').select('id',{count:'exact',head:true}).eq('status','open'),
+      sb.from('revenue').select('amount,type,ts'),
+      sb.from('expenses').select('amount,vendor,category,ts'),
+      sb.from('cve_log').select('*').order('cvss_score',{ascending:false}).limit(6),
+      sb.from('pulse_alerts').select('*').eq('resolved',false).order('ts',{ascending:false}).limit(10),
+      sb.from('keywords').select('*').order('ts',{ascending:false}).limit(10),
+      sb.from('email_events').select('*').order('ts',{ascending:false}).limit(30),
+      sb.from('tickets').select('*').order('ts',{ascending:false}).limit(20),
+      sb.from('security_log').select('*').order('ts',{ascending:false}).limit(8),
+      sb.from('leads').select('*').order('ts',{ascending:false}).limit(30),
+      sb.from('activity_log').select('*').order('created_at',{ascending:false}).limit(15),
+      sb.from('activity_log').select('notes,created_at').eq('agent','borneai').order('created_at',{ascending:false}).limit(1),
+      sb.from('content_bank').select('*').order('ts',{ascending:false}).limit(10),
+    ]);
+
+    const mrr=(rv.data||[]).filter(r=>r.type==='mrr').reduce((s,r)=>s+(r.amount||0),0);
+    const burn=(ex.data||[]).reduce((s,e)=>s+(e.amount||0),0);
+    const net=mrr-burn;
+    const today=new Date().toISOString().slice(0,10);
+    const todayAI=(ex.data||[]).filter(e=>e.category==='ai_costs'&&(e.ts||'').slice(0,10)===today).reduce((s,e)=>s+(e.amount||0),0);
+    const monthlyAI=(ex.data||[]).filter(e=>e.category==='ai_costs').reduce((s,e)=>s+(e.amount||0),0);
+    const leadsD=leads.data||[];
+    const emD=evEm.data||[];
+    const tiD=evTi.data||[];
+    const del=emD.filter(e=>e.event_type==='email.delivered').length;
+    const opn=emD.filter(e=>e.event_type==='email.opened').length;
+    const bnc=emD.filter(e=>e.event_type==='email.bounced').length;
+    const clk=emD.filter(e=>e.event_type==='email.clicked').length;
+    const or=del>0?Math.round(opn/del*100):0;
+    const cr=opn>0?Math.round(clk/opn*100):0;
+    const closedL=leadsD.filter(l=>l.status==='closed').length;
+    const convR=leadsD.length>0?closedL/leadsD.length:0;
+    const cpl=leadsD.length>0?monthlyAI/leadsD.length:0;
+    const contentCount=co.count||0;
+    const contentItems=cbData.data||[];
+
+    // Brief
+    const briefD=brief?.data?.[0];
+    document.getElementById('brief-text').textContent=briefD?.notes||'BorneAI briefing will appear here after the next 4h heartbeat. All systems operational.';
+    document.getElementById('brief-ts').textContent=briefD?tAgo(briefD.created_at)+' ago':'—';
+
+    // Goals
+    const mrrPct=Math.min(mrr/10000*100,100),leadPct=Math.min(leadsD.length/50*100,100),contentPct=Math.min(contentCount/30*100,100);
+    document.getElementById('g-mrr').style.width=mrrPct+'%';document.getElementById('g-mrr-pct').textContent=mrrPct.toFixed(0)+'%';document.getElementById('g-mrr-val').textContent='$'+mrr.toFixed(0);
+    document.getElementById('g-lead').style.width=leadPct+'%';document.getElementById('g-lead-pct').textContent=leadPct.toFixed(0)+'%';document.getElementById('g-lead-val').textContent=leadsD.length;
+    document.getElementById('g-content').style.width=contentPct+'%';document.getElementById('g-content-pct').textContent=contentPct.toFixed(0)+'%';document.getElementById('g-content-val').textContent=contentCount;
+
+    // Overview metrics
+    function setEl(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}
+    setEl('ov-burn','$'+burn.toFixed(0));setEl('ov-burn-sub',(net>=0?'surplus ':'deficit ')+'$'+Math.abs(net).toFixed(0));
+    setEl('ov-mrr','$'+mrr.toFixed(0));setEl('ov-runway',mrr>0?Math.round(burn/mrr)+'mo runway':'build to revenue');
+    setEl('ov-leads',leadsD.length);setEl('ov-leads-s',leadsD.filter(l=>l.status==='new').length+' new this month');
+    setEl('ov-tickets',ti.count??'—');setEl('ov-risks',ri.count??'—');
+
+    // Financial metrics
+    setEl('m-burn','$'+burn.toFixed(0));setEl('m-burn-sub',(net>=0?'surplus ':'deficit ')+'$'+Math.abs(net).toFixed(0));
+    setEl('m-mrr','$'+mrr.toFixed(0));setEl('m-runway',mrr>0?Math.round(burn/mrr)+'mo runway':'build to revenue');
+    const mnet=document.getElementById('m-net');if(mnet){mnet.textContent=(net>=0?'+ ':'- ')+'$'+Math.abs(net).toFixed(0);mnet.style.color=net>=0?'var(--green)':'var(--red2)';}
+    setEl('m-today','$'+todayAI.toFixed(2));setEl('m-ai-mtd','$'+monthlyAI.toFixed(2));
+    setEl('fin-ts','Updated '+new Date().toISOString().slice(11,16)+' UTC');
+
+    // Budget bars
+    const dp=Math.min(todayAI/7*100,100),mp=Math.min(monthlyAI/200*100,100);
+    ['bc-d','bc-m'].forEach((id,i)=>{const el=document.getElementById(id);if(el){el.style.width=(i===0?dp:mp)+'%';el.style.background=i===0?(dp>80?'var(--red)':dp>60?'var(--orange)':'var(--green)'):(mp>80?'var(--red)':mp>60?'var(--orange)':'var(--gold)');}});
+    setEl('bc-dp',dp.toFixed(0)+'%');setEl('bc-ds','$'+todayAI.toFixed(2));
+    setEl('bc-mp',mp.toFixed(0)+'%');setEl('bc-ms','$'+monthlyAI.toFixed(2));
+    setEl('bc-cv','$'+cpl.toFixed(2));const bcc=document.getElementById('bc-c');if(bcc)bcc.style.width=Math.min(cpl/50*100,100)+'%';
+
+    // Health
+    const rs=Math.min((ri.count||0)*5+(cv.data||[]).filter(c=>c.status==='open').length*3,40),health=Math.round(100-rs);
+    setEl('hpct',health+'%');
+    const hpct=document.getElementById('hpct');if(hpct)hpct.style.color=health>90?'var(--green)':health>70?'var(--gold)':'var(--red)';
+    const hst=document.getElementById('hstatus');if(hst){hst.textContent=health>90?'Healthy':health>70?'Degraded':'Critical';hst.style.color=health>90?'var(--green)':health>70?'var(--gold)':'var(--red2)';}
+    const arc=document.getElementById('harc');const circ=69.1;if(arc){arc.style.strokeDashoffset=circ-(circ*health/100);arc.style.stroke=health>90?'#1EBF5A':health>70?'#C9A84C':'#E5393A';}
+    if(ri.count>0){document.getElementById('sec-dot').style.display='block';}
+
+    // Pipeline cards
+    setEl('ps-t',contentCount);setEl('ps-p',contentItems.filter(c=>c.status==='published').length);
+    setEl('pl-t',leadsD.length);setEl('pl-n',leadsD.filter(l=>l.status==='new').length);
+    setEl('pe-d',del);setEl('pe-o',opn);
+    setEl('pt-o',tiD.filter(t=>t.status==='open').length);setEl('pt-r',tiD.filter(t=>t.status==='resolved'||t.status==='closed').length);
+
+    // Approvals
+    const aprD=(pa.data||[]).filter(a=>a.action_required);
+    const aprHTML=aprD.length?aprD.slice(0,5).map(a=>`<div class="apr"><div class="apr-ico" style="background:var(--gold-dim)">${a.source==='care'?'🎫':'⚠️'}</div><div class="apr-body"><div class="apr-title">${(a.notes||a.event||'Action required').slice(0,50)}</div><div class="apr-sub">${a.source||'System'} · ${tAgo(a.ts)}</div></div><div class="apr-btns"><button class="apr-btn apr-ok" onclick="approveAlert('${a.id}')">✓ Approve</button><button class="apr-btn apr-no">✕</button></div></div>`).join(''):'<div class="ld">No pending approvals</div>';
+    setEl('apr-count-ov',aprD.length+' pending');
+    const aprPanel=document.getElementById('approvals-panel-ov');if(aprPanel)aprPanel.innerHTML=aprHTML;
+
+    // Revenue chart
+    const now=Date.now(),labels=[],revData=[],burnData=[];
+    for(let i=29;i>=0;i--){const d=new Date(now-i*86400000);const ds=d.toISOString().slice(0,10);labels.push(ds);revData.push((rv.data||[]).filter(r=>(r.ts||'').slice(0,10)===ds).reduce((s,r)=>s+(r.amount||0),0));burnData.push((ex.data||[]).filter(e=>(e.ts||'').slice(0,10)===ds).reduce((s,e)=>s+(e.amount||0),0));}
+    setTimeout(()=>drawChart(labels,revData,burnData),200);
+
+    // Forecast
+    const pipeVal=leadsD.filter(l=>l.status!=='closed').length*99;
+    const fcPanel=document.getElementById('forecast-panel');
+    if(fcPanel)fcPanel.innerHTML=`<div class="fc-card"><div class="fc-p">30 Days</div><div class="fc-v" style="color:var(--green)">$${Math.round(pipeVal*convR*0.3)}</div><div class="fc-s">${(convR*100).toFixed(0)}% conv rate</div></div><div class="fc-card"><div class="fc-p">60 Days</div><div class="fc-v" style="color:var(--teal2)">$${Math.round(pipeVal*convR*0.6)}</div><div class="fc-s">$${pipeVal} pipeline</div></div><div class="fc-card"><div class="fc-p">90 Days</div><div class="fc-v" style="color:var(--gold)">$${Math.round(pipeVal*convR)}</div><div class="fc-s">${leadsD.filter(l=>l.status!=='closed').length} active leads</div></div>`;
+
+    // Ledger
+    const aiCosts=(ex.data||[]).filter(e=>e.category==='ai_costs').reduce((s,e)=>s+(e.amount||0),0);
+    const runway=mrr>0?Math.round(burn/mrr):null;
+    const ldgrPanel=document.getElementById('ledger-panel');
+    if(ldgrPanel)ldgrPanel.innerHTML=`<div class="sysr"><span class="sk">MRR</span><span class="sv-lg" style="color:var(--green)">$${mrr.toFixed(0)}</span></div><div class="sysr"><span class="sk">Monthly Burn</span><span class="sv-lg" style="color:var(--gold)">$${burn.toFixed(0)}</span></div><div class="sysr"><span class="sk">Net Position</span><span class="sv-lg" style="color:${net>=0?'var(--green)':'var(--red2)'}">$${net.toFixed(0)}</span></div><div class="sysr"><span class="sk">AI Costs MTD</span><span class="sv" style="color:var(--orange)">$${aiCosts.toFixed(2)}</span></div><div class="sysr"><span class="sk">Cost Per Lead</span><span class="sv" style="color:var(--teal2)">$${cpl.toFixed(2)}</span></div><div class="sysr"><span class="sk">Runway</span><span class="sv">${runway?runway+'mo':'∞'}</span></div><div class="sysr"><span class="sk">Conv Rate</span><span class="sv">${(convR*100).toFixed(1)}%</span></div><div class="sysr"><span class="sk">Avg Deal Size</span><span class="sv">$99/mo base</span></div>`;
+
+    // AI cost by model
+    const modelCosts=[{m:'claude-sonnet',e:monthlyAI*0.45},{m:'gpt-5-codex',e:monthlyAI*0.20},{m:'minimax-m2.5',e:monthlyAI*0.25},{m:'gpt-5-nano',e:monthlyAI*0.05},{m:'gemini-flash',e:monthlyAI*0.05}];
+    const maxC2=Math.max(...modelCosts.map(m=>m.e),1);
+    const aiPanel=document.getElementById('ai-cost-panel');
+    if(aiPanel)aiPanel.innerHTML=modelCosts.map(m=>`<div class="ai-row"><div class="ai-model">${m.m}</div><div class="ai-bar-wrap"><div class="ai-bar" style="width:${m.e/maxC2*100}%"></div></div><div class="ai-val">$${m.e.toFixed(2)}</div></div>`).join('');
+
+    // Email panels
+    const emailHTML=`<div class="ebar"><div class="ebar-hd"><span class="ebar-lbl">Delivered</span><span class="ebar-val" style="color:var(--green)">${del}</span></div><div class="ebar-track"><div class="ebar-fill" style="width:${Math.min(del,100)}%;background:var(--green)"></div></div></div><div class="ebar"><div class="ebar-hd"><span class="ebar-lbl">Open Rate</span><span class="ebar-val" style="color:var(--blue2)">${or}%</span></div><div class="ebar-track"><div class="ebar-fill" style="width:${or}%;background:var(--blue2)"></div></div></div><div class="ebar"><div class="ebar-hd"><span class="ebar-lbl">Click Rate</span><span class="ebar-val" style="color:var(--purple2)">${cr}%</span></div><div class="ebar-track"><div class="ebar-fill" style="width:${cr}%;background:var(--purple2)"></div></div></div><div class="ebar"><div class="ebar-hd"><span class="ebar-lbl">Bounced</span><span class="ebar-val" style="color:${bnc>0?'var(--red2)':'var(--text3)'}">${bnc}</span></div></div>`;
+    ['email-panel','email-panel2'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=emailHTML;});
+
+    // Funnel
+    const stages=['new','warm','hot','demo','proposal','closed'],counts=stages.map(s=>leadsD.filter(l=>l.status===s).length),maxFC=Math.max(...counts,1);
+    const funnelPanel=document.getElementById('funnel-panel');
+    if(funnelPanel)funnelPanel.innerHTML=stages.map((s,i)=>`<div class="frow"><span class="f-lbl">${s}</span><div class="f-track"><div class="f-fill" style="width:${counts[i]/maxFC*100}%;background:${SC2[s]}"></div></div><span class="f-count" style="color:${SC2[s]}">${counts[i]}</span></div>`).join('');
+
+    // Lead aging
+    const nowMs=Date.now();
+    const agingPanel=document.getElementById('aging-panel');
+    if(agingPanel)agingPanel.innerHTML=leadsD.slice(0,10).map(l=>{const days=Math.floor((nowMs-new Date(l.ts))/86400000);const stC=SC2[l.status||'new']||'var(--text3)';const aC=days>14?'var(--red2)':days>7?'var(--orange)':'var(--green)';return`<div class="la"><span class="la-name">${(l.name||'Unknown').slice(0,24)}</span><span class="la-st" style="color:${stC};background:${stC}18;border:1px solid ${stC}30">${l.status||'new'}</span><span class="la-d" style="color:${aC}">${days}d</span></div>`;}).join('')||'<div class="ld">No leads yet</div>';
+
+    // Outreach
+    const avgDays=leadsD.length>0?Math.round(leadsD.reduce((s,l)=>s+Math.floor((nowMs-new Date(l.ts))/86400000),0)/leadsD.length):0;
+    const outPanel=document.getElementById('outreach-panel');
+    if(outPanel)outPanel.innerHTML=`
+     <div class="sysr" style="border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:6px;"><span class="sk" style="color:var(--gold)">Chase — Outreach Engine</span><span class="sv" style="color:var(--green)">● Running</span></div>
+     <div class="sysr"><span class="sk">Sent Today</span><span class="sv" style="color:var(--blue2)">${emD.filter(e=>e.event_type==='email.sent'&&(e.created_at||'').startsWith(new Date().toISOString().split('T')[0])).length} / 20</span></div>
+     <div class="sysr"><span class="sk">Total Sent</span><span class="sv" style="color:var(--blue2)">${emD.filter(e=>e.event_type==='email.sent').length}</span></div>
+     <div class="sysr"><span class="sk">Replies</span><span class="sv" style="color:var(--gold)">${emD.filter(e=>e.event_type==='email.replied').length}</span></div>
+     <div class="sysr"><span class="sk">Bounces</span><span class="sv" style="color:var(--red2)">${emD.filter(e=>e.event_type==='email.bounced').length}</span></div>
+     <div class="sysr"><span class="sk">Follow-Ups Pending</span><span class="sv" style="color:var(--orange)">${leadsD.filter(l=>l.status==='warm').length}</span></div>
+     <div class="sysr"><span class="sk">Open Rate</span><span class="sv" style="color:${or>20?'var(--green)':'var(--orange)'}">${or}%</span></div>
+     <div style="border-top:1px solid var(--border);margin:6px 0;padding-top:6px;">
+     <div class="sysr"><span class="sk">CT Leads Scraped</span><span class="sv" style="color:var(--teal2)">${Math.max(leadsD.length,546)}</span></div>
+     <div class="sysr"><span class="sk">Enriched</span><span class="sv" style="color:var(--green)">${leadsD.filter(l=>l.enriched).length} / ${Math.max(leadsD.length,546)}</span></div>
+     <div class="sysr"><span class="sk">Hot Leads</span><span class="sv" style="color:var(--red2)">${leadsD.filter(l=>l.status==='hot').length}</span></div>
+     <div class="sysr"><span class="sk">Conv Rate</span><span class="sv">${(convR*100).toFixed(1)}%</span></div>
+     </div>
+     <div style="border-top:1px solid var(--border);margin:6px 0;padding-top:6px;">
+     <div class="sysr"><span class="sk">Token: Instagram</span><span class="sv" id="op-ig-days" style="color:var(--green)">—</span></div>
+     <div class="sysr"><span class="sk">Token: LinkedIn</span><span class="sv" id="op-li-days" style="color:var(--green)">—</span></div>
+     </div>`;
+    // Response time
+    const resolvedT=tiD.filter(t=>t.status==='resolved');
+    const respPanel=document.getElementById('response-panel');
+    if(respPanel)respPanel.innerHTML=`<div class="sysr"><span class="sk">Tickets Resolved</span><span class="sv" style="color:var(--green)">${resolvedT.length}</span></div><div class="sysr"><span class="sk">Auto-Resolve Rate</span><span class="sv" style="color:var(--blue2)">${tiD.length>0?Math.round(resolvedT.length/tiD.length*100):0}%</span></div><div class="sysr"><span class="sk">Care Confidence</span><span class="sv" style="color:var(--green)">≥ 0.80 threshold</span></div><div class="sysr"><span class="sk">Response Cron</span><span class="sv">Every 30 minutes</span></div><div class="sysr"><span class="sk">Escalation</span><span class="sv">Pulse → BorneAI → Geele</span></div>`;
+
+    // Keywords
+    const kwD=kw.data||[];
+    const kwPanel=document.getElementById('kw-panel');
+    if(kwPanel)kwPanel.innerHTML=kwD.length?kwD.map(k=>`<div class="krow"><span class="k-w">${(k.keyword||'').slice(0,36)}</span><div style="display:flex;align-items:center;flex-shrink:0"><span class="k-p" style="color:${!k.position?'var(--text3)':k.position<=10?'var(--green)':k.position<=30?'var(--gold)':'var(--text2)'}">${k.position||'—'}</span>${k.change!=null?`<span class="k-c" style="color:${k.change<0?'var(--green)':k.change>0?'var(--red2)':'var(--text3)'};background:${k.change<0?'var(--green-dim)':k.change>0?'var(--red-dim)':'transparent'}">${k.change>0?'+':''}${k.change}</span>`:''}</div></div>`).join(''):'<div class="ld">No rankings yet</div>';
+
+    // Content calendar
+    const calPanel=document.getElementById('calendar-panel');
+    if(calPanel)calPanel.innerHTML=['Twitter/X','Instagram','Threads','LinkedIn'].map(p=>`<div class="sysr"><span class="sk">${p}</span><span class="sv">Posts at 8am, 1pm, 6pm via Nova</span></div>`).join('')+`<div class="sysr"><span class="sk">TikTok</span><span class="sv" style="color:var(--gold)">Pending account setup</span></div>`;
+
+    // Content bank
+    const contentPanel=document.getElementById('content-panel');
+    setEl('content-count-lbl',contentCount+' pieces');
+    if(contentPanel)contentPanel.innerHTML=contentItems.filter(c=>c.status==='draft'||c.status==='approved').length?contentItems.filter(c=>c.status==='draft'||c.status==='approved').map(c=>`<div class="sysr" style="flex-direction:column;align-items:flex-start;gap:6px;padding:10px 0;border-bottom:1px solid var(--border)"><div style="display:flex;gap:8px;align-items:center"><span class="sk" style="color:${c.status==='approved'?'var(--gold)':'var(--text3)'}">${c.status}</span><span class="sv">${(c.title||'Untitled').slice(0,55)}</span></div><div style="display:flex;gap:12px;font-size:10px;color:var(--text3);margin-top:2px">${c.campaign?`<span>📋 ${c.campaign}</span>`:''} ${c.scheduled_for?`<span>🕐 ${new Date(c.scheduled_for).toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}</span>`:''} ${(c.platform||[]).map(p=>`<span>${p}</span>`).join('')}</div>${c.status==='draft'?`<div style="display:flex;gap:6px;margin-top:4px"><button onclick="approvePost('${c.id}')" style="font-size:11px;padding:4px 10px;border-radius:5px;border:1px solid #10b98140;background:#10b98115;color:#10b981;cursor:pointer">✅ Approve</button><button onclick="rejectPost('${c.id}')" style="font-size:11px;padding:4px 10px;border-radius:5px;border:1px solid #ef444440;background:#ef444415;color:#ef4444;cursor:pointer">❌ Reject</button></div>`:''}</div>`).join(''):'<div class="ld">No pending content</div>';
+
+    // Security
+    const cveD=cv.data||[],secD=evSec.data||[];
+    setEl('sec-risks',ri.count??'—');setEl('sec-cves',cveD.length);
+    const secPanel=document.getElementById('sec-panel');
+    if(secPanel)secPanel.innerHTML=[...cveD.map(c=>`<div class="srow"><div class="sd" style="background:${(c.cvss_score||0)>=9?'var(--red)':'var(--orange)'}"></div><div class="sm">${c.cve_id||'CVE'} · ${(c.affected||'Unknown').slice(0,30)}</div><div class="st">CVSS ${c.cvss_score||'?'}</div></div>`),...secD.slice(0,4).map(s=>`<div class="srow"><div class="sd" style="background:${s.severity==='critical'?'var(--red)':'var(--gold)'}"></div><div class="sm">${(s.finding||s.action||'—').slice(0,52)}</div><div class="st">${tAgo(s.ts)}</div></div>`)].join('')||'<div class="ld">No security events</div>';
+
+    // Alerts
+    const paD=pa.data||[];
+    setEl('nb',paD.length);setEl('nb2',paD.length+' open');
+    if(paD.length>0){document.getElementById('nb-dot').style.display='block';document.getElementById('nb-dot2').style.display='block';}
+    const alertHTML=paD.length?paD.map(a=>`<div class="srow"><div class="sd" style="background:var(--red);box-shadow:0 0 5px var(--red)"></div><div class="sm">${(a.notes||a.event||'Alert').slice(0,62)}</div><div class="st">${tAgo(a.ts)}</div></div>`).join(''):'<div class="ld">All clear</div>';
+    const alertsPanel=document.getElementById('alerts-panel');if(alertsPanel)alertsPanel.innerHTML=alertHTML;
+    document.getElementById('notif-list').innerHTML=alertHTML;
+
+    // VPS
+    const uptimeSec=Math.floor((Date.now()-startTime)/1000),uptimeStr=uptimeSec>3600?Math.floor(uptimeSec/3600)+'h '+Math.floor((uptimeSec%3600)/60)+'m':Math.floor(uptimeSec/60)+'m '+uptimeSec%60+'s';
+    const bcU=document.getElementById('bc-u');if(bcU)bcU.textContent=uptimeStr;
+    const vpsPanel=document.getElementById('vps-panel');
+    if(vpsPanel)vpsPanel.innerHTML=`<div class="vbar"><div class="vbar-lbl">CPU</div><div class="vbar-track"><div class="vbar-fill" style="width:18%;background:var(--green)"></div></div><div class="vbar-val" style="color:var(--green)">~18%</div></div><div class="vbar"><div class="vbar-lbl">RAM</div><div class="vbar-track"><div class="vbar-fill" style="width:42%;background:var(--blue2)"></div></div><div class="vbar-val" style="color:var(--blue2)">~42%</div></div><div class="vbar"><div class="vbar-lbl">Disk</div><div class="vbar-track"><div class="vbar-fill" style="width:28%;background:var(--teal2)"></div></div><div class="vbar-val" style="color:var(--teal2)">~28%</div></div><div class="sysr"><span class="sk">Hostname</span><span class="sv">srv1430138.hstgr.cloud</span></div><div class="sysr"><span class="sk">Tailscale IP</span><span class="sv">100.67.83.108</span></div><div class="sysr"><span class="sk">SSL</span><span class="sv" style="color:var(--green)">Auto-managed (Caddy)</span></div><div class="sysr"><span class="sk">Last Backup</span><span class="sv" style="color:var(--green)">Daily 2am → S3</span></div><div class="sysr"><span class="sk">Dashboard Uptime</span><span class="sv" style="color:var(--green)">${uptimeStr}</span></div>`;
+
+    // System config
+    const sysPanel=document.getElementById('sys-panel');
+    if(sysPanel)sysPanel.innerHTML=`<div class="sysr"><span class="sk">Heartbeat</span><span class="sv" style="color:var(--green)">Every 4h</span></div><div class="sysr"><span class="sk">Supabase</span><span class="sv" style="color:var(--green)">22 tables · Real-Time Active</span></div><div class="sysr"><span class="sk">Context Pruning</span><span class="sv">30m TTL</span></div><div class="sysr"><span class="sk">Max Subagents</span><span class="sv">4 concurrent</span></div><div class="sysr"><span class="sk">Model Fallbacks</span><span class="sv">gemini-flash → minimax</span></div><div class="sysr"><span class="sk">Opus</span><span class="sv" style="color:var(--red2)">Removed from all chains</span></div><div class="sysr"><span class="sk">OpenClaw</span><span class="sv">v1.0 · Debian 13 · Node v22</span></div>`;
+
+    // Events
+    allEvents=[];
+    emD.forEach(ev=>addEv(ev,'email',ev.event_type?.includes('bounce')?'error':'success'));
+    tiD.forEach(ev=>addEv(ev,'support',ev.status==='open'?'open':'success'));
+    (evSec.data||[]).forEach(ev=>addEv(ev,'security',ev.severity==='critical'?'error':'info'));
+    (actLog.data||[]).forEach(ev=>addEv({...ev,ts:ev.created_at||ev.ts},'ops','info'));
+    allEvents.sort((a,b)=>new Date(b._ts)-new Date(a._ts));
+    renderFeed();
+
+  }catch(e){console.error('Load error:',e);}
+}
+
+async function approveAlert(id){try{await sb.from('pulse_alerts').update({resolved:true,action_required:false}).eq('id',id);setTimeout(loadData,300);}catch(e){}}
+
+function setupRT(){
+  sb.channel('mc-rt')
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'email_events'},p=>{addEv(p.new,'email',p.new.event_type?.includes('bounce')?'error':'success');allEvents.sort((a,b)=>new Date(b._ts)-new Date(a._ts));renderFeed();setTimeout(loadData,600);})
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'tickets'},p=>{addEv(p.new,'support','open');allEvents.sort((a,b)=>new Date(b._ts)-new Date(a._ts));renderFeed();setTimeout(loadData,600);})
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'security_log'},p=>{addEv(p.new,'security',p.new.severity==='critical'?'error':'info');allEvents.sort((a,b)=>new Date(b._ts)-new Date(a._ts));renderFeed();setTimeout(loadData,600);})
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'leads'},p=>{addEv(p.new,'sales','info');allEvents.sort((a,b)=>new Date(b._ts)-new Date(a._ts));renderFeed();setTimeout(loadData,600);})
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'activity_log'},p=>{addEv({...p.new,ts:p.new.created_at||p.new.ts},'ops','info');allEvents.sort((a,b)=>new Date(b._ts)-new Date(a._ts));renderFeed();})
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'pulse_alerts'},()=>loadData())
+    .subscribe();
+}
+
+function updateClock(){
+  const n=new Date();
+  const clockEl=document.getElementById('clock');if(clockEl)clockEl.textContent=n.toISOString().slice(11,19)+' UTC';
+  const dateEl=document.getElementById('dateval');if(dateEl)dateEl.textContent=n.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  const footerEl=document.getElementById('footer-ts');if(footerEl)footerEl.textContent=n.toISOString().replace('T',' ').split('.')[0]+' UTC';
+  function tz(o){const t=new Date(n.getTime()+o*3600000);return t.toISOString().slice(11,16);}
+  ['wc-est','wc-pst','wc-gmt','wc-sgt'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=tz([-5,-8,0,8][i]);});
+  const s=Math.floor((Date.now()-startTime)/1000);
+  const uEl=document.getElementById('bc-u');if(uEl)uEl.textContent=s>3600?Math.floor(s/3600)+'h '+Math.floor((s%3600)/60)+'m':Math.floor(s/60)+'m '+s%60+'s';
+}
+
+async function refreshMeta(){
+  const btn=event.target;btn.textContent='↻ Refreshing...';btn.disabled=true;
+  try{
+    const r=await fetch('https://resendhook.bornesystems.com/refresh-meta',{method:'POST'});
+    const d=await r.json();
+    if(d.ok){
+      document.getElementById('ig-status').textContent='● Active · Refreshed today';
+      document.getElementById('th-status').textContent='● Active · Refreshed today';
+      btn.textContent='✓ Done';
+    } else { btn.textContent='✗ Failed'; }
+  } catch(e){ btn.textContent='✗ Error'; }
+  setTimeout(()=>{btn.textContent='↺ Refresh';btn.disabled=false;},3000);
+}
+
+function refreshLinkedIn(){
+  window.open('https://www.linkedin.com/developers/tools/oauth/token-generator?clientId=78j02ertscfztd','_blank');
+}
+
+function updateTokenCountdowns(){
+  const igDays=Math.ceil((new Date('2026-05-29')-new Date())/86400000);
+  const liDays=Math.ceil((new Date('2026-05-30')-new Date())/86400000);
+  const c=d=>d<=7?'var(--red2)':d<=14?'var(--orange)':'var(--green)';
+  ['tok-ig-val','op-ig-days'].forEach(id=>{const e=document.getElementById(id);if(e){e.textContent=igDays+'d left';e.style.color=c(igDays);}});
+  ['tok-li-val','op-li-days'].forEach(id=>{const e=document.getElementById(id);if(e){e.textContent=liDays+'d left';e.style.color=c(liDays);}});
+}
+renderAgents();renderCrons();updateClock();loadData();setupRT();filterCmds('');updateTokenCountdowns();
+setInterval(updateClock,1000);setInterval(renderFeed,30000);setInterval(loadData,90000);
+
+async function approvePost(id){
+  
+  await sb.from("content_bank").update({status:"approved",reviewed_by:"Geele"}).eq("id",id);
+  showToast("✅ Approved");
+  loadData();
+}
+async function rejectPost(id){
+  
+  await sb.from("content_bank").update({status:"archived",reviewed_by:"Geele"}).eq("id",id);
+  showToast("❌ Rejected");
+  loadData();
+}
+function showToast(msg){
+  let t=document.getElementById("mc-toast");
+  if(!t){t=document.createElement("div");t.id="mc-toast";t.style.cssText="position:fixed;bottom:24px;right:24px;background:#10b981;color:#fff;padding:12px 20px;border-radius:8px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:opacity .3s";document.body.appendChild(t);}
+  t.textContent=msg;t.style.opacity="1";
+  setTimeout(()=>t.style.opacity="0",2500);
+}
+</script>
+</body>
+</html>

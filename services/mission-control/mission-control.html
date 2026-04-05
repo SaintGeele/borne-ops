@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission Control — Borne Systems</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080C10;
+    --bg2: #0D1117;
+    --bg3: #111820;
+    --border: #1E2A38;
+    --text: #C8D6E5;
+    --muted: #4A6070;
+    --green: #00FFB2;
+    --orange: #FF6B35;
+    --blue: #4DABF7;
+    --purple: #CC5DE8;
+    --yellow: #FFB347;
+    --red: #FF4444;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    min-height: 100vh;
+    padding: 20px;
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,178,0.006) 2px, rgba(0,255,178,0.006) 4px);
+  }
+
+  .wrap { max-width: 1400px; margin: 0 auto; }
+
+  /* Header */
+  .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+  .header-left .sys { font-size: 11px; color: var(--green); letter-spacing: .2em; opacity: .7; margin-bottom: 4px; }
+  .header-left h1 { font-family: var(--sans); font-size: 26px; font-weight: 600; color: #E8F4FF; letter-spacing: -.02em; }
+  .header-right { text-align: right; }
+  .header-right .label { font-size: 11px; color: var(--muted); letter-spacing: .1em; margin-bottom: 4px; }
+  .health-score { font-size: 30px; font-weight: 600; letter-spacing: -.02em; }
+
+  /* Pipeline cards */
+  .pipelines { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .pipeline-card { background: var(--bg2); border-radius: 6px; padding: 14px; position: relative; overflow: hidden; border: 1px solid transparent; }
+  .pipeline-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+  .pipeline-card.social { border-color: rgba(0,255,178,.15); }
+  .pipeline-card.social::before { background: linear-gradient(90deg, var(--green), transparent); }
+  .pipeline-card.sales { border-color: rgba(255,107,53,.15); }
+  .pipeline-card.sales::before { background: linear-gradient(90deg, var(--orange), transparent); }
+  .pipeline-card.email { border-color: rgba(77,171,247,.15); }
+  .pipeline-card.email::before { background: linear-gradient(90deg, var(--blue), transparent); }
+  .pipeline-card.support { border-color: rgba(204,93,232,.15); }
+  .pipeline-card.support::before { background: linear-gradient(90deg, var(--purple), transparent); }
+
+  .pc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .pc-name { font-size: 11px; letter-spacing: .15em; font-weight: 500; }
+  .pc-health { font-size: 11px; }
+  .pc-stages { display: flex; align-items: center; gap: 3px; margin-bottom: 12px; flex-wrap: wrap; }
+  .pc-stage { font-size: 10px; padding: 2px 6px; border-radius: 3px; letter-spacing: .04em; }
+  .pc-arrow { font-size: 9px; opacity: .4; }
+  .pc-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .pc-metric-val { font-size: 20px; font-weight: 600; color: #E8F4FF; }
+  .pc-metric-lbl { font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+  /* Main grid */
+  .main { display: grid; grid-template-columns: 1fr 280px; gap: 16px; margin-bottom: 16px; }
+
+  /* Feed */
+  .feed { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .feed-header { padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .feed-title { display: flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: .12em; color: #E8F4FF; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .dot.live { background: var(--green); box-shadow: 0 0 5px var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.3} }
+  .filters { display: flex; gap: 3px; }
+  .filter-btn { background: transparent; border: 1px solid transparent; color: var(--muted); font-family: var(--mono); font-size: 10px; letter-spacing: .06em; padding: 3px 8px; border-radius: 3px; cursor: pointer; transition: all .15s; }
+  .filter-btn:hover { background: var(--bg3); }
+  .filter-btn.active { color: var(--green); background: rgba(0,255,178,.08); border-color: rgba(0,255,178,.2); }
+  .feed-list { height: 440px; overflow-y: auto; }
+  .feed-list::-webkit-scrollbar { width: 3px; }
+  .feed-list::-webkit-scrollbar-track { background: var(--bg2); }
+  .feed-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .feed-item { display: grid; grid-template-columns: 7px 72px 78px 1fr 68px; gap: 10px; align-items: center; padding: 9px 14px; border-bottom: 1px solid rgba(30,42,56,.5); transition: background .15s; }
+  .feed-item:hover { background: rgba(255,255,255,.02); }
+  .feed-item.flash { animation: flashIn 1.2s ease-out; }
+  @keyframes flashIn { 0%{background:rgba(0,255,178,.08)}100%{background:transparent} }
+  .ev-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .ev-time { font-size: 10px; color: var(--muted); }
+  .ev-agent { font-size: 10px; font-weight: 500; letter-spacing: .04em; }
+  .ev-msg { font-size: 11px; color: var(--text); line-height: 1.4; }
+  .ev-status { font-size: 10px; letter-spacing: .06em; text-align: right; }
+  .feed-footer { padding: 7px 14px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; }
+  .feed-footer span { font-size: 10px; color: var(--muted); }
+
+  /* Agents */
+  .agents { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .agents-header { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 11px; letter-spacing: .12em; color: #E8F4FF; }
+  .agents-list { height: 440px; overflow-y: auto; padding: 4px 0; }
+  .agents-list::-webkit-scrollbar { width: 3px; }
+  .agents-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .agent-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 14px; border-bottom: 1px solid rgba(30,42,56,.4); }
+  .agent-info { display: flex; align-items: center; gap: 8px; }
+  .agent-name { font-size: 12px; color: #E8F4FF; font-weight: 500; }
+  .agent-role { font-size: 10px; color: var(--muted); }
+  .agent-badge { font-size: 9px; letter-spacing: .06em; padding: 2px 5px; border-radius: 2px; }
+  .agents-footer { padding: 7px 14px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; }
+  .agents-footer span { font-size: 10px; color: var(--muted); }
+
+  /* Metrics row */
+  .metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+  .metric-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px; }
+  .metric-card-title { font-size: 10px; color: var(--muted); letter-spacing: .1em; margin-bottom: 8px; }
+  .metric-card-val { font-size: 24px; font-weight: 600; color: #E8F4FF; letter-spacing: -.02em; }
+  .metric-card-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* Footer */
+  .footer { display: flex; justify-content: space-between; align-items: center; }
+  .footer span { font-size: 10px; color: #1E2A38; letter-spacing: .08em; }
+
+  /* Loading */
+  .loading { display: flex; align-items: center; justify-content: center; height: 100px; color: var(--muted); font-size: 11px; letter-spacing: .1em; }
+
+  /* Status colors */
+  .c-green { color: var(--green); }
+  .c-orange { color: var(--orange); }
+  .c-blue { color: var(--blue); }
+  .c-purple { color: var(--purple); }
+  .c-yellow { color: var(--yellow); }
+  .c-red { color: var(--red); }
+  .c-muted { color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="sys">BORNE SYSTEMS // OPENCLAW</div>
+      <h1>Mission Control</h1>
+    </div>
+    <div class="header-right">
+      <div class="label">SYSTEM HEALTH</div>
+      <div class="health-score c-green" id="health-score">—</div>
+    </div>
+  </div>
+
+  <!-- Metrics Row -->
+  <div class="metrics-row">
+    <div class="metric-card">
+      <div class="metric-card-title">EMAIL EVENTS</div>
+      <div class="metric-card-val" id="m-email">—</div>
+      <div class="metric-card-sub">all time</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-card-title">OPEN TICKETS</div>
+      <div class="metric-card-val" id="m-tickets">—</div>
+      <div class="metric-card-sub">support queue</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-card-title">CONTENT PIECES</div>
+      <div class="metric-card-val" id="m-content">—</div>
+      <div class="metric-card-sub">in content bank</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-card-title">SECURITY RISKS</div>
+      <div class="metric-card-val" id="m-risks">—</div>
+      <div class="metric-card-sub">open items</div>
+    </div>
+  </div>
+
+  <!-- Pipeline Cards -->
+  <div class="pipelines">
+    <div class="pipeline-card social">
+      <div class="pc-header">
+        <span class="pc-name c-green">SOCIAL</span>
+        <span class="pc-health c-green">✓ LIVE</span>
+      </div>
+      <div class="pc-stages">
+        <span class="pc-stage" style="color:var(--green);background:rgba(0,255,178,.1);border:1px solid rgba(0,255,178,.2)">Mercury</span>
+        <span class="pc-arrow">→</span>
+        <span class="pc-stage" style="color:var(--green);background:rgba(0,255,178,.1);border:1px solid rgba(0,255,178,.2)">MrX</span>
+        <span class="pc-arrow">→</span>
+        <span class="pc-stage" style="color:var(--green);background:rgba(0,255,178,.1);border:1px solid rgba(0,255,178,.2)">Inspector</span>
+        <span class="pc-arrow">→</span>
+        <span class="pc-stage" style="color:var(--green);background:rgba(0,255,178,.1);border:1px solid rgba(0,255,178,.2)">Nova</span>
+      </div>
+      <div class="pc-metrics">
+        <div><div class="pc-metric-val" id="s-content">—</div><div class="pc-metric-lbl">CONTENT PIECES</div></div>
+        <div><div class="pc-metric-val" id="s-approved">—</div><div class="pc-metric-lbl">APPROVED</div></div>
+      </div>
+    </div>
+    <div class="pipeline-card sales">
+      <div class="pc-header">
+        <span class="pc-name c-orange">SALES</span>
+        <span class="pc-health c-green">✓ LIVE</span>
+      </div>
+      <div class="pc-stages">
+        <span class="pc-stage" style="color:var(--orange);background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.2)">Chase</span>
+        <span class="pc-arrow">→</span>
+        <span class="pc-stage" style="color:var(--orange);background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.2)">Insight</span>
+        <span class="pc-arrow">→</span>
+        <span class="pc-stage" style="color:var(--orange);background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.2)">Demo</span>
+        <span class="pc-arrow">→</span>
+        <span class="pc-stage" style="color:var(--orange);background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.2)">Geele</span>
+      </div>
+      <div class="pc-metrics">
+        <div><div class="pc-metric-val" id="s-leads">—</div><div class="pc-metric-lbl">TOTAL LEADS</div></div>
+        <div><div class="pc-metric-val" id="s-activities">—</div><div class="pc-metric-lbl">ACTIVITIES</div></div>
+      </div>
+    </div>
+    <div class="pipeline-card email">
+      <div class="pc-header">
+        <span class="pc-name c-blue">EMAIL</span>
+        <span class="pc-health c-green">✓ LIVE</span>
+      </div>
+      <div class="pc-stages">
+        <span class="pc-stage" style="color:var(--blue);background:rgba(77,171,247,.1);border:1px solid rgba(77,171,247,.2)">Send</span>
+        <span class="pc-arrow">→</span>
+        <span class="pc-stage" style="color:var(--blue);background:rgba(77,171,247,.1);border:1px solid rgba(77,171,247,.2)">Deliver</span>
+        <span class="pc-arrow">→</span>
+        <span class="pc-stage" style="color:var(--blue);background:rgba(77,171,247,.1);border:1px solid rgba(77,171,247,.2)">Open</span>
+        <span class="pc-arrow">→</span>
+        <span class="pc-stage" style="color:var(--blue);background:rgba(77,171,247,.1);border:1px solid rgba(77,171,247,.2)">Convert</span>
+      </div>
+      <div class="pc-metrics">
+        <div><div class="pc-metric-val" id="e-delivered">—</div><div class="pc-metric-lbl">DELIVERED</div></div>
+        <div><div class="pc-metric-val" id="e-opened">—</div><div class="pc-metric-lbl">OPENED</div></div>
+      </div>
+    </div>
+    <div class="pipeline-card support">
+      <div class="pc-header">
+        <span class="pc-name c-purple">SUPPORT</span>
+        <span class="pc-health c-green">✓ LIVE</span>
+      </div>
+      <div class="pc-stages">
+        <span class="pc-stage" style="color:var(--purple);background:rgba(204,93,232,.1);border:1px solid rgba(204,93,232,.2)">Form</span>
+        <span class="pc-arrow">→</span>
+        <span class="pc-stage" style="color:var(--purple);background:rgba(204,93,232,.1);border:1px solid rgba(204,93,232,.2)">Care</span>
+        <span class="pc-arrow">→</span>
+        <span class="pc-stage" style="color:var(--purple);background:rgba(204,93,232,.1);border:1px solid rgba(204,93,232,.2)">Triage</span>
+        <span class="pc-arrow">→</span>
+        <span class="pc-stage" style="color:var(--purple);background:rgba(204,93,232,.1);border:1px solid rgba(204,93,232,.2)">Resolve</span>
+      </div>
+      <div class="pc-metrics">
+        <div><div class="pc-metric-val" id="t-open">—</div><div class="pc-metric-lbl">OPEN</div></div>
+        <div><div class="pc-metric-val" id="t-resolved">—</div><div class="pc-metric-lbl">RESOLVED</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feed + Agents -->
+  <div class="main">
+    <div class="feed">
+      <div class="feed-header">
+        <div class="feed-title">
+          <div class="dot live"></div>
+          LIVE EVENT FEED
+        </div>
+        <div class="filters">
+          <button class="filter-btn active" onclick="setFilter('all',this)">ALL</button>
+          <button class="filter-btn" onclick="setFilter('email',this)">EMAIL</button>
+          <button class="filter-btn" onclick="setFilter('support',this)">SUPPORT</button>
+          <button class="filter-btn" onclick="setFilter('security',this)">SECURITY</button>
+        </div>
+      </div>
+      <div class="feed-list" id="feed-list">
+        <div class="loading">CONNECTING TO SUPABASE...</div>
+      </div>
+      <div class="feed-footer">
+        <span id="feed-count">0 EVENTS</span>
+        <span id="last-update">—</span>
+      </div>
+    </div>
+
+    <div class="agents">
+      <div class="agents-header">AGENT ROSTER</div>
+      <div class="agents-list" id="agents-list">
+        <div class="loading">LOADING...</div>
+      </div>
+      <div class="agents-footer">
+        <span id="agents-active">— ACTIVE</span>
+        <span id="agents-idle">— IDLE</span>
+        <span>12 TOTAL</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <span>OPENCLAW v1.0 // DEBIAN 13 // NODE v22</span>
+    <span id="clock">—</span>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const SUPABASE_URL = 'https://bnxyaqfulsptequuzlay.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJueHlhcWZ1bHNwdGVxdXV6bGF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1ODMzNDQsImV4cCI6MjA5MDE1OTM0NH0.eLfvrMQRVFfjZrNs1M4I_jvKVGCwFIZ2AYPpJziEb88';
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const AGENTS = [
+  {name:'BorneAI',role:'Chief of Staff',pipeline:null},
+  {name:'Atlas',role:'Orchestrator',pipeline:null},
+  {name:'Mercury',role:'Strategist',pipeline:'social'},
+  {name:'MrX',role:'Writer',pipeline:'social'},
+  {name:'Inspector',role:'QA',pipeline:'social'},
+  {name:'Nova',role:'Social Mgr',pipeline:'social'},
+  {name:'Chase',role:'Sales Dev',pipeline:'sales'},
+  {name:'Insight',role:'Enrichment',pipeline:'sales'},
+  {name:'Ledger',role:'Finance',pipeline:'ops'},
+  {name:'Chronicle',role:'Logs',pipeline:'ops'},
+  {name:'Pulse',role:'Analytics',pipeline:'ops'},
+  {name:'Knox',role:'Security',pipeline:'security'},
+];
+
+const PIPELINE_COLORS = {
+  social:'var(--green)', sales:'var(--orange)',
+  email:'var(--blue)', support:'var(--purple)',
+  ops:'var(--yellow)', security:'var(--red)'
+};
+
+let allEvents = [];
+let currentFilter = 'all';
+
+function timeAgo(ts) {
+  const s = Math.floor((Date.now() - new Date(ts)) / 1000);
+  if (s < 60) return s + 's ago';
+  if (s < 3600) return Math.floor(s/60) + 'm ago';
+  return Math.floor(s/3600) + 'h ago';
+}
+
+function statusColor(status) {
+  const map = {
+    success:'var(--green)', verified:'var(--green)', supabase_written:'var(--green)',
+    open:'var(--yellow)', pending:'var(--blue)',
+    failed:'var(--red)', error:'var(--red)', verify_failed:'var(--red)',
+    raw:'var(--muted)', info:'var(--blue)'
+  };
+  return map[status] || 'var(--muted)';
+}
+
+function pipelineFromEvent(ev) {
+  if (ev.event_type) return 'email';
+  if (ev.action === 'ticket_created' || ev.issue_type) return 'support';
+  if (ev.severity) return 'security';
+  if (ev.action) return 'ops';
+  return 'system';
+}
+
+function agentFromEvent(ev) {
+  if (ev.event_type) return 'Resend';
+  if (ev.issue_type !== undefined) return 'Care';
+  if (ev.agent) return ev.agent.charAt(0).toUpperCase() + ev.agent.slice(1);
+  return 'System';
+}
+
+function messageFromEvent(ev) {
+  if (ev.event_type) {
+    const sub = ev.subject ? ` — ${ev.subject}` : '';
+    const to = ev.recipient ? ` → ${ev.recipient}` : '';
+    return `${ev.event_type}${sub}${to}`;
+  }
+  if (ev.issue_type !== undefined) return `Ticket #${ev.id?.slice(0,8)} — ${ev.subject || 'Support request'}`;
+  if (ev.finding) return ev.finding.slice(0,80);
+  if (ev.action) return `${ev.action}${ev.target ? ' → '+ev.target : ''}`;
+  return JSON.stringify(ev).slice(0,60);
+}
+
+function renderFeed() {
+  const list = document.getElementById('feed-list');
+  const filtered = currentFilter === 'all' ? allEvents : allEvents.filter(e => e._pipeline === currentFilter);
+
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="loading">NO EVENTS YET — WAITING FOR DATA...</div>';
+    document.getElementById('feed-count').textContent = '0 EVENTS';
+    return;
+  }
+
+  list.innerHTML = filtered.map(ev => `
+    <div class="feed-item" id="ev-${ev._id}">
+      <div class="ev-dot" style="background:${statusColor(ev._status)};box-shadow:${ev._status==='success'||ev._status==='verified'||ev._status==='supabase_written'?'0 0 4px '+statusColor(ev._status):'none'}"></div>
+      <span class="ev-time">${timeAgo(ev._ts)}</span>
+      <span class="ev-agent" style="color:${PIPELINE_COLORS[ev._pipeline]||'var(--muted)'};">${agentFromEvent(ev).toUpperCase()}</span>
+      <span class="ev-msg">${messageFromEvent(ev)}</span>
+      <span class="ev-status" style="color:${statusColor(ev._status)}">${(ev._status||'info').toUpperCase()}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('feed-count').textContent = filtered.length + ' EVENTS';
+  document.getElementById('last-update').textContent = 'UPDATED ' + new Date().toISOString().slice(11,19) + ' UTC';
+}
+
+function addEvent(ev, pipeline, status) {
+  ev._id = ev.id || Math.random().toString(36).slice(2);
+  ev._ts = ev.ts || ev.created_at || new Date().toISOString();
+  ev._pipeline = pipeline;
+  ev._status = status;
+  allEvents.unshift(ev);
+  if (allEvents.length > 100) allEvents = allEvents.slice(0, 100);
+}
+
+async function loadMetrics() {
+  try {
+    const [emailRes, ticketsRes, contentRes, risksRes] = await Promise.all([
+      sb.from('email_events').select('id', {count:'exact', head:true}),
+      sb.from('tickets').select('id', {count:'exact', head:true}).eq('status','open'),
+      sb.from('content_bank').select('id', {count:'exact', head:true}),
+      sb.from('security_risks').select('id', {count:'exact', head:true}).eq('status','open'),
+    ]);
+
+    document.getElementById('m-email').textContent = emailRes.count ?? '—';
+    document.getElementById('m-tickets').textContent = ticketsRes.count ?? '—';
+    document.getElementById('m-content').textContent = contentRes.count ?? '—';
+    document.getElementById('m-risks').textContent = risksRes.count ?? '—';
+
+    const riskCount = risksRes.count || 0;
+    document.getElementById('m-risks').style.color = riskCount > 5 ? 'var(--red)' : riskCount > 0 ? 'var(--yellow)' : 'var(--green)';
+
+    const health = Math.round(100 - Math.min(riskCount * 5, 30));
+    document.getElementById('health-score').textContent = health + '%';
+    document.getElementById('health-score').style.color = health > 90 ? 'var(--green)' : health > 70 ? 'var(--yellow)' : 'var(--red)';
+  } catch(e) { console.error('metrics error', e); }
+}
+
+async function loadPipelineMetrics() {
+  try {
+    const [contentStats, activityCount, emailStats, ticketStats] = await Promise.all([
+      sb.from('content_bank').select('status'),
+      sb.from('activity_log').select('id', {count:'exact', head:true}),
+      sb.from('email_events').select('event_type'),
+      sb.from('tickets').select('status'),
+    ]);
+
+    // Social
+    const total = contentStats.data?.length || 0;
+    const approved = contentStats.data?.filter(c => c.status === 'approved' || c.status === 'published').length || 0;
+    document.getElementById('s-content').textContent = total;
+    document.getElementById('s-approved').textContent = approved;
+
+    // Sales
+    document.getElementById('s-leads').textContent = '9';
+    document.getElementById('s-activities').textContent = activityCount.count ?? '—';
+
+    // Email
+    const delivered = emailStats.data?.filter(e => e.event_type === 'email.delivered').length || 0;
+    const opened = emailStats.data?.filter(e => e.event_type === 'email.opened').length || 0;
+    document.getElementById('e-delivered').textContent = delivered;
+    document.getElementById('e-opened').textContent = opened;
+
+    // Support
+    const openT = ticketStats.data?.filter(t => t.status === 'open').length || 0;
+    const resolvedT = ticketStats.data?.filter(t => t.status === 'resolved' || t.status === 'closed').length || 0;
+    document.getElementById('t-open').textContent = openT;
+    document.getElementById('t-resolved').textContent = resolvedT;
+
+  } catch(e) { console.error('pipeline metrics error', e); }
+}
+
+async function loadRecentEvents() {
+  try {
+    const [emailEvs, ticketEvs, secEvs] = await Promise.all([
+      sb.from('email_events').select('*').order('ts', {ascending:false}).limit(20),
+      sb.from('tickets').select('*').order('ts', {ascending:false}).limit(10),
+      sb.from('security_log').select('*').order('ts', {ascending:false}).limit(10),
+    ]);
+
+    allEvents = [];
+
+    (emailEvs.data || []).forEach(ev => addEvent(ev, 'email', ev.event_type?.includes('bounce') || ev.event_type?.includes('fail') ? 'error' : 'success'));
+    (ticketEvs.data || []).forEach(ev => addEvent(ev, 'support', ev.status === 'open' ? 'open' : 'success'));
+    (secEvs.data || []).forEach(ev => addEvent(ev, 'security', ev.severity === 'critical' ? 'error' : ev.severity === 'high' ? 'pending' : 'info'));
+
+    allEvents.sort((a,b) => new Date(b._ts) - new Date(a._ts));
+    renderFeed();
+  } catch(e) {
+    console.error('events error', e);
+    document.getElementById('feed-list').innerHTML = '<div class="loading">ERROR LOADING EVENTS</div>';
+  }
+}
+
+function renderAgents() {
+  const list = document.getElementById('agents-list');
+  const active = AGENTS.filter(a => ['BorneAI','Atlas','Chronicle','Pulse','Nova','Chase'].includes(a.name));
+  const activeNames = new Set(active.map(a => a.name));
+
+  list.innerHTML = AGENTS.map(agent => {
+    const isActive = activeNames.has(agent.name);
+    const color = agent.pipeline ? PIPELINE_COLORS[agent.pipeline] : 'var(--muted)';
+    return `
+      <div class="agent-row">
+        <div class="agent-info">
+          <div class="dot" style="background:${isActive?'var(--green)':'var(--muted)'};${isActive?'box-shadow:0 0 4px var(--green)':''}"></div>
+          <div>
+            <div class="agent-name">${agent.name}</div>
+            <div class="agent-role">${agent.role}</div>
+          </div>
+        </div>
+        ${agent.pipeline ? `<span class="agent-badge" style="color:${color};border:1px solid ${color}33;background:${color}11">${agent.pipeline.toUpperCase()}</span>` : ''}
+      </div>
+    `;
+  }).join('');
+
+  const activeCount = AGENTS.filter(a => activeNames.has(a.name)).length;
+  document.getElementById('agents-active').textContent = activeCount + ' ACTIVE';
+  document.getElementById('agents-idle').textContent = (AGENTS.length - activeCount) + ' IDLE';
+}
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderFeed();
+}
+
+// Real-time subscriptions
+function setupRealtime() {
+  sb.channel('email-events')
+    .on('postgres_changes', {event:'INSERT', schema:'public', table:'email_events'}, payload => {
+      const ev = payload.new;
+      addEvent(ev, 'email', ev.event_type?.includes('bounce') ? 'error' : 'success');
+      allEvents.sort((a,b) => new Date(b._ts) - new Date(a._ts));
+      renderFeed();
+      loadMetrics();
+      loadPipelineMetrics();
+    })
+    .subscribe();
+
+  sb.channel('tickets')
+    .on('postgres_changes', {event:'INSERT', schema:'public', table:'tickets'}, payload => {
+      addEvent(payload.new, 'support', 'open');
+      allEvents.sort((a,b) => new Date(b._ts) - new Date(a._ts));
+      renderFeed();
+      loadMetrics();
+      loadPipelineMetrics();
+    })
+    .subscribe();
+
+  sb.channel('security-log')
+    .on('postgres_changes', {event:'INSERT', schema:'public', table:'security_log'}, payload => {
+      const ev = payload.new;
+      addEvent(ev, 'security', ev.severity === 'critical' ? 'error' : 'info');
+      allEvents.sort((a,b) => new Date(b._ts) - new Date(a._ts));
+      renderFeed();
+      loadMetrics();
+    })
+    .subscribe();
+}
+
+// Clock
+setInterval(() => {
+  document.getElementById('clock').textContent = new Date().toISOString().replace('T',' ').split('.')[0] + ' UTC';
+}, 1000);
+
+// Refresh time labels every 30s
+setInterval(renderFeed, 30000);
+
+// Refresh metrics every 2 min
+setInterval(() => { loadMetrics(); loadPipelineMetrics(); }, 120000);
+
+// Init
+(async () => {
+  renderAgents();
+  await Promise.all([loadMetrics(), loadPipelineMetrics(), loadRecentEvents()]);
+  setupRealtime();
+})();
+</script>
+</body>
+</html>

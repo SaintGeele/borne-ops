@@ -1,0 +1,9 @@
+digraph ThreatMap {
+  rankdir=LR;
+  node [shape=box];
+  "Router Vulnerabilities" -> "Work Devices";
+  "VPN Exposure" -> "Corporate Data";
+  "WiFi Misconfig" -> "Lateral Movement";
+  "Employee Behavior" -> "End Points";
+  "End Points" -> "Company Data" [style=dashed];
+}

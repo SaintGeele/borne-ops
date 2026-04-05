@@ -1,0 +1,3 @@
+Use Atlas to create a daily Borne Systems CEO briefing.
+Have Mission Control summarize runtime health, Knox summarize security concerns, Ivy summarize research opportunities, Nexus summarize engineering priorities, and Chronicle record the final briefing.
+Keep it concise, actionable, and organized.

@@ -129,4 +129,106 @@
     });
   }
 
+  // --- Lead Modal ---
+  window.openLeadModal = function() {
+    const modal = document.getElementById('leadModal');
+    if (modal) {
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      // Focus first input
+      const firstInput = modal.querySelector('input[name="name"]');
+      if (firstInput) setTimeout(() => firstInput.focus(), 100);
+    }
+  };
+
+  window.closeLeadModal = function() {
+    const modal = document.getElementById('leadModal');
+    if (modal) {
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+  };
+
+  // Close modal on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const modal = document.getElementById('leadModal');
+      if (modal && modal.classList.contains('is-open')) {
+        closeLeadModal();
+      }
+    }
+  });
+
+  // --- Lead Form Submission ---
+  window.submitLeadForm = async function(event, formId) {
+    event.preventDefault();
+    
+    const form = document.getElementById(formId);
+    if (!form) return;
+
+    const statusEl = document.getElementById(formId + '-status');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn ? submitBtn.textContent : 'Send';
+
+    // Show loading state
+    if (submitBtn) {
+      submitBtn.textContent = 'Sending...';
+      submitBtn.disabled = true;
+    }
+    if (statusEl) {
+      statusEl.className = 'lead-form__status';
+      statusEl.textContent = '';
+    }
+
+    // Build form data
+    const formData = new FormData(form);
+    const payload = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      company: formData.get('company') || '',
+      interest: formData.get('interest'),
+      message: formData.get('message') || ''
+    };
+
+    try {
+      const response = await fetch('https://resendhook.bornesystems.com/leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        // Success
+        if (statusEl) {
+          statusEl.className = 'lead-form__status success';
+          statusEl.textContent = 'Thanks for reaching out. Check your email for confirmation.';
+        }
+        form.reset();
+        
+        // Close modal if from hero modal
+        if (formId === 'heroLeadForm') {
+          setTimeout(closeLeadModal, 2000);
+        }
+      } else {
+        throw new Error('Server error');
+      }
+    } catch (error) {
+      // Error
+      if (statusEl) {
+        statusEl.className = 'lead-form__status error';
+        statusEl.textContent = 'Something went wrong. Please try again or email contact@bornesystems.com.';
+      }
+    } finally {
+      // Restore button
+      if (submitBtn) {
+        submitBtn.textContent = originalBtnText;
+        submitBtn.disabled = false;
+      }
+    }
+  };
+
 })();

@@ -1,0 +1,102 @@
+#!/usr/bin/env python3
+"""
+xpost - Lightweight X/Twitter CLI for OpenClaw agents
+Usage: xpost [command] [args]
+"""
+
+import os
+import sys
+import argparse
+import requests
+from urllib.parse import urlencode
+import base64
+import hashlib
+import time
+import oauth1
+
+# Load config
+CONFIG_PATH = os.path.expanduser("~/.config/x-api/keys.env")
+
+def load_config():
+    config = {}
+    if os.path.exists(CONFIG_PATH):
+        with open(CONFIG_PATH) as f:
+            for line in f:
+                if '=' in line:
+                    key, val = line.strip().split('=', 1)
+                    config[key] = val
+    return config
+
+def post_tweet(text, config):
+    """Post a tweet using OAuth 1.0a"""
+    # This is a simplified version - full OAuth implementation needed
+    url = "https://api.twitter.com/2/tweets"
+    
+    auth = oauth1.Client(
+        config['X_API_KEY'],
+        client_secret=config['X_API_SECRET'],
+        resource_owner_key=config['X_ACCESS_TOKEN'],
+        resource_owner_secret=config['X_ACCESS_TOKEN_SECRET']
+    )
+    
+    # For now, use simple bearer token approach for demo
+    # In production, use full OAuth 1.0a
+    headers = {
+        "Content-Type": "application/json",
+    }
+    
+    data = {"text": text}
+    
+    response = requests.post(url, json=data, headers=headers)
+    return response.json()
+
+def get_timeline(config, max_results=10):
+    """Get recent tweets from timeline"""
+    url = f"https://api.twitter.com/2/tweets?max_results={max_results}"
+    # Add OAuth headers...
+    response = requests.get(url)
+    return response.json()
+
+def search_tweets(query, config, max_results=10):
+    """Search tweets"""
+    url = f"https://api.twitter.com/2/tweets/search/recent?query={query}&max_results={max_results}"
+    response = requests.get(url)
+    return response.json()
+
+def main():
+    parser = argparse.ArgumentParser(description="xpost - X/Twitter CLI")
+    parser.add_argument("command", choices=["post", "timeline", "search", "reply", "like", "retweet"])
+    parser.add_argument("args", nargs="*", help="Arguments for command")
+    
+    args = parser.parse_args()
+    config = load_config()
+    
+    if not config:
+        print("Error: No config found. Create ~/.config/x-api/keys.env")
+        sys.exit(1)
+    
+    if args.command == "post":
+        if not args.args:
+            print("Usage: xpost post [tweet text]")
+            sys.exit(1)
+        text = " ".join(args.args)
+        result = post_tweet(text, config)
+        print(f"Tweet posted: {result}")
+    
+    elif args.command == "timeline":
+        result = get_timeline(config)
+        print(result)
+    
+    elif args.command == "search":
+        if not args.args:
+            print("Usage: xpost search [query]")
+            sys.exit(1)
+        query = " ".join(args.args)
+        result = search_tweets(query, config)
+        print(result)
+    
+    else:
+        print(f"Command {args.command} not yet implemented")
+
+if __name__ == "__main__":
+    main()

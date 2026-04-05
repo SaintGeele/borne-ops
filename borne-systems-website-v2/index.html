@@ -83,7 +83,37 @@
       <span>Scroll</span>
       <div class="hero__scroll-line"></div>
     </div>
+
+    <!-- Hero CTA Button -->
+    <div class="hero__cta">
+      <button class="hero__cta-btn" onclick="openLeadModal()">Get Started</button>
+    </div>
   </section>
+
+  <!-- Lead Capture Modal -->
+  <div id="leadModal" class="lead-modal" aria-hidden="true">
+    <div class="lead-modal__backdrop" onclick="closeLeadModal()"></div>
+    <div class="lead-modal__content">
+      <button class="lead-modal__close" onclick="closeLeadModal()" aria-label="Close">&times;</button>
+      <h3 class="lead-modal__title">Let's Talk</h3>
+      <p class="lead-modal__desc">Tell us about your needs and we'll be in touch.</p>
+      <form id="heroLeadForm" class="lead-form lead-form--modal" onsubmit="submitLeadForm(event, 'heroLeadForm')">
+        <input type="text" name="name" placeholder="Your Name" required class="lead-form__input">
+        <input type="email" name="email" placeholder="Business Email" required class="lead-form__input">
+        <input type="text" name="company" placeholder="Company (optional)" class="lead-form__input">
+        <select name="interest" class="lead-form__input" required>
+          <option value="" disabled selected>What are you interested in?</option>
+          <option value="AI Receptionist">AI Receptionist</option>
+          <option value="Lead Automation">Lead Automation</option>
+          <option value="Security Services">Security Services</option>
+          <option value="Other">Other</option>
+        </select>
+        <textarea name="message" placeholder="Tell us about your needs..." rows="3" class="lead-form__input"></textarea>
+        <button type="submit" class="contact__btn">Send Request</button>
+        <div class="lead-form__status" id="heroLeadForm-status"></div>
+      </form>
+    </div>
+  </div>
 
   <!-- ========== INTRO ========== -->
   <section class="intro" id="intro">
@@ -254,18 +284,20 @@
         </p>
         
         <!-- Lead Capture Form -->
-        <form id="leadForm" class="lead-form" action="https://formspree.io/f/xpwzgvzp" method="POST">
+        <form id="leadForm" class="lead-form" onsubmit="submitLeadForm(event, 'leadForm')">
           <input type="text" name="name" placeholder="Your Name" required class="lead-form__input">
           <input type="email" name="email" placeholder="Business Email" required class="lead-form__input">
+          <input type="text" name="company" placeholder="Company (optional)" class="lead-form__input">
           <select name="interest" class="lead-form__input" required>
             <option value="" disabled selected>What are you interested in?</option>
-            <option value="ai-receptionist">AI Receptionist ($297/mo)</option>
-            <option value="lead-automation">Lead Automation</option>
-            <option value="security">Security Consulting</option>
-            <option value="other">Other</option>
+            <option value="AI Receptionist">AI Receptionist</option>
+            <option value="Lead Automation">Lead Automation</option>
+            <option value="Security Services">Security Services</option>
+            <option value="Other">Other</option>
           </select>
           <textarea name="message" placeholder="Tell us about your needs..." rows="3" class="lead-form__input"></textarea>
           <button type="submit" class="contact__btn">Send Request &rarr;</button>
+          <div class="lead-form__status" id="leadForm-status"></div>
         </form>
         <p class="contact__note">or email contact@bornesystems.com</p>
       </div>
@@ -275,6 +307,25 @@
   <!-- ========== FOOTER ========== -->
   <footer class="footer">
     <div class="container">
+      <!-- Footer Lead Form -->
+      <div class="footer__lead">
+        <h3 class="footer__lead-title">Ready to get started?</h3>
+        <p class="footer__lead-desc">Leave your info and we'll reach out.</p>
+        <form id="footerLeadForm" class="lead-form lead-form--footer" onsubmit="submitLeadForm(event, 'footerLeadForm')">
+          <input type="text" name="name" placeholder="Your Name" required class="lead-form__input">
+          <input type="email" name="email" placeholder="Your Email" required class="lead-form__input">
+          <input type="text" name="company" placeholder="Company (optional)" class="lead-form__input">
+          <select name="interest" class="lead-form__input" required>
+            <option value="" disabled selected>Interest</option>
+            <option value="AI Receptionist">AI Receptionist</option>
+            <option value="Lead Automation">Lead Automation</option>
+            <option value="Security Services">Security Services</option>
+            <option value="Other">Other</option>
+          </select>
+          <button type="submit" class="contact__btn contact__btn--small">Submit</button>
+          <div class="lead-form__status" id="footerLeadForm-status"></div>
+        </form>
+      </div>
       <div class="footer__rule"></div>
       <div class="footer__inner">
         <div class="footer__left">

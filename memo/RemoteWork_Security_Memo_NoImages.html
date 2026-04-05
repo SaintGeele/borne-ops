@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Remote Work Security Memo — No Images</title>
+<style>
+  body { font-family: "Times New Roman", Times, serif; margin: 40px; }
+  h1 { font-size: 26px; font-weight: bold; }
+  h2 { font-size: 20px; font-weight: bold; margin-top: 28px; }
+  p { line-height: 1.4; }
+  table { border-collapse: collapse; width: 100%; margin-top: 8px; }
+  th, td { border: 1px solid #000; padding: 6px 8px; text-align: left; vertical-align: top; }
+  ul { margin: 0 0 0 1.25em; }
+  .authorline { margin-top: 8px; }
+  .works { margin-top: 28px; }
+  .note { font-family: Arial, sans-serif; font-size: 12px; }
+</style>
+</head>
+<body>
+  <h1>Remote Work Security: Protecting Home Networks for Small Business Employees</h1>
+  <p class="authorline">Geele Evans<br/>Dr. Lori Jirousek-Falls<br/>FCWR 304-F02<br/>25 March 2026</p>
+  <h2>Abstract</h2>
+  <p>Remote work expands opportunity for small businesses but shifts risk to home networks. This memo translates current CISA and NIST guidance into a concise, actionable framework for managers with no dedicated IT staff. It identifies router vulnerabilities, the importance of VPNs, Wi‑Fi hardening, and day‑to‑day practices, then provides a practical implementation checklist that can be deployed this week. The goal is to establish a secure baseline that is auditable, scalable, and affordable.</p>
+  <h2>Threat Landscape and Rationales</h2>
+  <p>Small businesses face router vulnerabilities from outdated firmware, weak credentials, and misconfigurations; VPN exposure when not used or poorly configured; and Wi‑Fi protections that are insufficient or improperly segmented. When home networks are compromised, work devices are at risk. A practical program for small businesses should emphasize tangible improvements, not theory. This framing aligns with CISA and NIST guidance that emphasizes perimeter hardening and verifiable controls (CISA; NIST).</p>
+  <h2>Practical Fixes: Technical and Policy Measures</h2>
+  <h3>Router Security</h3>
+  <ul>
+    <li>Keep firmware current; enable automatic updates if possible.</li>
+    <li>Change default admin credentials to a strong, unique password.</li>
+    <li>Disable remote management unless necessary; restrict if used.</li>
+    <li>Turn off UPnP and WPS; enable the router firewall.</li>
+    <li>Create a separate work network (dedicated SSID) for company devices.</li>
+  </ul>
+  <h3>VPN and Remote Access</h3>
+  <ul>
+    <li>Mandate VPN use for all remote work; require MFA for VPN access.</li>
+    <li>Establish clear VPN usage policies, including device posture checks before connection.</li>
+    <li>Minimize or eliminate split tunneling to reduce exposure from home devices (CISA; NIST guidance).</li>
+  </ul>
+  <h3>Wi‑Fi Hardening</h3>
+  <ul>
+    <li>Use WPA3 on the home network; disable older protocols (WEP, WPA2‑TKIP).</li>
+    <li>Avoid auto‑connecting to unknown networks; segment work devices on a dedicated network.</li>
+    <li>Maintain network segmentation so work traffic stays isolated from personal devices.</li>
+  </ul>
+  <h2>Day-to-Day Employee Practices</h2>
+  <ul>
+    <li>Keep devices updated; enable automatic updates.</li>
+    <li>Use a password manager and MFA for all work accounts.</li>
+    <li>Enable device encryption and a short automatic screen lock timeout.</li>
+    <li>If using public networks, employ a VPN; avoid untrusted networks for work tasks.</li>
+    <li>Regularly back up work data to approved storage with versioning.</li>
+  </ul>
+  <h2>Implementation Checklist for Employees</h2>
+  <ul>
+    <li>Update router firmware; change admin password; disable remote management; disable UPnP/WPS; create a dedicated work network.</li>
+    <li>Enforce WPA3 on the work network with a strong passphrase.</li>
+    <li>Install and configure a company‑approved VPN with MFA; route work traffic through the VPN.</li>
+    <li>Require pre‑VPN device posture checks (up-to-date OS, active antivirus).</li>
+    <li>Enable device encryption and a short auto‑lock timeout.</li>
+    <li>Use a password manager and enable MFA on work services.</li>
+    <li>Avoid public Wi‑Fi for work; use VPN if unavoidable.</li>
+    <li>Back up work data to approved repositories/storage with versioning.</li>
+    <li>Report any device compromise or router anomaly immediately.</li>
+  </ul>
+  <h2>Table 1. Day-to-Day Employee Practices for Remote Security</h2>
+  <table>
+    <tr><th>Practice</th><th>Rationale</th><th>Owner</th><th>Frequency</th><th>Status</th></tr>
+    <tr><td>Update OS &amp; apps</td><td>Closes known vulnerabilities</td><td>Employee</td><td>Auto/as scheduled</td><td>Pending</td></tr>
+    <tr><td>Use MFA on all work accounts</td><td>Reduces credential abuse</td><td>Employee</td><td>Per account</td><td>In progress</td></tr>
+    <tr><td>Use a password manager</td><td>Encourages strong passwords</td><td>Employee</td><td>Always</td><td>Required</td></tr>
+    <tr><td>Enable device encryption</td><td>Protects data at rest</td><td>Employee</td><td>On devices</td><td>Recommended</td></tr>
+    <tr><td>Require VPN for work</td><td>Encapsulates traffic; lowers exposure</td><td>All users</td><td>Always</td><td>Mandatory</td></tr>
+    <tr><td>Avoid public Wi‑Fi for work</td><td>Reduces risk from untrusted networks</td><td>Employee</td><td>Always</td><td>Mandatory</td></tr>
+    <tr><td>Back up work data regularly</td><td>Preserves data integrity</td><td>Employee/Manager</td><td>Daily/weekly</td><td>Ongoing</td></tr>
+  </table>
+  <h2>Works Cited</h2>
+  <p>CISA. “Remote Work Security Guidance.” Cybersecurity and Infrastructure Security Agency, 2023. Accessed 25 Mar. 2026.<br/>
+  NIST. “Guidelines for Securing Home Networks.” National Institute of Standards and Technology, 2020. Accessed 25 Mar. 2026.<br/>
+  Evans, Geele. “Remote Work Security: Protecting Home Networks for Small Business Employees.” FCWR 304 Memo, 6 Mar. 2026. Unpublished.</p>
+  <p class="note">Notes on MLA formatting: In-text references for the sources are placed after the referenced material (e.g., (CISA); (NIST)). The Works Cited page lists all sources in MLA format. Figures have been omitted intentionally; this version focuses on text, the checklist, and the table.</p>
+</body>
+</html>

@@ -1,0 +1,142 @@
+"use client"
+
+import { motion } from "framer-motion"
+import { ArrowRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
+
+const letterVariants = {
+  hidden: { opacity: 0, y: 50, filter: "blur(10px)" },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: {
+      delay: i * 0.05,
+      duration: 0.8,
+      ease: [0.25, 0.4, 0.25, 1],
+    },
+  }),
+}
+
+const StylizedText = ({ text, className = "" }: { text: string; className?: string }) => {
+  return (
+    <span className={className}>
+      {text.split("").map((char, i) => (
+        <motion.span
+          key={i}
+          custom={i}
+          variants={letterVariants}
+          initial="hidden"
+          animate="visible"
+          className={char === "*" ? "hidden" : "inline-block"}
+          style={{ 
+            fontStyle: "we make".includes(text.toLowerCase()) || i % 3 === 0 ? "italic" : "normal",
+          }}
+        >
+          {char === " " ? "\u00A0" : char}
+        </motion.span>
+      ))}
+    </span>
+  )
+}
+
+export function Hero() {
+  return (
+    <section className="relative min-h-screen flex flex-col justify-center px-6 md:px-12 lg:px-24 pt-32 pb-24 overflow-hidden">
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-secondary/20 pointer-events-none" />
+      
+      {/* Navigation */}
+      <motion.nav 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 lg:px-24 py-6 bg-background/80 backdrop-blur-md"
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-xl font-semibold tracking-tight">Appy</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" className="hidden md:inline-flex text-sm hover:bg-secondary">
+            Free Audit
+          </Button>
+          <Button className="text-sm bg-foreground text-background hover:bg-foreground/90">
+            Get in touch
+          </Button>
+        </div>
+      </motion.nav>
+
+      {/* Hero content */}
+      <div className="relative z-10 max-w-6xl">
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="text-muted-foreground mb-6 text-lg"
+        >
+          (We make)
+        </motion.p>
+        
+        <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-medium tracking-tight leading-[0.9]">
+          <StylizedText text="human" />
+          <br />
+          <span className="flex items-center gap-4">
+            <StylizedText text="centered" />
+          </span>
+          <br />
+          <StylizedText text="tech" />
+        </h1>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.2 }}
+          className="mt-16 max-w-xl"
+        >
+          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
+            Appy is an end-to-end product team, helping startups build tech that makes people{" "}
+            <span className="text-foreground font-medium">&apos;appy</span>.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.4 }}
+          className="mt-12 flex flex-wrap gap-4"
+        >
+          <Button 
+            size="lg" 
+            className="group bg-foreground text-background hover:bg-foreground/90 px-8"
+          >
+            Start a project
+            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </Button>
+          <Button 
+            size="lg" 
+            variant="outline"
+            className="border-border hover:bg-secondary px-8"
+          >
+            See our work
+          </Button>
+        </motion.div>
+      </div>
+
+      {/* Scroll indicator */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 2 }}
+        className="absolute bottom-12 left-1/2 -translate-x-1/2"
+      >
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="w-6 h-10 border-2 border-muted-foreground/30 rounded-full flex justify-center pt-2"
+        >
+          <motion.div className="w-1 h-2 bg-muted-foreground/50 rounded-full" />
+        </motion.div>
+      </motion.div>
+    </section>
+  )
+}

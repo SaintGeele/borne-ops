@@ -1,70 +1,109 @@
----
+# Security Audit Skill
+
+## Overview
+
+Run a quick host security audit checking for common vulnerabilities and misconfigurations.
+
+## Skill Metadata
+
+```yaml
 name: security-audit
-description: Conduct security audits for clients. Questionnaire-based assessment that scores security posture.
-author: Geele
 version: 1.0.0
-triggers:
-  - "security audit"
-  - "audit questionnaire"
-  - "security assessment"
-metadata: {"openclaw":{"emoji":"📋"}}
----
-
-# Security Audit Tool
-
-Conduct security audits via questionnaire. Generate score and recommendations.
-
-## Usage
-
-### Run audit
-```bash
-python3 {baseDir}/scripts/audit.py
+description: Host security auditing - check ports, SSH, firewall, permissions
+category: security
+schedule: "15 7 * * *"  # Reference cron schedule
+parameters:
+  - name: severity_threshold
+    type: string
+    default: high
+    description: Minimum severity to report (critical|high|medium)
+  - name: auto_fixable_only
+    type: boolean
+    default: false
+    description: Only report auto-fixable issues
 ```
 
-### Quick audit
-```bash
-python3 {baseDir}/scripts/audit.py --quick
-```
+## Execution
 
-## Questionnaire Categories
+```markdown
+# Security Audit
 
-| Category | Questions |
-|----------|-----------|
-| Passwords | 2FA, password manager, policies |
-| Network | Firewall, VPN, WiFi security |
-| Data | Backup, encryption, access control |
-| Email | Spam filter, DMARC, SPF |
-| Training | Phishing awareness, policies |
-| Compliance | GDPR, HIPAA, PCI |
+## Objective
+Run a quick host security audit and report critical/high findings.
+
+## Parameters
+- severity_threshold: critical|high|medium (default: high)
+- auto_fixable_only: true|false (default: false)
+
+## Checks
+
+### 1. Public Listeners
+Run: `ss -tuln`
+Identify services listening on 0.0.0.0 (public)
+Flag: Any unexpected open ports
+
+### 2. SSH Configuration
+Check:
+- PasswordAuthentication enabled?
+- Root login enabled?
+- Run: `grep -E "^PasswordAuthentication|^PermitRootLogin" /etc/ssh/sshd_config`
+
+### 3. Firewall Status
+Check:
+- ufw active?
+- iptables rules?
+- Run: `ufw status` or `iptables -L -n`
+
+### 4. File Permissions
+Check:
+- ~/.ssh permissions (should be 700)
+- ~/.ssh/* permissions (should be 600)
+- ~/.openclaw/config permissions
+
+### 5. Recent Security Logs
+Check for:
+- Failed SSH attempts
+- sudo failures
+- Unusual login times
 
 ## Output
 
-```markdown
-## Security Audit Results
+Write JSON to `~/.openclaw/workspace/security-audit-latest.json`:
 
-### Score: 65/100 (C)
-
-### Breakdown
-| Category | Score |
-|----------|-------|
-| Passwords | 80% |
-| Network | 50% |
-| Data | 70% |
-| Email | 60% |
-| Training | 40% |
-
-### Critical Issues
-- No 2FA enabled
-- No regular backups
-- No employee training
-
-### Recommendations
-1. Enable 2FA everywhere
-2. Set up automated backups
-3. Implement phishing training
+```json
+{
+  "timestamp": "ISO8601",
+  "findings": [
+    {
+      "check": "public_listeners",
+      "severity": "high|critical",
+      "description": "...",
+      "auto_fixable": true|false,
+      "recommendation": "..."
+    }
+  ],
+  "summary": {
+    "critical": 0,
+    "high": 0,
+    "medium": 0
+  }
+}
 ```
 
-## Use Cases
-- Free lead magnet
-- Initial client assessment
-- Annual security review
+## Report Format
+
+Send summary to user:
+
+🔒 **Security Audit**
+- ✅ Critical: X
+- ⚠️ High: X  
+- 📝 Medium: X
+
+[For each critical/high:]
+- **[severity]** [check]: [description]
+
+## Validation
+
+- If no findings: "✅ Security audit clean"
+- If findings exist: List each with severity
+- Always write JSON file for security-fix skill to read

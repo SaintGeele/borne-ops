@@ -1,0 +1,12 @@
+{
+  "compaction": {
+    "memoryFlush": {
+      "enabled": true
+    }
+  },
+  "memorySearch": {
+    "experimental": {
+      "sessionMemory": true
+    }
+  }
+}

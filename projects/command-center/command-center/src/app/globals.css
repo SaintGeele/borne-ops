@@ -1,0 +1,214 @@
+@import "tailwindcss";
+
+/* ========================================
+   Command Center Design System
+   Based on design.md specifications
+   ======================================== */
+
+/* CSS Custom Properties - Dark Theme (Default) */
+:root {
+  /* Backgrounds — 5-step grayscale ladder */
+  --bg-base: #09090b;
+  --bg-raised: #111113;
+  --bg-surface: #18181b;
+  --bg-overlay: #1f1f23;
+  --bg-hover: #27272a;
+
+  /* Borders */
+  --border-subtle: #1e1e22;
+  --border-default: #27272a;
+  --border-strong: #3f3f46;
+
+  /* Text — 4-level hierarchy */
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a;
+  --text-ghost: #52525b;
+
+  /* Accent — violet for interactive elements */
+  --accent: #8b5cf6;
+  --accent-hover: #7c3aed;
+  --accent-muted: rgba(139, 92, 246, 0.12);
+
+  /* Semantic colors */
+  --positive: #22c55e;
+  --positive-muted: rgba(34, 197, 94, 0.12);
+  --negative: #ef4444;
+  --negative-muted: rgba(239, 68, 68, 0.12);
+  --warning: #eab308;
+  --warning-muted: rgba(234, 179, 8, 0.12);
+  --info: #3b82f6;
+  --info-muted: rgba(59, 130, 246, 0.12);
+
+  /* Chart palette */
+  --chart-1: #8b5cf6;
+  --chart-2: #3b82f6;
+  --chart-3: #22c55e;
+  --chart-4: #f59e0b;
+  --chart-5: #ec4899;
+  --chart-6: #06b6d4;
+  --chart-7: #f97316;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+
+  /* Spacing */
+  --sidebar-width: 240px;
+  --header-height: 56px;
+}
+
+/* Light Theme */
+[data-theme="light"] {
+  --bg-base: #fafafa;
+  --bg-raised: #f4f4f5;
+  --bg-surface: #ffffff;
+  --bg-overlay: #ffffff;
+  --bg-hover: #f4f4f5;
+
+  --border-subtle: #e4e4e7;
+  --border-default: #d4d4d8;
+  --border-strong: #a1a1aa;
+
+  --text-primary: #09090b;
+  --text-secondary: #52525b;
+  --text-tertiary: #71717a;
+  --text-ghost: #a1a1aa;
+
+  --accent: #7c3aed;
+  --accent-hover: #6d28d9;
+  --accent-muted: rgba(124, 58, 237, 0.08);
+
+  --positive: #16a34a;
+  --positive-muted: rgba(22, 163, 74, 0.08);
+  --negative: #dc2626;
+  --negative-muted: rgba(220, 38, 38, 0.08);
+  --warning: #ca8a04;
+  --warning-muted: rgba(202, 138, 4, 0.08);
+  --info: #2563eb;
+  --info-muted: rgba(37, 99, 235, 0.08);
+
+  --chart-1: #7c3aed;
+  --chart-2: #2563eb;
+  --chart-3: #16a34a;
+  --chart-4: #d97706;
+  --chart-5: #db2777;
+  --chart-6: #0891b2;
+  --chart-7: #ea580c;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Tailwind theme configuration */
+@theme inline {
+  --color-bg-base: var(--bg-base);
+  --color-bg-raised: var(--bg-raised);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-overlay: var(--bg-overlay);
+  --color-bg-hover: var(--bg-hover);
+
+  --color-border-subtle: var(--border-subtle);
+  --color-border-default: var(--border-default);
+  --color-border-strong: var(--border-strong);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-text-ghost: var(--text-ghost);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-muted: var(--accent-muted);
+
+  --color-positive: var(--positive);
+  --color-positive-muted: var(--positive-muted);
+  --color-negative: var(--negative);
+  --color-negative-muted: var(--negative-muted);
+  --color-warning: var(--warning);
+  --color-warning-muted: var(--warning-muted);
+  --color-info: var(--info);
+  --color-info-muted: var(--info-muted);
+}
+
+/* Base styles */
+* {
+  border-color: var(--border-subtle);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-base);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}
+
+/* Focus styles */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background: var(--accent-muted);
+  color: var(--text-primary);
+}
+
+/* Utility classes */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { 
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.2s ease-out;
+}

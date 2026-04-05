@@ -1,0 +1,10 @@
+Create a Borne Systems executive briefing.
+
+Include:
+1. gateway and agent health
+2. important security concerns
+3. research priorities and opportunities
+4. project and task priorities
+5. documentation or follow-up reminders
+
+Keep it concise, clear, and actionable.

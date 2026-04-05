@@ -1,0 +1,176 @@
+{
+  "_comment": "Discord Multi-Agent Config Patch for Borne Systems. Merge into openclaw.json after creating bot apps and setting tokens.",
+  "_instructions": "1. Create 7 Discord bot apps (Atlas, Nexus, Ivy, Knox, MrX, Professor, Chronicle). 2. Set tokens via: openclaw config set channels.discord.accounts.<name>.token '\"TOKEN\"' --json. 3. Apply this patch with: openclaw config merge config-patch.json OR manually merge into openclaw.json. 4. Restart gateway.",
+
+  "channels": {
+    "discord": {
+      "enabled": true,
+      "groupPolicy": "allowlist",
+      "streaming": "off",
+      "dmPolicy": "pairing",
+      "dm": {
+        "enabled": true
+      },
+      "accounts": {
+        "default": {
+          "_comment": "BorneAI - existing bot token from DISCORD_BOT_TOKEN env var",
+          "guilds": {
+            "1479519793378885894": {
+              "requireMention": true,
+              "users": ["345963930864058368"],
+              "channels": {
+                "1479519794784108687": { "allow": true, "requireMention": true },
+                "1479906695252545596": { "allow": true, "requireMention": true },
+                "1479906695898730597": { "allow": true, "requireMention": true },
+                "1479906696263368705": { "allow": true, "requireMention": true },
+                "1480000667392147568": { "allow": true, "requireMention": false },
+                "1480000668021428415": { "allow": true, "requireMention": false },
+                "1479906755411578971": { "allow": true, "requireMention": true },
+                "1479906756082667542": { "allow": true, "requireMention": true }
+              }
+            }
+          }
+        },
+        "atlas": {
+          "_comment": "Atlas - Project Coordinator. Token set separately.",
+          "guilds": {
+            "1479519793378885894": {
+              "requireMention": true,
+              "users": ["345963930864058368"],
+              "channels": {
+                "1480000720479715534": { "allow": true, "requireMention": true },
+                "1480000721469444158": { "allow": true, "requireMention": true }
+              }
+            }
+          }
+        },
+        "nexus": {
+          "_comment": "Nexus - Engineering Lead. Token set separately.",
+          "guilds": {
+            "1479519793378885894": {
+              "requireMention": true,
+              "users": ["345963930864058368"],
+              "channels": {
+                "1480000719724482744": { "allow": true, "requireMention": true },
+                "1480000722157174835": { "allow": true, "requireMention": true },
+                "1479906700143362189": { "allow": true, "requireMention": true },
+                "1479906700797677648": { "allow": true, "requireMention": true },
+                "1479906701212909581": { "allow": true, "requireMention": true },
+                "1479906752588677324": { "allow": true, "requireMention": true },
+                "1479906753490452703": { "allow": true, "requireMention": true }
+              }
+            }
+          }
+        },
+        "ivy": {
+          "_comment": "Ivy - Research Lead. Token set separately.",
+          "guilds": {
+            "1479519793378885894": {
+              "requireMention": true,
+              "users": ["345963930864058368"],
+              "channels": {
+                "1480000762988728393": { "allow": true, "requireMention": true },
+                "1480000766428188763": { "allow": true, "requireMention": true },
+                "1480000767476760617": { "allow": true, "requireMention": true },
+                "1480000768185733310": { "allow": true, "requireMention": true },
+                "1479906754522517646": { "allow": true, "requireMention": true }
+              }
+            }
+          }
+        },
+        "knox": {
+          "_comment": "Knox - Security Lead. Token set separately.",
+          "guilds": {
+            "1479519793378885894": {
+              "requireMention": true,
+              "users": ["345963930864058368"],
+              "channels": {
+                "1480000802302202061": { "allow": true, "requireMention": true },
+                "1480000803321155759": { "allow": true, "requireMention": true },
+                "1479906697861664900": { "allow": true, "requireMention": true },
+                "1479906698398273588": { "allow": true, "requireMention": true },
+                "1479906699190992999": { "allow": true, "requireMention": true },
+                "1479943172124839936": { "allow": true, "requireMention": true }
+              }
+            }
+          }
+        },
+        "mrx": {
+          "_comment": "MrX - Content & Outreach. Token set separately.",
+          "guilds": {
+            "1479519793378885894": {
+              "requireMention": true,
+              "users": ["345963930864058368"],
+              "channels": {
+                "1480000844672794876": { "allow": true, "requireMention": true },
+                "1480000845411254354": { "allow": true, "requireMention": true },
+                "1480000846065307732": { "allow": true, "requireMention": true }
+              }
+            }
+          }
+        },
+        "professor": {
+          "_comment": "Professor - Education Lead. Token set separately.",
+          "guilds": {
+            "1479519793378885894": {
+              "requireMention": true,
+              "users": ["345963930864058368"],
+              "channels": {
+                "1480000913954439228": { "allow": true, "requireMention": true },
+                "1480000914596298883": { "allow": true, "requireMention": true },
+                "1480000915296620675": { "allow": true, "requireMention": true },
+                "1480000916458438668": { "allow": true, "requireMention": true }
+              }
+            }
+          }
+        },
+        "chronicle": {
+          "_comment": "Chronicle - Documentation. Shares #documentation with Ivy. Token set separately.",
+          "guilds": {
+            "1479519793378885894": {
+              "requireMention": true,
+              "users": ["345963930864058368"],
+              "channels": {
+                "1480000766428188763": { "allow": true, "requireMention": true }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "bindings": [
+    {
+      "agentId": "borneai",
+      "match": { "channel": "discord", "accountId": "default" }
+    },
+    {
+      "agentId": "atlas",
+      "match": { "channel": "discord", "accountId": "atlas" }
+    },
+    {
+      "agentId": "nexus",
+      "match": { "channel": "discord", "accountId": "nexus" }
+    },
+    {
+      "agentId": "ivy",
+      "match": { "channel": "discord", "accountId": "ivy" }
+    },
+    {
+      "agentId": "knox",
+      "match": { "channel": "discord", "accountId": "knox" }
+    },
+    {
+      "agentId": "mrx",
+      "match": { "channel": "discord", "accountId": "mrx" }
+    },
+    {
+      "agentId": "professor",
+      "match": { "channel": "discord", "accountId": "professor" }
+    },
+    {
+      "agentId": "chronicle",
+      "match": { "channel": "discord", "accountId": "chronicle" }
+    }
+  ]
+}

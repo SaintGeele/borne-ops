@@ -1,0 +1,120 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{times}
+\usepackage{caption}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tikz}
+\usetikzlibrary{positioning, shapes.geometric, arrows}
+
+\begin{document}
+
+Geele Evans\\
+Dr. Lori Jirousek-Falls\\
+FCWR 304-F02\\
+25 March 2026
+
+Remote Work Security: Protecting Home Networks for Small Business Employees
+
+Abstract
+Remote work expands opportunity for small businesses but shifts risk to home networks. This memo translates current CISA and NIST guidance into a concise, actionable framework for managers with no dedicated IT staff. It identifies router vulnerabilities, the importance of VPNs, Wi‑Fi hardening, and day‑to‑day practices, then provides a practical implementation checklist that can be deployed this week. The goal is to establish a secure baseline that is auditable, scalable, and affordable.
+
+Threat Landscape and Rationales
+Small businesses face router vulnerabilities from outdated firmware, weak credentials, and misconfigurations; VPN exposure when not used or poorly configured; and Wi‑Fi protections that are insufficient or improperly segmented. When home networks are compromised, work devices and corporate data are at risk. A practical program for small businesses should emphasize tangible improvements, not theory. This framing aligns with CISA and NIST guidance that emphasizes perimeter hardening and verifiable controls (CISA; NIST).
+
+Practical Fixes: Technical and Policy Measures
+
+Router Security
+- Keep firmware current; enable automatic updates if possible.
+- Change default admin credentials to a strong, unique password.
+- Disable remote management unless necessary; restrict if used.
+- Turn off UPnP and WPS; enable the router firewall.
+- Create a separate work network (dedicated SSID) for company devices.
+
+VPN and Remote Access
+- Mandate VPN use for all remote work; require MFA for VPN access.
+- Establish clear VPN usage policies, including device posture checks before connection.
+- Minimize or eliminate split tunneling to reduce exposure from home devices (CISA; NIST guidance).
+
+Wi‑Fi Hardening
+- Use WPA3 on the home network; disable older protocols (WEP, WPA2‑TKIP).
+- Avoid auto‑connecting to unknown networks; segment work devices on a dedicated network.
+- Maintain network segmentation so work traffic stays isolated from personal devices.
+
+Day-to-Day Employee Practices
+- Keep devices updated; enable automatic updates.
+- Use a password manager and MFA for all work accounts.
+- Enable device encryption and a short automatic screen lock timeout.
+- If using public networks, employ a VPN; avoid untrusted networks for work tasks.
+- Regularly back up work data to approved storage with versioning.
+
+Implementation Checklist for Employees
+- Update router firmware; change admin password; disable remote management; disable UPnP/WPS; create a dedicated work network.
+- Enforce WPA3 on the work network with a strong passphrase.
+- Install and configure a company‑approved VPN with MFA; route work traffic through the VPN.
+- Require pre‑VPN device posture checks (up-to-date OS, active antivirus).
+- Enable device encryption and a short auto‑lock timeout.
+- Use a password manager and enable MFA on work services.
+- Avoid public Wi‑Fi for work; use VPN if unavoidable.
+- Back up work data to approved repositories/storage with versioning.
+- Report any device compromise or router anomaly immediately.
+
+Figure 1. Threat Landscape Map for Remote Work Security
+Caption: A schematic of the principal risk vectors for home networks used by remote workers—router vulnerabilities, VPN exposure, Wi‑Fi misconfigurations, and day-to-day endpoint practices. Adapted from CISA and NIST.
+\\begin{figure}[h]
+\\centering
+\\begin{tikzpicture}[>=stealth', node distance=3cm, auto]
+\\node[draw, rounded corners, minimum width=3.6cm, minimum height=1.6cm] (r) {Router Vulnerabilities};
+\\node[draw, rounded corners, right=of r, minimum width=3.6cm, minimum height=1.6cm] (w) {Work Devices};
+\\node[draw, rounded corners, below=of r, minimum width=3.6cm, minimum height=1.6cm] (v) {VPN Exposure};
+\\node[draw, rounded corners, right=of v, minimum width=3.6cm, minimum height=1.6cm] (c) {Corporate Data};
+\\node[draw, rounded corners, left=of r, minimum width=3.6cm, minimum height=1.6cm] (b) {WiFi Misconfig};
+\\node[draw, rounded corners, below=of b, minimum width=3.6cm, minimum height=1.6cm] (e) {End Points};
+
+\\draw[->] (r) -- (w);
+\\draw[->] (v) -- (c);
+\\draw[->] (b) -- (e);
+\\draw[->] (e) -- (c);
+\\end{tikzpicture}
+\\caption{Threat Landscape Map for Remote Work Security.}
+\\end{figure}
+
+Figure 2. VPN Topology Diagram
+Caption: A recommended remote-work topology: home device connects to a manufacturer‑validated VPN with MFA, routing all work traffic through the corporate network.
+\\begin{figure}[h]
+\\centering
+\\begin{tikzpicture}[>=stealth', node distance=3cm, auto]
+\\node[ellipse, draw] (home) {Home Device};
+\\node[ellipse, draw, right=of home] (vpn) {VPN Gateway};
+\\node[ellipse, draw, right=of vpn] (corp) {Corporate Network};
+
+\\path[->] (home) edge (vpn);
+\\path[->] (vpn) edge (corp);
+\\path[->] (home) edge[bend left=25] (corp) node[midway, above] {Internet};
+\\end{tikzpicture}
+\\caption{VPN Topology Diagram.}
+\\end{figure}
+
+Table 1. Day-to-Day Employee Practices for Remote Security
+Caption: Practical daily practices aligned with CISA/NIST guidance.
+\\begin{table}[h]
+\\centering
+\\begin{tabular}{p{4.2cm} p{5.5cm} p{2.2cm} p{2.2cm} p{2.4cm}}
+\\toprule
+Practice & Rationale & Owner & Frequency & Status \\
+\\midrule
+Update OS & Closes known vulnerabilities & Employee & Auto/as scheduled & Pending \\
+Use MFA on all work accounts & Reduces credential abuse & Employee & Per account & In progress \\
+Use a password manager & Encourages strong passwords & Employee & Always & Required \\
+Enable device encryption & Protects data at rest & Employee & On devices & Recommended \\
+Require VPN for work & Encapsulates traffic; lowers exposure & All users & Always & Mandatory \\
+Avoid public Wi‑Fi for work & Reduces risk from untrusted networks & Employee & Always & Mandatory \\
+Back up work data regularly & Preserves data integrity & Employee/Manager & Daily/weekly & Ongoing \\
+\\bottomrule
+\\end{tabular}
+\\end{table}
+
+Works Cited
+CISA. “Remote Work Security Guidance.” Cybersecurity and Infrastructure Security Agency, 2023. Accessed 25 Mar. 2026.
+NIST. “Guidelines for Securing Home Networks.” National Institute of Standards and Technology, 2020. Accessed 25 Mar. 2026.
+Evans, Geele. “Remote Work Security: Protecting Home Networks for Small Business Employees.” FCWR 304 Memo, 6 Mar. 2026.

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Office — Borne Systems</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#050608;--surface:#0A0C10;--surface2:#0F1218;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);
+  --text:#E8EDF5;--text2:#8896A8;
+  --gold:#C9A84C;--green:#22C55E;--red:#EF4444;
+  --blue:#3B82F6;--orange:#F97316;--purple:#A855F7;--teal:#14B8A6;
+  --syne:'Syne',sans-serif;--mono:'DM Mono',monospace;
+}
+html,body{background:var(--black);color:var(--text);font-family:var(--syne);height:100%;overflow:hidden;}
+.header{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-bottom:1px solid var(--border);height:54px;}
+.h-left{display:flex;flex-direction:column;gap:1px;}
+.h-eyebrow{font-family:var(--mono);font-size:9px;letter-spacing:.25em;color:var(--gold);text-transform:uppercase;}
+.h-title{font-size:16px;font-weight:800;letter-spacing:-.02em;}
+.h-right{display:flex;gap:8px;}
+.chip{display:flex;align-items:center;gap:5px;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:3px 9px;font-family:var(--mono);font-size:10px;color:var(--text2);}
+.cdot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:cdotPulse 2s infinite;}
+.wrap{position:relative;width:100%;height:calc(100vh - 54px);overflow:hidden;background:var(--black);}
+#room{position:absolute;inset:0;width:100%;height:100%;}
+#alayer{position:absolute;top:0;left:0;width:1100px;height:580px;pointer-events:none;}
+.acard{position:absolute;transform:translate(-50%,-100%);pointer-events:all;cursor:pointer;z-index:10;}
+.aava{width:32px;height:32px;border-radius:50%;border:2px solid;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:14px;margin:0 auto 3px;position:relative;transition:transform .18s,box-shadow .18s;}
+.acard:hover .aava{transform:scale(1.18);}
+.asdot{position:absolute;bottom:0;right:0;width:7px;height:7px;border-radius:50%;border:1.5px solid var(--black);}
+.aname{font-size:9px;font-weight:700;text-align:center;color:var(--text);text-shadow:0 1px 8px rgba(0,0,0,1);white-space:nowrap;letter-spacing:.03em;}
+.atask{font-family:var(--mono);font-size:7px;color:var(--text2);text-align:center;white-space:nowrap;text-shadow:0 1px 8px rgba(0,0,0,1);max-width:70px;overflow:hidden;text-overflow:ellipsis;transition:opacity .28s;}
+.dp{position:absolute;top:12px;right:12px;width:248px;background:var(--surface);border:1px solid var(--border2);border-radius:11px;padding:16px;z-index:100;display:none;}
+.dp.on{display:block;}
+.dp-x{position:absolute;top:10px;right:11px;background:none;border:none;color:var(--text2);cursor:pointer;font-family:var(--mono);font-size:12px;}
+.dp-av{width:46px;height:46px;border-radius:50%;border:2px solid;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:10px;}
+.dp-n{font-size:15px;font-weight:800;letter-spacing:-.02em;margin-bottom:1px;}
+.dp-r{font-family:var(--mono);font-size:9px;color:var(--text2);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;}
+.dp-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:10px;}
+.dp-row:last-of-type{border:none;}
+.dpl{color:var(--text2);}
+.dpv{color:var(--text);}
+.dp-tbox{margin-top:9px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:7px 9px;}
+.dp-tlbl{font-family:var(--mono);font-size:7px;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:3px;}
+.dp-tv{font-family:var(--mono);font-size:9px;}
+.legend{position:absolute;bottom:13px;left:13px;z-index:50;}
+.leg-ttl{font-family:var(--mono);font-size:7px;letter-spacing:.2em;text-transform:uppercase;color:rgba(136,150,168,.4);margin-bottom:4px;}
+.leg-i{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;color:var(--text2);margin-bottom:2px;}
+.leg-d{width:7px;height:7px;border-radius:50%;}
+.scanlines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.022) 2px,rgba(0,0,0,.022) 4px);pointer-events:none;z-index:3;}
+.vig{position:absolute;inset:0;background:radial-gradient(ellipse at 52% 45%,transparent 50%,rgba(5,6,8,.8) 100%);pointer-events:none;z-index:2;}
+.particle{position:absolute;width:2px;height:2px;border-radius:50%;pointer-events:none;animation:pUp linear forwards;}
+@keyframes pUp{0%{opacity:0;transform:translate(0,0);}15%{opacity:.9;}85%{opacity:.65;}100%{opacity:0;transform:translate(var(--dx),var(--dy));}}
+@keyframes cdotPulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.4);}50%{box-shadow:0 0 0 3px rgba(34,197,94,0);}}
+@keyframes floatCard{0%,100%{transform:translate(-50%,-100%) translateY(0);}50%{transform:translate(-50%,-100%) translateY(-5px);}}
+.acard.sel{animation:floatCard 2.4s ease-in-out infinite;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="h-left">
+    <div class="h-eyebrow">Borne Systems // Operations</div>
+    <div class="h-title">Agent Office</div>
+  </div>
+  <div class="h-right">
+    <div class="chip"><div class="cdot"></div><span id="acount">18 Active</span></div>
+    <div class="chip"><span id="clk">--:--:-- UTC</span></div>
+    <div class="chip" style="color:var(--gold)"><span id="tcount">-- Tasks</span></div>
+  </div>
+</div>
+
+<div class="wrap" id="wrap">
+  <svg id="room" viewBox="0 0 1100 580" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"></svg>
+  <div id="alayer"></div>
+  <div class="scanlines"></div>
+  <div class="vig"></div>
+  <div class="dp" id="dp">
+    <button class="dp-x" onclick="closeDP()">✕</button>
+    <div class="dp-av" id="dp-av"></div>
+    <div class="dp-n" id="dp-n"></div>
+    <div class="dp-r" id="dp-r"></div>
+    <div class="dp-row"><span class="dpl">Model</span><span class="dpv" id="dp-m"></span></div>
+    <div class="dp-row"><span class="dpl">Tier</span><span class="dpv" id="dp-t"></span></div>
+    <div class="dp-row"><span class="dpl">Zone</span><span class="dpv" id="dp-z"></span></div>
+    <div class="dp-row"><span class="dpl">Status</span><span class="dpv" style="color:var(--green)">● Active</span></div>
+    <div class="dp-tbox">
+      <div class="dp-tlbl">Current Task</div>
+      <div class="dp-tv" id="dp-ta"></div>
+    </div>
+  </div>
+  <div class="legend">
+    <div class="leg-ttl">Model Tier</div>
+    <div class="leg-i"><div class="leg-d" style="background:var(--gold)"></div>Sonnet</div>
+    <div class="leg-i"><div class="leg-d" style="background:var(--teal)"></div>Codex</div>
+    <div class="leg-i"><div class="leg-d" style="background:var(--blue)"></div>Minimax</div>
+    <div class="leg-i"><div class="leg-d" style="background:var(--text2)"></div>Nano</div>
+  </div>
+</div>
+
+<script>
+const TC={Sonnet:'#C9A84C',Codex:'#14B8A6',Minimax:'#3B82F6',Nano:'#8896A8'};
+
+const AGENTS=[
+  {id:'BorneAI',role:'Chief of Staff',tier:'Sonnet',model:'claude-sonnet-4-6',zone:'Executive',emoji:'🧠',sx:638,sy:238,
+   acts:['Routing requests...','Daily ops brief...','Coordinating pipelines...','Dispatching agents...','Priority briefing...']},
+  {id:'Atlas',role:'Operations',tier:'Sonnet',model:'claude-sonnet-4-6',zone:'Ops',emoji:'🗺️',sx:570,sy:262,
+   acts:['Monitoring workflows...','Supabase sync check...','Pipeline audit...','Escalation routing...']},
+  {id:'Knox',role:'Security Intel',tier:'Sonnet',model:'claude-sonnet-4-6',zone:'Security',emoji:'🛡️',sx:490,sy:200,
+   acts:['CVE scan in progress...','Threat intel update...','Risk register sync...','6am daily audit...']},
+  {id:'MrX',role:'Content Creator',tier:'Sonnet',model:'claude-sonnet-4-6',zone:'Content',emoji:'✍️',sx:756,sy:256,
+   acts:['LinkedIn post draft...','Tweet thread queued...','Borne Systems copy...','Social queue loaded...']},
+  {id:'Mercury',role:'Lead Enrichment',tier:'Sonnet',model:'claude-sonnet-4-6',zone:'Sales',emoji:'⚡',sx:822,sy:248,
+   acts:['Enriching 546 leads...','Hunter.io API call...','Apollo enrichment...','Lead quality score...']},
+  {id:'Nexus',role:'Engineering',tier:'Codex',model:'codex',zone:'Engineering',emoji:'⚙️',sx:448,sy:222,
+   acts:['Code review active...','Debugging systemd...','Service deploy run...','Pipeline fix pushed...']},
+  {id:'Forge',role:'Security Eng',tier:'Codex',model:'codex',zone:'Security',emoji:'🔧',sx:508,sy:240,
+   acts:['Pentest script run...','Security tooling...','Exploit research...','Patch analysis done...']},
+  {id:'Chase',role:'Outreach',tier:'Minimax',model:'minimax-m2.5',zone:'Sales',emoji:'📧',sx:764,sy:298,
+   acts:['Emails 20/day live...','Day-3 follow-ups...','Day-7 follow-ups...','Agentmail reply check...']},
+  {id:'Care',role:'Support',tier:'Minimax',model:'minimax-m2.5',zone:'Support',emoji:'💬',sx:524,sy:342,
+   acts:['Triaging tickets...','Drafting response...','Escalating to Atlas...','30min inbox check...']},
+  {id:'Insight',role:'Analytics',tier:'Minimax',model:'minimax-m2.5',zone:'Sales',emoji:'📊',sx:820,sy:308,
+   acts:['Funnel analysis...','Lead scoring run...','Perf report gen...','Conversion tracking...']},
+  {id:'Ivy',role:'Research',tier:'Minimax',model:'minimax-m2.5',zone:'Research',emoji:'🌿',sx:396,sy:372,
+   acts:['Market data scrape...','Research brief...','Cross-referencing...','Summary drafting...']},
+  {id:'Inspector',role:'QA Gate',tier:'Minimax',model:'minimax-m2.5',zone:'Ops',emoji:'🔍',sx:582,sy:322,
+   acts:['QA: email batch...','Output review...','Content gate pass...','Anomaly flagged...']},
+  {id:'Beacon',role:'SEO',tier:'Minimax',model:'minimax-m2.5',zone:'Content',emoji:'📡',sx:716,sy:244,
+   acts:['10 keywords tracked...','Citation audit...','Technical SEO scan...','Rankings updated...']},
+  {id:'Ledger',role:'Finance',tier:'Minimax',model:'minimax-m2.5',zone:'Finance',emoji:'💰',sx:728,sy:368,
+   acts:['Burn: $548/mo...','Invoice review...','AI spend $150-180...','Expense reconcile...']},
+  {id:'Pulse',role:'Monitoring',tier:'Minimax',model:'minimax-m2.5',zone:'Ops',emoji:'💓',sx:624,sy:328,
+   acts:['System health OK...','Alert scan active...','VPS uptime log...','Agent heartbeat...']},
+  {id:'Chronicle',role:'Memory',tier:'Nano',model:'gemini-nano',zone:'Research',emoji:'📚',sx:440,sy:360,
+   acts:['Logging events...','Indexing memory...','Archive to Supabase...','Event store flush...']},
+  {id:'Gauge',role:'Metrics',tier:'Nano',model:'gemini-nano',zone:'Content',emoji:'📈',sx:858,sy:272,
+   acts:['Sampling KPIs...','Metrics flush...','Token spend calc...','Dashboard update...']},
+  {id:'Control',role:'Eng Monitor',tier:'Nano',model:'gemini-nano',zone:'Engineering',emoji:'🖥️',sx:420,sy:252,
+   acts:['Dashboard sync...','Agent broadcast...','Metrics pipeline...','Control nominal...']},
+];
+
+let tidx={};
+AGENTS.forEach(a=>{tidx[a.id]=Math.floor(Math.random()*a.acts.length);});
+let activeId=null;
+
+// ─── SVG ROOM ───────────────────────────────────────────────
+function drawRoom(){
+  const svg=document.getElementById('room');
+  const ns='http://www.w3.org/2000/svg';
+  function el(tag,a,p=svg){const e=document.createElementNS(ns,tag);for(const[k,v] of Object.entries(a))e.setAttribute(k,v);p.appendChild(e);return e;}
+
+  // DEFS
+  const defs=el('defs',{});
+  const flg=el('linearGradient',{id:'flg',x1:'0%',y1:'0%',x2:'100%',y2:'100%'},defs);
+  ['0%:#0C0F17','100%:#07080D'].forEach(s=>{const[o,c]=s.split(':');const st=el('stop',{offset:o},flg);st.setAttribute('style',`stop-color:${c};stop-opacity:1`);});
+  const wlg=el('linearGradient',{id:'wlg',x1:'0%',y1:'0%',x2:'0%',y2:'100%'},defs);
+  ['0%:#05060A','100%:#080A10'].forEach(s=>{const[o,c]=s.split(':');const st=el('stop',{offset:o},wlg);st.setAttribute('style',`stop-color:${c};stop-opacity:1`);});
+  const wrg=el('linearGradient',{id:'wrg',x1:'0%',y1:'0%',x2:'0%',y2:'100%'},defs);
+  ['0%:#07080D','100%:#090C13'].forEach(s=>{const[o,c]=s.split(':');const st=el('stop',{offset:o},wrg);st.setAttribute('style',`stop-color:${c};stop-opacity:1`);});
+
+  // Room corners
+  const T={x:550,y:95};  // top apex
+  const R={x:922,y:278}; // right
+  const B={x:600,y:490}; // bottom
+  const L={x:228,y:278}; // left
+  const WH=82;           // wall height
+
+  // WALLS
+  el('polygon',{points:`${L.x},${L.y} ${T.x},${T.y} ${T.x},${T.y-WH} ${L.x},${L.y-WH}`,fill:'url(#wlg)'});
+  el('polygon',{points:`${T.x},${T.y} ${R.x},${R.y} ${R.x},${R.y-WH} ${T.x},${T.y-WH}`,fill:'url(#wrg)'});
+  // wall seams
+  el('line',{x1:L.x,y1:L.y,x2:T.x,y2:T.y,stroke:'rgba(255,255,255,0.09)','stroke-width':'1.5'});
+  el('line',{x1:T.x,y1:T.y,x2:R.x,y2:R.y,stroke:'rgba(255,255,255,0.07)','stroke-width':'1.5'});
+  // baseboard
+  el('line',{x1:L.x,y1:L.y-4,x2:T.x,y2:T.y-4,stroke:'rgba(255,255,255,0.05)','stroke-width':'1'});
+  el('line',{x1:T.x,y1:T.y-4,x2:R.x,y2:R.y-4,stroke:'rgba(255,255,255,0.04)','stroke-width':'1'});
+  // ceiling caps
+  el('line',{x1:L.x,y1:L.y-WH,x2:T.x,y2:T.y-WH,stroke:'rgba(255,255,255,0.07)','stroke-width':'1'});
+  el('line',{x1:T.x,y1:T.y-WH,x2:R.x,y2:R.y-WH,stroke:'rgba(255,255,255,0.06)','stroke-width':'1'});
+  // LED strip ceiling glow
+  el('line',{x1:L.x+40,y1:L.y-WH+3,x2:T.x,y2:T.y-WH+3,stroke:'rgba(201,168,76,0.22)','stroke-width':'1'});
+  el('line',{x1:T.x,y1:T.y-WH+3,x2:R.x-40,y2:R.y-WH+3,stroke:'rgba(201,168,76,0.18)','stroke-width':'1'});
+  // ambient ceiling glow  
+  el('line',{x1:L.x+40,y1:L.y-WH+5,x2:T.x,y2:T.y-WH+5,stroke:'rgba(201,168,76,0.06)','stroke-width':'4'});
+  el('line',{x1:T.x,y1:T.y-WH+5,x2:R.x-40,y2:R.y-WH+5,stroke:'rgba(201,168,76,0.05)','stroke-width':'4'});
+
+  // wall vertical decor lines
+  for(let i=1;i<6;i++){
+    const t=i/6;
+    const wx1=L.x+(T.x-L.x)*t,wy1=L.y+(T.y-L.y)*t;
+    el('line',{x1:wx1,y1:wy1-WH+2,x2:wx1,y2:wy1-4,stroke:'rgba(255,255,255,0.025)','stroke-width':'0.5'});
+  }
+  for(let i=1;i<6;i++){
+    const t=i/6;
+    const wx1=T.x+(R.x-T.x)*t,wy1=T.y+(R.y-T.y)*t;
+    el('line',{x1:wx1,y1:wy1-WH+2,x2:wx1,y2:wy1-4,stroke:'rgba(255,255,255,0.02)','stroke-width':'0.5'});
+  }
+  // wall horizontal accent line
+  el('line',{x1:L.x,y1:L.y-WH*0.55,x2:T.x,y2:T.y-WH*0.55,stroke:'rgba(201,168,76,0.05)','stroke-width':'0.8'});
+  el('line',{x1:T.x,y1:T.y-WH*0.55,x2:R.x,y2:R.y-WH*0.55,stroke:'rgba(201,168,76,0.04)','stroke-width':'0.8'});
+
+  // Borne Systems wall text
+  const wt=el('text',{x:400,y:T.y-WH*0.5+4,'font-family':"'Syne',sans-serif",'font-size':'10','font-weight':'800','letter-spacing':'8',fill:'rgba(201,168,76,0.11)','text-anchor':'middle'});
+  wt.textContent='BORNE SYSTEMS';
+
+  // FLOOR
+  el('polygon',{points:`${L.x},${L.y} ${T.x},${T.y} ${R.x},${R.y} ${B.x},${B.y}`,fill:'url(#flg)'});
+
+  // Floor iso grid
+  for(let i=1;i<9;i++){
+    const t=i/9;
+    // iso-x lines
+    const ax=L.x+(T.x-L.x)*t,ay=L.y+(T.y-L.y)*t;
+    const bx=B.x+(R.x-B.x)*t,by=B.y+(R.y-B.y)*t;
+    el('line',{x1:ax,y1:ay,x2:bx,y2:by,stroke:'rgba(255,255,255,0.025)','stroke-width':'0.5'});
+    // iso-y lines
+    const cx=T.x+(R.x-T.x)*t,cy=T.y+(R.y-T.y)*t;
+    const dx=L.x+(B.x-L.x)*t,dy=L.y+(B.y-L.y)*t;
+    el('line',{x1:cx,y1:cy,x2:dx,y2:dy,stroke:'rgba(255,255,255,0.025)','stroke-width':'0.5'});
+  }
+  // floor edges
+  el('line',{x1:L.x,y1:L.y,x2:B.x,y2:B.y,stroke:'rgba(255,255,255,0.06)','stroke-width':'1'});
+  el('line',{x1:R.x,y1:R.y,x2:B.x,y2:B.y,stroke:'rgba(255,255,255,0.05)','stroke-width':'1'});
+
+  // Zone partition dashes
+  el('line',{x1:390,y1:278,x2:470,y2:488,stroke:'rgba(255,255,255,0.05)','stroke-width':'1.5','stroke-dasharray':'5,6'});
+  el('line',{x1:704,y1:278,x2:762,y2:488,stroke:'rgba(255,255,255,0.04)','stroke-width':'1.5','stroke-dasharray':'5,6'});
+  el('line',{x1:228,y1:378,x2:922,y2:378,stroke:'rgba(255,255,255,0.03)','stroke-width':'1','stroke-dasharray':'3,9'});
+
+  // Zone ambient glows
+  el('ellipse',{cx:635,cy:258,rx:105,ry:34,fill:'rgba(201,168,76,0.04)'});
+  el('ellipse',{cx:478,cy:238,rx:88,ry:30,fill:'rgba(239,68,68,0.03)'});
+  el('ellipse',{cx:790,cy:278,rx:105,ry:36,fill:'rgba(34,197,94,0.03)'});
+  el('ellipse',{cx:428,cy:368,rx:85,ry:28,fill:'rgba(168,85,247,0.03)'});
+  el('ellipse',{cx:750,cy:376,rx:78,ry:26,fill:'rgba(34,197,94,0.03)'});
+
+  // ── CONFERENCE TABLE (executive) ──
+  el('ellipse',{cx:636,cy:265,rx:70,ry:23,fill:'#0D1220',stroke:'rgba(201,168,76,0.2)','stroke-width':'1.5'});
+  el('ellipse',{cx:636,cy:263,rx:54,ry:16,fill:'none',stroke:'rgba(201,168,76,0.09)','stroke-width':'0.8','stroke-dasharray':'4,4'});
+  el('rect',{x:567,y:265,width:138,height:14,fill:'#0A0D18'});
+  el('ellipse',{cx:636,cy:279,rx:70,ry:23,fill:'#090C16',stroke:'rgba(201,168,76,0.08)','stroke-width':'0.8'});
+
+  // ── SERVER RACKS (engineering) ──
+  function rack(x,y,c){
+    el('rect',{x,y,width:25,height:52,fill:'#07090E',stroke:`rgba(${c},0.22)`,'stroke-width':'1',rx:'2'});
+    el('line',{x1:x,y1:y+18,x2:x+25,y2:y+18,stroke:`rgba(${c},0.12)`,'stroke-width':'0.5'});
+    el('line',{x1:x,y1:y+35,x2:x+25,y2:y+35,stroke:`rgba(${c},0.1)`,'stroke-width':'0.5'});
+    [[x+7,y+9,0],[x+7,y+26,1],[x+7,y+43,0]].forEach(([lx,ly,orange])=>{
+      el('circle',{cx:lx,cy:ly,r:'2',fill:'#22C55E',opacity:'0.9'});
+      el('circle',{cx:lx+9,cy:ly,r:'2',fill:orange?'#F97316':'#3B82F6',opacity:'0.7'});
+    });
+  }
+  rack(242,282,'59,130,246');
+  rack(272,282,'20,184,166');
+
+  // ── DESK HELPER ── simplified isometric box
+  function desk(x,y,w,d,h,tc,fc,sc){
+    // top face: parallelogram (w=right, d=depth going down-right)
+    const dx=d*0.5,dy=d*0.38;
+    el('polygon',{points:`${x},${y} ${x+w},${y-w*0.25} ${x+w+dx},${y-w*0.25+dy} ${x+dx},${y+dy}`,fill:tc,stroke:'rgba(255,255,255,0.04)','stroke-width':'0.4'});
+    // front face
+    el('polygon',{points:`${x+dx},${y+dy} ${x+w+dx},${y-w*0.25+dy} ${x+w+dx},${y-w*0.25+dy+h} ${x+dx},${y+dy+h}`,fill:fc,stroke:'rgba(255,255,255,0.025)','stroke-width':'0.4'});
+    // side face
+    el('polygon',{points:`${x+w},${y-w*0.25} ${x+w+dx},${y-w*0.25+dy} ${x+w+dx},${y-w*0.25+dy+h} ${x+w},${y-w*0.25+h}`,fill:sc,stroke:'rgba(255,255,255,0.02)','stroke-width':'0.4'});
+  }
+
+  // Eng/Sec desks (left zone)
+  desk(312,295, 36,22,12, '#0F1622','#090D18','#0C1018');
+  desk(344,310, 36,22,12, '#0F1622','#090D18','#0C1018');
+  desk(308,328, 36,22,12, '#0F1622','#090D18','#0C1018');
+  desk(340,344, 36,22,12, '#0F1622','#090D18','#0C1018');
+
+  // Ops center desks
+  desk(530,290, 32,20,11, '#111510','#0A0E0A','#0D1110');
+  desk(556,304, 32,20,11, '#111510','#0A0E0A','#0D1110');
+  desk(510,320, 32,20,11, '#111510','#0A0E0A','#0D1110');
+  desk(540,336, 32,20,11, '#111510','#0A0E0A','#0D1110');
+
+  // Sales/Content desks (right zone)
+  desk(676,270, 34,21,11, '#0F1614','#090D0C','#0C1110');
+  desk(706,282, 34,21,11, '#0F1614','#090D0C','#0C1110');
+  desk(736,267, 34,21,11, '#0F1614','#090D0C','#0C1110');
+  desk(762,278, 34,21,11, '#0F1614','#090D0C','#0C1110');
+  desk(792,290, 34,21,11, '#0F1614','#090D0C','#0C1110');
+  desk(820,270, 34,21,11, '#0F1614','#090D0C','#0C1110');
+
+  // Support desks (center-lower)
+  desk(488,332, 34,21,11, '#0E1222','#090A18','#0B0C18');
+  desk(548,350, 34,21,11, '#0E1222','#090A18','#0B0C18');
+  desk(574,366, 34,21,11, '#0E1222','#090A18','#0B0C18');
+
+  // Finance desks (right-lower)
+  desk(690,350, 34,21,11, '#0E1A14','#090C0A','#0B0F0C');
+  desk(716,364, 34,21,11, '#0E1A14','#090C0A','#0B0F0C');
+
+  // Research desks (left-lower)
+  desk(378,346, 34,21,11, '#14101E','#0C0A16','#100D18');
+  desk(406,362, 34,21,11, '#14101E','#0C0A16','#100D18');
+
+  // ── MONITOR SCREENS ──
+  function monitor(x,y,c){
+    el('rect',{x,y,width:22,height:14,fill:'#07101E',stroke:`rgba(${c},0.32)`,'stroke-width':'0.7',rx:'1'});
+    el('rect',{x:x+2,y:y+2,width:18,height:10,fill:`rgba(${c},0.06)`,rx:'1'});
+  }
+  monitor(316,288,'59,130,246');monitor(348,303,'20,184,166');
+  monitor(534,283,'201,168,76');monitor(556,297,'201,168,76');
+  monitor(680,263,'34,197,94');monitor(710,275,'34,197,94');
+  monitor(740,261,'168,85,247');monitor(766,271,'168,85,247');
+  monitor(796,283,'34,197,94');
+
+  // ── PLANTS ──
+  function plant(x,y,r){
+    el('ellipse',{cx:x+r*0.3,cy:y+r*0.4,rx:r*0.9,ry:r*0.65,fill:'rgba(34,197,94,0.11)'});
+    el('ellipse',{cx:x-r*0.35,cy:y,rx:r*0.7,ry:r*0.5,fill:'rgba(34,197,94,0.13)'});
+    el('ellipse',{cx:x+r*0.4,cy:y-r*0.3,rx:r*0.55,ry:r*0.4,fill:'rgba(34,197,94,0.09)'});
+    el('line',{x1:x,y1:y+r*0.6,x2:x,y2:y+r*1.8,stroke:'rgba(34,197,94,0.22)','stroke-width':'2'});
+  }
+  plant(246,474,14);plant(876,474,12);
+  plant(242,195,8);plant(892,195,8);
+
+  // ── AGENT FLOOR SHADOWS ──
+  AGENTS.forEach(a=>{
+    el('ellipse',{cx:a.sx,cy:a.sy+5,rx:'13',ry:'5',fill:'rgba(0,0,0,0.28)'});
+  });
+
+  // ── ZONE LABELS ──
+  function zlbl(x,y,txt,op){
+    const t=el('text',{x,y,'font-family':"'DM Mono',monospace",'font-size':'8',fill:`rgba(136,150,168,${op})`,'letter-spacing':'3.5','text-anchor':'middle'});
+    t.textContent=txt;
+  }
+  zlbl(350,276,'ENG / SECURITY',0.32);
+  zlbl(636,260,'EXECUTIVE',0.38);
+  zlbl(788,255,'SALES / CONTENT',0.3);
+  zlbl(432,378,'RESEARCH',0.26);
+  zlbl(565,378,'OPS / SUPPORT',0.26);
+  zlbl(742,378,'FINANCE',0.26);
+
+  // Corner column accents
+  el('rect',{x:225,y:195,width:5,height:285,fill:'rgba(255,255,255,0.025)'});
+  el('rect',{x:920,y:278,width:4,height:202,fill:'rgba(255,255,255,0.02)'});
+}
+
+// ─── AGENT CARDS ────────────────────────────────────────────
+function renderAgents(){
+  const layer=document.getElementById('alayer');
+  layer.innerHTML='';
+  AGENTS.forEach(a=>{
+    const tc=TC[a.tier];
+    const act=a.acts[tidx[a.id]%a.acts.length];
+    const div=document.createElement('div');
+    div.className='acard';
+    div.id=`ac-${a.id}`;
+    div.style.left=a.sx+'px';
+    div.style.top=a.sy+'px';
+    div.onclick=()=>showDP(a.id);
+    div.innerHTML=`<div class="aava" style="border-color:${tc};box-shadow:0 0 10px ${tc}1E"><span style="font-size:14px;line-height:1;display:block">${a.emoji}</span><div class="asdot" style="background:#22C55E"></div></div><div class="aname">${a.id}</div><div class="atask" id="at-${a.id}">${act.slice(0,20)}${act.length>20?'…':''}</div>`;
+    layer.appendChild(div);
+  });
+}
+
+function showDP(id){
+  const a=AGENTS.find(x=>x.id===id);if(!a)return;
+  const tc=TC[a.tier];
+  const act=a.acts[tidx[a.id]%a.acts.length];
+  const dv=v=>document.getElementById(v);
+  dv('dp-av').textContent=a.emoji;
+  dv('dp-av').style.borderColor=tc;
+  dv('dp-av').style.boxShadow=`0 0 18px ${tc}2E`;
+  dv('dp-n').textContent=a.id;
+  dv('dp-r').textContent=a.role;
+  dv('dp-m').textContent=a.model;
+  dv('dp-t').textContent=a.tier;
+  dv('dp-z').textContent=a.zone;
+  dv('dp-ta').textContent=act;
+  dv('dp-ta').style.color=tc;
+  document.getElementById('dp').classList.add('on');
+  activeId=id;
+  document.querySelectorAll('.acard').forEach(c=>c.classList.remove('sel'));
+  document.getElementById(`ac-${id}`)?.classList.add('sel');
+}
+
+function closeDP(){
+  document.getElementById('dp').classList.remove('on');
+  document.querySelectorAll('.acard').forEach(c=>c.classList.remove('sel'));
+  activeId=null;
+}
+
+// ─── ACTIVITY CYCLE ──────────────────────────────────────────
+function cycleActs(){
+  AGENTS.forEach(a=>{
+    tidx[a.id]=(tidx[a.id]+1)%a.acts.length;
+    const e=document.getElementById(`at-${a.id}`);
+    if(!e)return;
+    e.style.opacity='0';
+    setTimeout(()=>{
+      const t=a.acts[tidx[a.id]];
+      e.textContent=t.slice(0,20)+(t.length>20?'…':'');
+      e.style.opacity='1';
+    },280);
+  });
+  if(activeId){
+    const a=AGENTS.find(x=>x.id===activeId);
+    if(a){document.getElementById('dp-ta').textContent=a.acts[tidx[a.id]%a.acts.length];}
+  }
+}
+
+// ─── PARTICLES ───────────────────────────────────────────────
+function spark(){
+  const layer=document.getElementById('alayer');
+  const a=AGENTS[Math.floor(Math.random()*AGENTS.length)];
+  const tc=TC[a.tier];
+  const p=document.createElement('div');
+  p.className='particle';
+  p.style.left=(a.sx+Math.random()*16-8)+'px';
+  p.style.top=(a.sy-38)+'px';
+  p.style.background=tc;
+  p.style.setProperty('--dx',(Math.random()*22-11)+'px');
+  p.style.setProperty('--dy',(-26-Math.random()*18)+'px');
+  p.style.animationDuration=(1.6+Math.random()*1.4)+'s';
+  layer.appendChild(p);
+  setTimeout(()=>p.remove(),3200);
+}
+
+// ─── CLOCK / STATS ───────────────────────────────────────────
+function tick(){
+  const n=new Date();
+  document.getElementById('clk').textContent=`${String(n.getUTCHours()).padStart(2,'0')}:${String(n.getUTCMinutes()).padStart(2,'0')}:${String(n.getUTCSeconds()).padStart(2,'0')} UTC`;
+}
+function updateStats(){
+  document.getElementById('tcount').textContent=`${13+Math.floor(Math.random()*6)} Tasks`;
+}
+
+// ─── SCALE AGENT LAYER ───────────────────────────────────────
+function scale(){
+  const wrap=document.getElementById('wrap');
+  const layer=document.getElementById('alayer');
+  const s=Math.min(wrap.clientWidth/1100,wrap.clientHeight/580);
+  const ox=(wrap.clientWidth-1100*s)/2;
+  const oy=(wrap.clientHeight-580*s)/2;
+  layer.style.transform=`translate(${ox}px,${oy}px) scale(${s})`;
+  layer.style.transformOrigin='0 0';
+}
+
+// ─── INIT ─────────────────────────────────────────────────────
+drawRoom();
+renderAgents();
+tick();updateStats();scale();
+setInterval(cycleActs,3800);
+setInterval(tick,1000);
+setInterval(updateStats,9000);
+setInterval(spark,650);
+window.addEventListener('resize',scale);
+</script>
+</body>
+</html>

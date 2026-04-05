@@ -1,0 +1,1214 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+@custom-variant dark (&:is(.dark *));
+
+/* ─── BORNE SYSTEMS DESIGN TOKENS ─────────────────────────────────────────── */
+:root {
+  /* Blue-black palette */
+  --bs-bg:           #080b10;
+  --bs-surface:      #0d1117;
+  --bs-surface-2:    #141920;
+  --bs-border:       rgba(255, 255, 255, 0.07);
+  --bs-border-hover: rgba(255, 255, 255, 0.18);
+  --bs-white:        #f0f2f5;
+  --bs-white-dim:    rgba(240, 242, 245, 0.55);
+  --bs-white-faint:  rgba(240, 242, 245, 0.28);
+  --bs-accent:       #4d7fff;
+  --bs-accent-dim:   rgba(77, 127, 255, 0.6);
+  --bs-accent-glow:  rgba(77, 127, 255, 0.10);
+
+  /* Shadcn compat tokens */
+  --background:         oklch(0.063 0.012 240);
+  --foreground:         oklch(0.96 0.004 240);
+  --card:               oklch(0.09 0.012 240);
+  --card-foreground:    oklch(0.96 0.004 240);
+  --popover:            oklch(0.09 0.012 240);
+  --popover-foreground: oklch(0.96 0.004 240);
+  --primary:            oklch(0.96 0.004 240);
+  --primary-foreground: oklch(0.063 0.012 240);
+  --secondary:          oklch(0.13 0.012 240);
+  --secondary-foreground: oklch(0.96 0.004 240);
+  --muted:              oklch(0.13 0.012 240);
+  --muted-foreground:   oklch(0.58 0.004 240);
+  --accent:             oklch(0.55 0.18 264);
+  --accent-foreground:  oklch(0.96 0.004 240);
+  --destructive:        oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border:             oklch(0.19 0.008 240);
+  --input:              oklch(0.19 0.008 240);
+  --ring:               oklch(0.4 0.008 240);
+  --radius:             0.375rem;
+  --sidebar:            oklch(0.08 0.012 240);
+  --sidebar-foreground: oklch(0.96 0.004 240);
+  --sidebar-primary:    oklch(0.96 0.004 240);
+  --sidebar-primary-foreground: oklch(0.063 0.012 240);
+  --sidebar-accent:     oklch(0.13 0.012 240);
+  --sidebar-accent-foreground: oklch(0.96 0.004 240);
+  --sidebar-border:     oklch(0.19 0.008 240);
+  --sidebar-ring:       oklch(0.4 0.008 240);
+}
+
+.dark {
+  --background:         oklch(0.063 0.012 240);
+  --foreground:         oklch(0.96 0.004 240);
+  --card:               oklch(0.09 0.012 240);
+  --card-foreground:    oklch(0.96 0.004 240);
+  --popover:            oklch(0.09 0.012 240);
+  --popover-foreground: oklch(0.96 0.004 240);
+  --primary:            oklch(0.96 0.004 240);
+  --primary-foreground: oklch(0.063 0.012 240);
+  --secondary:          oklch(0.13 0.012 240);
+  --secondary-foreground: oklch(0.96 0.004 240);
+  --muted:              oklch(0.13 0.012 240);
+  --muted-foreground:   oklch(0.58 0.004 240);
+  --accent:             oklch(0.55 0.18 264);
+  --accent-foreground:  oklch(0.96 0.004 240);
+  --destructive:        oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border:             oklch(0.19 0.008 240);
+  --input:              oklch(0.19 0.008 240);
+  --ring:               oklch(0.4 0.008 240);
+}
+
+@theme inline {
+  --font-display:  'Funnel Display', 'Space Grotesk', system-ui, sans-serif;
+  --font-sans:     var(--font-sans), 'Space Grotesk', system-ui, sans-serif;
+  --font-mono:     var(--font-mono), 'Space Grotesk', system-ui, monospace;
+  --font-pixel:    'Silkscreen', monospace;
+  --color-background:           var(--background);
+  --color-foreground:           var(--foreground);
+  --color-card:                 var(--card);
+  --color-card-foreground:      var(--card-foreground);
+  --color-popover:              var(--popover);
+  --color-popover-foreground:   var(--popover-foreground);
+  --color-primary:              var(--primary);
+  --color-primary-foreground:   var(--primary-foreground);
+  --color-secondary:            var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted:                var(--muted);
+  --color-muted-foreground:     var(--muted-foreground);
+  --color-accent:               var(--accent);
+  --color-accent-foreground:    var(--accent-foreground);
+  --color-destructive:          var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border:               var(--border);
+  --color-input:                var(--input);
+  --color-ring:                 var(--ring);
+  --radius-sm:  calc(var(--radius) - 4px);
+  --radius-md:  calc(var(--radius) - 2px);
+  --radius-lg:  var(--radius);
+  --radius-xl:  calc(var(--radius) + 4px);
+  --color-sidebar:                    var(--sidebar);
+  --color-sidebar-foreground:         var(--sidebar-foreground);
+  --color-sidebar-primary:            var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent:             var(--sidebar-accent);
+  --color-sidebar-accent-foreground:  var(--sidebar-accent-foreground);
+  --color-sidebar-border:             var(--sidebar-border);
+  --color-sidebar-ring:               var(--sidebar-ring);
+}
+
+/* ─── RESET & BASE ─────────────────────────────────────────────────────────── */
+@layer base {
+  *, *::before, *::after {
+    @apply border-border outline-ring/50;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    /* Premium smooth scroll: using CSS scroll-behavior with a gentle feel */
+    scroll-padding-top: 80px;
+  }
+
+  body {
+    background-color: var(--bs-bg);
+    color: var(--bs-white);
+    font-family: var(--font-sans), 'Space Grotesk', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+
+  /*
+   * TYPOGRAPHY HIERARCHY
+   * Major headings → Funnel Display (geometric, premium, futuristic)
+   * Body / UI copy → Space Grotesk (clean, legible, humanist)
+   */
+
+  h1, h2 {
+    font-family: 'Funnel Display', 'Space Grotesk', system-ui, sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.0;
+    color: var(--bs-white);
+  }
+
+  h3 {
+    font-family: 'Funnel Display', 'Space Grotesk', system-ui, sans-serif;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    line-height: 1.1;
+    color: var(--bs-white);
+  }
+
+  h4, h5, h6 {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--bs-white);
+  }
+
+  p, li, td, th {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    color: inherit;
+  }
+
+  a {
+    font-family: inherit;
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+/* ─── TYPOGRAPHY ───────────────────────────────────────────────────────────── */
+/*
+  Typographic system:
+  - Display headings: Funnel Display (modern geometric sans — clean, premium, futuristic)
+  - Body / UI: Space Grotesk (legible, humanist, polished)
+  Inspired by Appycamper's Funnel Display-driven typography.
+*/
+
+.font-display {
+  font-family: 'Funnel Display', 'Space Grotesk', system-ui, sans-serif;
+}
+
+/* Fluid display scale — Funnel Display */
+.text-display-xl {
+  font-size: clamp(56px, 8vw, 130px);
+  line-height: 0.88;
+  letter-spacing: -0.045em;
+  font-family: 'Funnel Display', system-ui, sans-serif;
+  font-weight: 800;
+}
+
+.text-display-lg {
+  font-size: clamp(40px, 6vw, 88px);
+  line-height: 0.95;
+  letter-spacing: -0.022em;
+  font-family: 'Funnel Display', 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 500;
+}
+
+.text-display-md {
+  font-size: clamp(28px, 3.5vw, 54px);
+  line-height: 1.05;
+  letter-spacing: -0.018em;
+  font-family: 'Funnel Display', 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 500;
+}
+
+/* Section heading — Funnel Display, responsive, for major section dividers */
+.text-display-sm {
+  font-size: clamp(20px, 2.5vw, 36px);
+  line-height: 1.1;
+  letter-spacing: -0.014em;
+  font-family: 'Funnel Display', 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 500;
+}
+
+/* Editorial body — Funnel Display light for large statements, Space Grotesk for body */
+.text-editorial {
+  font-size: clamp(20px, 2vw, 30px);
+  line-height: 1.45;
+  font-family: 'Funnel Display', 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+}
+
+.text-label {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 500;
+}
+
+.text-counter {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+}
+
+/* Body copy utilities — Space Grotesk for clarity and legibility */
+.text-body-lg {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: clamp(16px, 1.4vw, 18px);
+  line-height: 1.70;
+  font-weight: 400;
+  letter-spacing: 0.005em;
+}
+
+.text-body {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  font-weight: 400;
+  letter-spacing: 0.005em;
+}
+
+.text-body-sm {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.60;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+/* ─── SECTION DIVIDERS ─────────────────────────────────────────────────────── */
+.section-rule {
+  border-top: 1px solid var(--bs-border);
+}
+
+/* ─── FLOATING KEYFRAMES v5 ────────────────────────────────────────────────────
+ *
+ * v5 CINEMATIC MOTION UPGRADE:
+ *   • No two cards share the same keyframe stop pattern
+ *   • Foreground anchors (A/F): more stops, plateau hesitation at apex
+ *   • Midground (G/J/K/B): asymmetric profiles — slow rise, faster return
+ *   • Background/atmosphere (E/H/I/L/M/N): fewer stops, much slower periods
+ *   • Depth cue through motion frequency: foreground = active, bg = gravitational
+ *
+ * AMPLITUDES (unchanged from v4, cinematic profiles refined):
+ *   Foreground:       20–28px (A/F)
+ *   Midground:        18–32px (G/J/K/B)
+ *   Weave-behind:     14–22px (C/D/H)
+ *   Atmosphere:        8–16px (E/I/L/M/N)
+ *
+ * PERIODS v5:
+ *   A: 10.2s   B: 15.8s  C: 11.4s  D: 14.6s  E: 19.4s
+ *   F: 13.8s   G: 14.0s  H: 22.0s  I: 16.0s  J: 10.4s
+ *   K: 13.0s   L: 20.0s  M: 12.0s  N: 18.0s
+ *
+ * NO: rotation, bounce, spring, opacity pulse, X movement
+ */
+
+/* A — Foreground anchor, most prominent. "Float with resistance":
+   dips slightly before rising to apex — feels weighted, not bouncy.
+   v15: period increased to 12s (less mechanical). */
+@keyframes floatA {
+  0%   { transform: translateY(0px); }
+  15%  { transform: translateY(-6px); }
+  28%  { transform: translateY(-12px); }
+  52%  { transform: translateY(-28px); }
+  72%  { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+/* B — Tall card behind headline. Slow, gravitational. Asymmetric:
+   rises slowly (front-loaded), descends more quickly (rear-loaded). */
+@keyframes floatB {
+  0%   { transform: translateY(0px); }
+  22%  { transform: translateY(-4px); }
+  38%  { transform: translateY(-12px); }
+  56%  { transform: translateY(-26px); }
+  74%  { transform: translateY(-16px); }
+  88%  { transform: translateY(-6px); }
+  100% { transform: translateY(0px); }
+}
+
+/* C — 3D letterform, mid-low anchor. Dips before apex, clean return. */
+@keyframes floatC {
+  0%   { transform: translateY(0px); }
+  18%  { transform: translateY(-4px); }
+  48%  { transform: translateY(-22px); }
+  72%  { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+/* D — Ink splash. Dynamic multi-bounce — most energetic pattern in the set.
+   Communicates the explosive image subject through its motion character. */
+@keyframes floatD {
+  0%   { transform: translateY(0px); }
+  20%  { transform: translateY(-8px); }
+  36%  { transform: translateY(-20px); }
+  50%  { transform: translateY(-14px); }
+  65%  { transform: translateY(-22px); }
+  82%  { transform: translateY(-6px); }
+  100% { transform: translateY(0px); }
+}
+
+/* E — Candle flame, atmospheric. Very slow and barely perceptible.
+   Like a single candle flame in still air — barely moves. */
+@keyframes floatE {
+  0%   { transform: translateY(0px); }
+  35%  { transform: translateY(-8px); }
+  62%  { transform: translateY(-14px); }
+  100% { transform: translateY(0px); }
+}
+
+/* F — Foreground hand gesture. Hover hesitation at apex — lingers.
+   Feels like a hand held up, gravity gently pulling it back down. */
+@keyframes floatF {
+  0%   { transform: translateY(0px); }
+  22%  { transform: translateY(-9px); }
+  46%  { transform: translateY(-24px); }
+  54%  { transform: translateY(-26px); }
+  70%  { transform: translateY(-22px); }
+  86%  { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+/* G — Code editor, midground. Late apex (crests at 62%) — slow on the way up,
+   quicker return. The asymmetry makes it feel less mechanical than sine. */
+@keyframes floatG {
+  0%   { transform: translateY(0px); }
+  28%  { transform: translateY(-6px); }
+  44%  { transform: translateY(-18px); }
+  62%  { transform: translateY(-32px); }
+  80%  { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+/* H — Concrete texture, deep background. Extraordinarily slow (22s period).
+   Creates gravitational presence — barely drifting, like continental drift. */
+@keyframes floatH {
+  0%   { transform: translateY(0px); }
+  40%  { transform: translateY(-10px); }
+  68%  { transform: translateY(-18px); }
+  100% { transform: translateY(0px); }
+}
+
+/* I — Gold bokeh, atmospheric ghost. Very slow, minimal amplitude. */
+@keyframes floatI {
+  0%   { transform: translateY(0px); }
+  30%  { transform: translateY(-5px); }
+  55%  { transform: translateY(-12px); }
+  78%  { transform: translateY(-4px); }
+  100% { transform: translateY(0px); }
+}
+
+/* J — Light trail, energetic. Shorter period, dynamic profile.
+   Rises fast, comes back with secondary oscillation. */
+@keyframes floatJ {
+  0%   { transform: translateY(0px); }
+  24%  { transform: translateY(-6px); }
+  42%  { transform: translateY(-16px); }
+  58%  { transform: translateY(-12px); }
+  74%  { transform: translateY(-20px); }
+  88%  { transform: translateY(-4px); }
+  100% { transform: translateY(0px); }
+}
+
+/* K — Circuit macro, top bleeder. Late apex (at 68%) — slow riser.
+   Partially off-screen means it can drift more freely without being noticed. */
+@keyframes floatK {
+  0%   { transform: translateY(0px); }
+  24%  { transform: translateY(-4px); }
+  44%  { transform: translateY(-10px); }
+  68%  { transform: translateY(-28px); }
+  86%  { transform: translateY(-6px); }
+  100% { transform: translateY(0px); }
+}
+
+/* L — Ink in water, left ghost. Slow, organic, fluid. */
+@keyframes floatL {
+  0%   { transform: translateY(0px); }
+  38%  { transform: translateY(-6px); }
+  58%  { transform: translateY(-20px); }
+  80%  { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+/* M — Neon wireframe, left ghost. Irregular tension-and-release profile.
+   Rises to intermediate, drops slightly, then rises to true apex. */
+@keyframes floatM {
+  0%   { transform: translateY(0px); }
+  26%  { transform: translateY(-10px); }
+  44%  { transform: translateY(-8px); }
+  64%  { transform: translateY(-16px); }
+  82%  { transform: translateY(-4px); }
+  100% { transform: translateY(0px); }
+}
+
+/* N — Frosted glass, bottom ghost. Smooth, calm. Barely moves. */
+@keyframes floatN {
+  0%   { transform: translateY(0px); }
+  44%  { transform: translateY(-6px); }
+  66%  { transform: translateY(-14px); }
+  100% { transform: translateY(0px); }
+}
+
+/* O — Wide architectural bleed card. v15 NEW. Barely perceptible.
+   Very slow, minimal amplitude. Creates right-edge compositional mass.
+   Deep background drift — like a building shifting in heat haze. */
+@keyframes floatO {
+  0%   { transform: translateY(0px); }
+  42%  { transform: translateY(-5px); }
+  68%  { transform: translateY(-10px); }
+  88%  { transform: translateY(-4px); }
+  100% { transform: translateY(0px); }
+}
+
+/*
+ * Phase spread — v5 periods, all recalculated.
+ * Negative animation-delay pre-offsets phase so all cards
+ * are at different cycle points on initial load.
+ *
+ * Card A  →  period 12.0s,  delay   0.0s    (phase   0%)  [v15: slowed from 10.2s]
+ * Card B  →  period 15.8s,  delay  -7.9s    (phase  50%)
+ * Card C  →  period 11.4s,  delay  -2.4s    (phase  21%)
+ * Card D  →  period 14.6s,  delay  -4.4s    (phase  30%)
+ * Card E  →  period 19.4s,  delay  -9.9s    (phase  51%)
+ * Card F  →  period 13.8s,  delay  -5.1s    (phase  37%)
+ * Card G  →  period 14.0s,  delay  -4.3s    (phase  31%)
+ * Card H  →  period 22.0s,  delay -15.4s    (phase  70%)
+ * Card I  →  period 16.0s,  delay  -6.2s    (phase  39%)
+ * Card J  →  period 10.4s,  delay  -7.0s    (phase  67%)
+ * Card K  →  period 13.0s,  delay  -3.1s    (phase  24%)
+ * Card L  →  period 20.0s,  delay -15.2s    (phase  76%)
+ * Card M  →  period 12.0s,  delay  -3.7s    (phase  31%)
+ * Card N  →  period 18.0s,  delay  -9.5s    (phase  53%)
+ * Card O  →  period 24.0s,  delay -12.0s    (phase  50%)  [v15 NEW]
+ */
+.float-a {
+  animation: floatA 12.0s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+  animation-delay: 0s;
+}
+.float-b {
+  animation: floatB 15.8s ease-in-out infinite;
+  animation-delay: -7.9s;
+}
+.float-c {
+  animation: floatC 11.4s ease-in-out infinite;
+  animation-delay: -2.4s;
+}
+.float-d {
+  animation: floatD 14.6s ease-in-out infinite;
+  animation-delay: -4.4s;
+}
+.float-e {
+  animation: floatE 19.4s ease-in-out infinite;
+  animation-delay: -9.9s;
+}
+.float-f {
+  animation: floatF 13.8s ease-in-out infinite;
+  animation-delay: -5.1s;
+}
+.float-g {
+  animation: floatG 14.0s ease-in-out infinite;
+  animation-delay: -4.3s;
+}
+.float-h {
+  animation: floatH 22.0s ease-in-out infinite;
+  animation-delay: -15.4s;
+}
+.float-i {
+  animation: floatI 16.0s ease-in-out infinite;
+  animation-delay: -6.2s;
+}
+.float-j {
+  animation: floatJ 10.4s ease-in-out infinite;
+  animation-delay: -7.0s;
+}
+.float-k {
+  animation: floatK 13.0s ease-in-out infinite;
+  animation-delay: -3.1s;
+}
+.float-l {
+  animation: floatL 20.0s ease-in-out infinite;
+  animation-delay: -15.2s;
+}
+.float-m {
+  animation: floatM 12.0s ease-in-out infinite;
+  animation-delay: -3.7s;
+}
+.float-n {
+  animation: floatN 18.0s ease-in-out infinite;
+  animation-delay: -9.5s;
+}
+.float-o {
+  animation: floatO 24.0s ease-in-out infinite;
+  animation-delay: -12.0s;
+}
+
+/* ─── SHOWCASE CARD HOVER ──────────────────────────────────────────────────── */
+.showcase-card {
+  transition: transform 0.45s cubic-bezier(0.25, 0.1, 0.25, 1),
+              border-color 0.45s cubic-bezier(0.25, 0.1, 0.25, 1),
+              box-shadow 0.45s cubic-bezier(0.25, 0.1, 0.25, 1);
+  border: 1px solid var(--bs-border);
+  background-color: var(--bs-surface);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.showcase-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--bs-border-hover);
+  box-shadow: 0 12px 48px var(--bs-accent-glow);
+}
+
+/* ─── NAV LINK UNDERLINE ───────────────────────────────────────────────────── */
+.nav-link {
+  position: relative;
+  color: rgba(240, 242, 245, 0.50);
+  font-size: 13px;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--bs-white);
+  opacity: 0.35;
+  transform: scaleX(0.5);
+  transform-origin: left;
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.nav-link:hover {
+  color: var(--bs-white);
+}
+
+.nav-link:hover::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+/* ─── UNDERLINE TEXT LINK ──────────────────────────────────────────────────── */
+.text-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--bs-white);
+  font-size: 14px;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 500;
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+
+.text-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--bs-white);
+  opacity: 0.5;
+  transform-origin: right;
+  transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.text-link:hover::after {
+  opacity: 1;
+  transform-origin: left;
+}
+
+/* ─── INPUT UNDERLINE STYLE ────────────────────────────────────────────────── */
+.input-editorial {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(240, 242, 245, 0.2);
+  border-radius: 0;
+  padding: 12px 0;
+  color: var(--bs-white);
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 15px;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.3s ease;
+}
+
+.input-editorial::placeholder {
+  color: rgba(240, 242, 245, 0.3);
+}
+
+.input-editorial:focus {
+  border-bottom-color: rgba(240, 242, 245, 0.6);
+}
+
+/* ─── VERTICAL LABEL ───────────────────────────────────────────────────────── */
+.vertical-label {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  white-space: nowrap;
+}
+
+/* ─── SCROLLBAR ────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bs-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ─── SELECTION ────────────────────────────────────────────────────────────── */
+::selection {
+  background: rgba(77, 127, 255, 0.25);
+  color: var(--bs-white);
+}
+
+/* ─── SCROLL REFINEMENT PASS ──────────────────────────────────────────────── */
+/*
+ * Performance helpers for scroll-driven parallax layers.
+ * Applied to motion.div wrappers that use useTransform Y values.
+ * Tells the browser to promote these to their own compositing layer.
+ */
+.parallax-layer {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/*
+ * Section entrance transition polish.
+ * Prevents any sub-pixel rendering artifacts during motion reveal.
+ */
+.section-reveal {
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/*
+ * Hero scroll-exit: ensure the floating collage container
+ * also gets composited for smooth parallax as user exits hero.
+ */
+#hero .float-a,
+#hero .float-b,
+#hero .float-c,
+#hero .float-d,
+#hero .float-e,
+#hero .float-f,
+#hero .float-g,
+#hero .float-h,
+#hero .float-i,
+#hero .float-j,
+#hero .float-k,
+#hero .float-l,
+#hero .float-m,
+#hero .float-n,
+#hero .float-o {
+  /* will-change already set inline; ensure backface-visibility too */
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* ─── SECTION TRANSITIONS — CHAPTER PACING ────────────────────────────────── */
+/*
+ * Each section feels like turning a page. Subtle top border dividers.
+ * Section motion.div wrappers get compositing hints.
+ * Editorial rhythm: generous vertical padding enforced via CSS fallback.
+ */
+
+/* Smooth section border highlight on scroll into view */
+section[id] {
+  scroll-margin-top: 80px;
+}
+
+/* Composed layer hint for all Framer Motion scroll-driven sections */
+section[id] > div,
+section[id] > motion\.div {
+  backface-visibility: hidden;
+}
+
+/* ─── SILKSCREEN PIXEL FONT UTILITIES ──────────────────────────────────────── */
+/*
+ * Silkscreen is used ONLY for:
+ *   - Section counter numbers (01, 02, 03...)
+ *   - Hero SCROLL indicator
+ *   - Hero image editorial counter overlay
+ *   - Metric/stat labels (small data annotations)
+ *   - Section metadata separators
+ *   - Form meta labels
+ *
+ * NOT used for: body text, main headlines, section labels (those use Space Grotesk)
+ */
+.font-pixel {
+  font-family: 'Silkscreen', monospace;
+  font-size: 9px;
+  letter-spacing: 0.10em;
+  line-height: 1;
+}
+
+/* ─── FOUNDER CARD ─────────────────────────────────────────────────────────── */
+/*
+ * Clip-path vertical wipe entrance for portrait images
+ * (already handled inline via Framer Motion, CSS fallback provided)
+ */
+.portrait-card {
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* ─── METRICS SECTION ──────────────────────────────────────────────────────── */
+/*
+ * Large editorial stat numbers: Funnel Display at large sizes
+ * should have strong letter-spacing compression.
+ */
+.metric-value {
+  font-family: 'Funnel Display', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 0.9;
+}
+
+/* ─── HOVER STATE: showcase card image opacity lift ────────────────────────── */
+.showcase-card:hover .showcase-card-bg-image {
+  opacity: 0.16 !important;
+}
+
+/* ─── SMOOTH PAGE TRANSITIONS ──────────────────────────────────────────────── */
+/*
+ * Framer Motion handles most of the heavy lifting.
+ * These CSS helpers ensure no paint artifacts during transform animations.
+ */
+main {
+  isolation: isolate;
+}
+
+/* ─── SHOWCASE CARD IMAGE HOVER ────────────────────────────────────────────── */
+/*
+ * v15: slightly more opacity lift on hover for better visual feedback
+ */
+.showcase-card:hover img {
+  opacity: 0.18 !important;
+}
+
+/* ─── METRICS SECTION REFINEMENTS ─────────────────────────────────────────── */
+/*
+ * v15: Add accent underline utility for metric values
+ */
+.metric-underline {
+  display: inline-block;
+  position: relative;
+}
+.metric-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 60%;
+  height: 1px;
+  background: rgba(77, 127, 255, 0.35);
+}
+
+/* ─── SECTION CHAPTER PACING — v15 REFINEMENTS ─────────────────────────────── */
+/*
+ * Premium section-to-section transitions:
+ * — Border top on each section creates chapter "page turn" effect
+ * — Each section has intentional breathing room
+ * — First child of each section has a slight delay via nth-child selectors
+ *   (Framer Motion handles the actual animation; these are CSS safety nets)
+ */
+#about,
+#products,
+#services,
+#results,
+#founder,
+#contact {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ─── FOUNDER SECTION LARGE CHAPTER GHOST ──────────────────────────────────── */
+/*
+ * Decorative background chapter number — editorial art direction.
+ * Very faint Funnel Display oversized numeral behind the content.
+ */
+.chapter-ghost {
+  font-family: 'Funnel Display', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(120px, 18vw, 280px);
+  line-height: 1;
+  letter-spacing: -0.06em;
+  color: rgba(240, 242, 245, 0.028);
+  user-select: none;
+  pointer-events: none;
+  position: absolute;
+  left: -0.05em;
+  top: -0.1em;
+  z-index: 0;
+  white-space: nowrap;
+}
+
+/* ─── REDUCED MOTION ───────────────────────────────────────────────────────── */
+/*
+ * Respect user preference for reduced motion.
+ * Float animations are paused; parallax transforms are removed.
+ * Critical for accessibility — premium doesn't mean inaccessible.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .float-a, .float-b, .float-c, .float-d, .float-e,
+  .float-f, .float-g, .float-h, .float-i, .float-j,
+  .float-k, .float-l, .float-m, .float-n, .float-o {
+    animation: none !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ─── MOBILE RESPONSIVENESS PASS ──────────────────────────────────────────── */
+/*
+ * MOBILE OPTIMIZATION v1
+ * Comprehensive mobile/tablet fixes for all sections.
+ * Breakpoints: 640px (sm), 768px (md), 1024px (lg)
+ */
+
+/* Prevent horizontal overflow site-wide */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* ── Typography: mobile scale ── */
+/* Hero display headline: reduce minimum floor on very small screens */
+@media (max-width: 480px) {
+  .text-display-xl {
+    font-size: clamp(44px, 13vw, 72px);
+    letter-spacing: -0.038em;
+  }
+
+  .text-display-lg {
+    font-size: clamp(32px, 10vw, 56px);
+    letter-spacing: -0.018em;
+  }
+
+  .text-display-md {
+    font-size: clamp(22px, 6.5vw, 40px);
+  }
+
+  .text-editorial {
+    font-size: clamp(18px, 5vw, 26px);
+  }
+}
+
+/* ── Section grids: mobile collapse ── */
+/*
+ * Editorial section (About) uses grid with left sidebar.
+ * On mobile, collapse to single column.
+ */
+@media (max-width: 767px) {
+  .editorial-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Hide the left sidebar counter column on mobile */
+  .editorial-grid > :first-child {
+    display: none !important;
+  }
+}
+
+/* ── Metrics: 2-col on mobile, 4-col on lg ── */
+@media (max-width: 767px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 24px !important;
+  }
+
+  /* Remove left border accents on mobile metrics — they cause layout issues */
+  .metrics-grid > * {
+    border-left: none !important;
+    padding-left: 0 !important;
+  }
+
+  /* Re-add separators as bottom borders between rows */
+  .metrics-grid > *:nth-child(1),
+  .metrics-grid > *:nth-child(2) {
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+}
+
+/* ── Showcase/Services grid: single column on small, 2-col on tablet ── */
+@media (max-width: 639px) {
+  .showcase-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Tall cards should not span 2 rows on mobile — becomes too long */
+  .showcase-card[style*="span 2"] {
+    grid-row: span 1 !important;
+  }
+}
+
+/* ── Two-column layout collapse (CTA, Founder) ── */
+@media (max-width: 1023px) {
+  .two-col-grid {
+    grid-template-columns: 1fr !important;
+    gap: clamp(32px, 5vw, 56px) !important;
+  }
+}
+
+/* ── Footer: stack on mobile ── */
+@media (max-width: 767px) {
+  .footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+
+  .footer-nav {
+    flex-wrap: wrap;
+    gap: 16px 24px;
+  }
+
+  .footer-social {
+    flex-wrap: wrap;
+  }
+}
+
+/* ── Stat tags row (Editorial section) — wrap cleanly ── */
+@media (max-width: 767px) {
+  .stat-tags-row {
+    gap: 0;
+  }
+
+  .stat-tags-row .stat-tag {
+    padding: 8px 16px 8px 0 !important;
+  }
+}
+
+/* ── Touch targets: ensure minimum 44px for interactive elements ── */
+@media (max-width: 1023px) {
+  .nav-link {
+    padding: 10px 2px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .text-link {
+    min-height: 44px;
+    padding: 4px 0;
+  }
+
+  a[href^="#"] {
+    min-height: 44px;
+  }
+}
+
+/* ── Input/form fields on mobile ── */
+@media (max-width: 767px) {
+  .input-editorial {
+    font-size: 16px; /* Prevent iOS zoom on focus */
+  }
+}
+
+/* ── Showcase card: reduce padding on small screens ── */
+@media (max-width: 639px) {
+  .showcase-card > div {
+    padding: 20px 20px 24px !important;
+  }
+}
+
+/* ── Reduce parallax intensity on mobile for performance ── */
+/*
+ * Mobile GPUs are less powerful; heavy parallax can cause jank.
+ * We reduce via CSS-level hints. JS parallax still runs but
+ * with smaller travel values via clamp in components.
+ */
+@media (max-width: 1023px) {
+  .parallax-layer {
+    will-change: auto;
+  }
+}
+
+/* ── Image blocks: ensure no overflow ── */
+img, video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ── Tall showcase cards: disable row-span on mobile/tablet ── */
+@media (max-width: 639px) {
+  .showcase-card-tall {
+    grid-row: span 1 !important;
+  }
+}
+
+/* ── Float animations on mobile — selective ─────────────────────────────────
+ *
+ * v16: Mobile now shows a curated 6-card subset (a, b, e, f, g, j).
+ * We PAUSE all non-mobile cards to save GPU resources, but RE-ENABLE
+ * the 6 curated mobile cards with gentler reduced-amplitude overrides.
+ *
+ * Amplitude reduction strategy for mobile:
+ *   Desktop peaks: floatA = -28px, floatG = -32px, floatF = -26px, etc.
+ *   Mobile peaks: max ±8px travel — subtle depth without choppiness.
+ *   Period: kept same or slightly longer for smoothness.
+ */
+@media (max-width: 1023px) {
+  /* Pause ALL float animations first */
+  .float-a, .float-b, .float-c, .float-d, .float-e,
+  .float-f, .float-g, .float-h, .float-i, .float-j,
+  .float-k, .float-l, .float-m, .float-n, .float-o {
+    animation-play-state: paused;
+  }
+
+  /* Re-enable ONLY the 6 mobile-visible cards (inside .hero-mobile-collage) */
+  .hero-mobile-collage .float-a,
+  .hero-mobile-collage .float-b,
+  .hero-mobile-collage .float-e,
+  .hero-mobile-collage .float-f,
+  .hero-mobile-collage .float-g,
+  .hero-mobile-collage .float-j {
+    animation-play-state: running;
+  }
+
+  /* ── Reduced amplitude keyframes for mobile ──────────────────────────────
+   * Override the full-travel desktop keyframes with gentle mobile variants.
+   * Max travel: 6–8px (down from 20–32px desktop).
+   * These apply ONLY when inside the mobile collage container.
+   */
+
+  /* floatA mobile: 28px → 6px peak */
+  .hero-mobile-collage .float-a {
+    animation: floatA-mobile 14s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+    animation-delay: 0s;
+  }
+
+  /* floatB mobile: 26px → 5px peak */
+  .hero-mobile-collage .float-b {
+    animation: floatB-mobile 18s ease-in-out infinite;
+    animation-delay: -7.9s;
+  }
+
+  /* floatE mobile: 14px → 4px peak */
+  .hero-mobile-collage .float-e {
+    animation: floatE-mobile 22s ease-in-out infinite;
+    animation-delay: -9.9s;
+  }
+
+  /* floatF mobile: 26px → 7px peak */
+  .hero-mobile-collage .float-f {
+    animation: floatF-mobile 16s ease-in-out infinite;
+    animation-delay: -5.1s;
+  }
+
+  /* floatG mobile: 32px → 8px peak */
+  .hero-mobile-collage .float-g {
+    animation: floatG-mobile 16s ease-in-out infinite;
+    animation-delay: -4.3s;
+  }
+
+  /* floatJ mobile: 20px → 5px peak */
+  .hero-mobile-collage .float-j {
+    animation: floatJ-mobile 12s ease-in-out infinite;
+    animation-delay: -7.0s;
+  }
+}
+
+/* ── Mobile float keyframes — reduced amplitude ─────────────────────────────
+ * Defined OUTSIDE the media query so they're available globally,
+ * but only referenced inside the @media block above.
+ */
+@keyframes floatA-mobile {
+  0%   { transform: translateY(0px); }
+  28%  { transform: translateY(-3px); }
+  52%  { transform: translateY(-6px); }
+  72%  { transform: translateY(-2px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes floatB-mobile {
+  0%   { transform: translateY(0px); }
+  38%  { transform: translateY(-3px); }
+  56%  { transform: translateY(-5px); }
+  88%  { transform: translateY(-2px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes floatE-mobile {
+  0%   { transform: translateY(0px); }
+  35%  { transform: translateY(-2px); }
+  62%  { transform: translateY(-4px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes floatF-mobile {
+  0%   { transform: translateY(0px); }
+  22%  { transform: translateY(-3px); }
+  46%  { transform: translateY(-6px); }
+  54%  { transform: translateY(-7px); }
+  86%  { transform: translateY(-2px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes floatG-mobile {
+  0%   { transform: translateY(0px); }
+  28%  { transform: translateY(-2px); }
+  44%  { transform: translateY(-5px); }
+  62%  { transform: translateY(-8px); }
+  80%  { transform: translateY(-3px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes floatJ-mobile {
+  0%   { transform: translateY(0px); }
+  24%  { transform: translateY(-2px); }
+  42%  { transform: translateY(-4px); }
+  58%  { transform: translateY(-3px); }
+  74%  { transform: translateY(-5px); }
+  88%  { transform: translateY(-1px); }
+  100% { transform: translateY(0px); }
+}
+
+/* ── Chapter ghost: scale down on mobile to avoid layout overflow ── */
+@media (max-width: 767px) {
+  .chapter-ghost {
+    font-size: clamp(80px, 28vw, 160px) !important;
+    opacity: 0.018;
+  }
+}
+
+/* ── Section padding: Tailwind px-6 (24px) handles mobile padding correctly ── */
+/* No override needed — px-6 md:px-12 lg:px-20 xl:px-28 already responsive */
+
+/* ── Mobile: section header rows — wrap cleanly ── */
+@media (max-width: 639px) {
+  .section-header-row {
+    flex-wrap: wrap;
+    gap: 10px 16px;
+  }
+
+  /* CTA in header row: push to new line on mobile */
+  .section-header-cta {
+    margin-left: 0 !important;
+    width: 100%;
+    margin-top: 4px;
+  }
+}
+/* ── Hero mobile: right-edge fade — wider on mobile to mask bleed cards ──── */
+@media (max-width: 1023px) {
+  .hero-right-fade {
+    width: 14% !important;
+    background: linear-gradient(to left, rgba(8,11,16,0.72) 0%, transparent 100%) !important;
+  }
+}

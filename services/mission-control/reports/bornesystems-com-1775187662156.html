@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEO Audit — Borne Systems</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#050608;color:#E8EDF5;font-family:'DM Mono',monospace;min-height:100vh;padding:0;}
+.header{background:#0A0C10;border-bottom:1px solid rgba(255,255,255,0.06);padding:24px 40px;display:flex;justify-content:space-between;align-items:center;}
+.brand{font-family:'Syne',sans-serif;font-size:13px;font-weight:800;letter-spacing:.15em;color:#C9A84C;}
+.report-tag{font-size:9px;letter-spacing:.2em;color:#8896A8;text-transform:uppercase;}
+.wrap{max-width:900px;margin:0 auto;padding:40px 24px;}
+.hero{text-align:center;padding:48px 0 40px;}
+.score-ring{width:140px;height:140px;margin:0 auto 24px;position:relative;}
+.score-ring svg{transform:rotate(-90deg);}
+.score-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Syne',sans-serif;}
+.score-val{font-size:36px;font-weight:800;letter-spacing:-.03em;}
+.score-lbl{font-size:10px;letter-spacing:.15em;color:#8896A8;text-transform:uppercase;}
+.company-name{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;letter-spacing:-.02em;margin-bottom:6px;}
+.audit-url{font-size:12px;color:#8896A8;margin-bottom:4px;}
+.audit-ts{font-size:10px;color:#4A5568;}
+.section{margin-bottom:32px;}
+.section-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#C9A84C;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(201,168,76,0.15);}
+.scores-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:32px;}
+.score-card{background:#0A0C10;border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:16px;text-align:center;}
+.sc-icon{font-size:20px;margin-bottom:8px;}
+.sc-val{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin-bottom:4px;}
+.sc-label{font-size:10px;color:#8896A8;letter-spacing:.05em;}
+.sc-status{font-size:9px;letter-spacing:.15em;text-transform:uppercase;margin-top:4px;}
+.speed-details{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;}
+.speed-item{background:#0F1218;border-radius:6px;padding:8px;text-align:center;}
+.speed-val{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:2px;}
+.speed-lbl{font-size:9px;color:#8896A8;letter-spacing:.1em;}
+.list{list-style:none;}
+.list li{padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:10px;align-items:flex-start;font-size:12px;line-height:1.5;}
+.list li:last-child{border-bottom:none;}
+.list-icon{width:18px;flex-shrink:0;font-size:12px;}
+.rec-num{width:24px;height:24px;border-radius:50%;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);display:flex;align-items:center;justify-content:center;font-size:10px;color:#C9A84C;flex-shrink:0;}
+.footer{text-align:center;padding:40px;font-size:11px;color:#4A5568;border-top:1px solid rgba(255,255,255,0.04);}
+.footer span{color:#C9A84C;}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="brand">BORNE SYSTEMS</div>
+  <div class="report-tag">SEO Audit Report</div>
+</div>
+<div class="wrap">
+  <div class="hero">
+    <div class="score-ring">
+      <svg viewBox="0 0 140 140" width="140" height="140">
+        <circle cx="70" cy="70" r="58" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="10"/>
+        <circle cx="70" cy="70" r="58" fill="none" stroke="#22C55E" stroke-width="10"
+          stroke-dasharray="364.424747816416" stroke-dashoffset="65.59645460695491"
+          stroke-linecap="round"/>
+      </svg>
+      <div class="score-num">
+        <div class="score-val" style="color:#22C55E">82</div>
+        <div class="score-lbl">/100</div>
+      </div>
+    </div>
+    <div class="company-name">Borne Systems</div>
+    <div class="audit-url">https://bornesystems.com</div>
+    <div class="audit-ts">Audited Apr 2, 2026, 11:40 PM · Powered by Borne Systems</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Category Scores</div>
+    <div class="scores-grid">
+      
+      <div class="score-card">
+        <div class="sc-val" style="color:#22C55E">100</div>
+        <div class="sc-label">Page Accessible</div>
+        <div class="sc-status" style="color:#22C55E">✓ Good</div>
+      </div>
+      <div class="score-card">
+        <div class="sc-val" style="color:#22C55E">75</div>
+        <div class="sc-label">Meta Tags</div>
+        <div class="sc-status" style="color:#22C55E">✓ Good</div>
+      </div>
+      <div class="score-card">
+        <div class="sc-val" style="color:#F97316">40</div>
+        <div class="sc-label">Heading Structure</div>
+        <div class="sc-status" style="color:#F97316">⚠ Needs Work</div>
+      </div>
+      <div class="score-card">
+        <div class="sc-val" style="color:#22C55E">100</div>
+        <div class="sc-label">Image Alt Tags</div>
+        <div class="sc-status" style="color:#22C55E">✓ Good</div>
+      </div>
+      <div class="score-card">
+        <div class="sc-val" style="color:#22C55E">100</div>
+        <div class="sc-label">Broken Links</div>
+        <div class="sc-status" style="color:#22C55E">✓ Good</div>
+      </div>
+      <div class="score-card">
+        <div class="sc-val" style="color:#22C55E">77</div>
+        <div class="sc-label">Page Speed</div>
+        <div class="sc-status" style="color:#22C55E">✓ Good</div>
+      </div>
+      <div class="score-card">
+        <div class="sc-val" style="color:#22C55E">80</div>
+        <div class="sc-label">Mobile Friendly</div>
+        <div class="sc-status" style="color:#22C55E">✓ Good</div>
+      </div>
+    </div>
+    
+    <div style="background:#0A0C10;border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:16px;">
+      <div style="font-size:11px;color:#8896A8;margin-bottom:8px;letter-spacing:.1em">CORE WEB VITALS</div>
+      <div class="speed-details">
+        <div class="speed-item"><div class="speed-val">71</div><div class="speed-lbl">Mobile Score</div></div>
+        <div class="speed-item"><div class="speed-val">83</div><div class="speed-lbl">Desktop Score</div></div>
+        <div class="speed-item"><div class="speed-val">2.4 s</div><div class="speed-lbl">First Paint</div></div>
+        <div class="speed-item"><div class="speed-val">18.8 s</div><div class="speed-lbl">Largest Paint</div></div>
+        <div class="speed-item"><div class="speed-val">0.004</div><div class="speed-lbl">Layout Shift</div></div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="section">
+    <div class="section-title">Issues Found (5)</div>
+    <ul class="list">
+      <li><div class="list-icon" style="color:#EF4444">✗</div><div>No canonical URL tag</div></li><li><div class="list-icon" style="color:#EF4444">✗</div><div>Missing Open Graph tags (affects social sharing previews)</div></li><li><div class="list-icon" style="color:#EF4444">✗</div><div>No H1 tag found — critical for SEO</div></li><li><div class="list-icon" style="color:#EF4444">✗</div><div>No H2 tags — add subheadings to improve structure</div></li><li><div class="list-icon" style="color:#EF4444">✗</div><div>No responsive CSS detected</div></li>
+    </ul>
+  </div>
+
+  
+  <div class="section">
+    <div class="section-title">Passing (7)</div>
+    <ul class="list">
+      <li><div class="list-icon" style="color:#22C55E">✓</div><div>Page is publicly accessible</div></li><li><div class="list-icon" style="color:#22C55E">✓</div><div>Title tag: "Borne Systems — Intelligent AI Agents to Scale You..."</div></li><li><div class="list-icon" style="color:#22C55E">✓</div><div>Meta description present and well-formed</div></li><li><div class="list-icon" style="color:#22C55E">✓</div><div>All 0 sampled links are working</div></li><li><div class="list-icon" style="color:#22C55E">✓</div><div>Mobile performance: 71/100</div></li><li><div class="list-icon" style="color:#22C55E">✓</div><div>Desktop performance: 83/100</div></li><li><div class="list-icon" style="color:#22C55E">✓</div><div>Viewport meta tag present</div></li>
+    </ul>
+  </div>
+
+  
+  <div class="section">
+    <div class="section-title">Recommendations</div>
+    <ul class="list">
+      <li><div class="rec-num">1</div><div>Ensure exactly one H1 tag per page containing your primary keyword</div></li><li><div class="rec-num">2</div><div>Add a canonical URL tag to prevent duplicate content issues</div></li><li><div class="rec-num">3</div><div>Add Open Graph tags to control how your page appears when shared on social media</div></li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    Report generated by <span>Borne Systems</span> · AI-powered SEO audit · <span>bornesystems.com</span>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Today's Top 3 | Borne Systems</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f1419;
+            color: #e7e9ea;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .container { max-width: 600px; margin: 0 auto; }
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #1d9bf0;
+        }
+        .date {
+            color: #71767b;
+            font-size: 0.875rem;
+            margin-bottom: 2rem;
+        }
+        .priority-card {
+            background: #16181c;
+            border: 1px solid #2f3336;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .priority-card:hover {
+            transform: translateY(-2px);
+            border-color: #1d9bf0;
+        }
+        .priority-card.overdue {
+            border-left: 4px solid #f4212e;
+        }
+        .priority-card.active {
+            border-left: 4px solid #1d9bf0;
+        }
+        .priority-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: #1d9bf0;
+            color: white;
+            border-radius: 50%;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+        }
+        .priority-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .priority-desc {
+            color: #71767b;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
+        }
+        .priority-meta {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            font-size: 0.8rem;
+        }
+        .tag {
+            background: #2f3336;
+            padding: 0.25rem 0.6rem;
+            border-radius: 9999px;
+            color: #71767b;
+        }
+        .tag.overdue { background: rgba(244, 33, 46, 0.2); color: #f4212e; }
+        .tag.academic { background: rgba(249, 166, 26, 0.2); color: #f9a626; }
+        .tag.business { background: rgba(29, 155, 240, 0.2); color: #1d9bf0; }
+        .tag.physical { background: rgba(83, 197, 107, 0.2); color: #53c56b; }
+        
+        .notion-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: #1d9bf0;
+            text-decoration: none;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        .notion-link:hover { text-decoration: underline; }
+        
+        .footer {
+            margin-top: 2rem;
+            text-align: center;
+            color: #71767b;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Today's Top 3</h1>
+        <p class="date" id="currentDate"></p>
+        
+        <div class="priority-card overdue">
+            <div class="priority-number">1</div>
+            <div class="priority-title">📋 Complete EIN Application</div>
+            <div class="priority-desc">
+                Wyoming LLC can't bank or bill without it. IRS online only, 7am–10pm MT. 
+                <strong>Overdue since March 22.</strong>
+            </div>
+            <div class="priority-meta">
+                <span class="tag overdue">OVERDUE</span>
+                <span class="tag business">Borne Systems</span>
+            </div>
+            <a href="https://www.irs.gov/ein" target="_blank" class="notion-link">
+                → Apply at IRS.gov
+            </a>
+        </div>
+        
+        <div class="priority-card overdue">
+            <div class="priority-number">2</div>
+            <div class="priority-title">🏥 Follow up Carson Aesthetics</div>
+            <div class="priority-desc">
+                HOT lead. Already reached out before Belize. Need to close the loop — they were interested in AI Receptionist.
+            </div>
+            <div class="priority-meta">
+                <span class="tag overdue">OVERDUE</span>
+                <span class="tag business">Borne Systems</span>
+            </div>
+            <a href="https://notion.so/31b26a63e1418103aee2e5bd1791df1f" target="_blank" class="notion-link">
+                → View in Notion
+            </a>
+        </div>
+        
+        <div class="priority-card active">
+            <div class="priority-number">3</div>
+            <div class="priority-title">📚 Check NYIT Assignments</div>
+            <div class="priority-desc">
+                Check for missed work across CSCI 185, ICLT 330, FCWR 304. 
+                SAP appeal pending — can't afford missed assignments.
+            </div>
+            <div class="priority-meta">
+                <span class="tag academic">ACADEMICS</span>
+            </div>
+            <a href="https://notion.so/31b26a63e14181e9b4afcce2e9c60055" target="_blank" class="notion-link">
+                → View in Notion
+            </a>
+        </div>
+        
+        <div class="footer">
+            <p>Active Tracks: Academics · Borne Systems · Job Search · OSCP · Physical</p>
+        </div>
+    </div>
+    
+    <script>
+        const dateEl = document.getElementById('currentDate');
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        dateEl.textContent = now.toLocaleDateString('en-US', options);
+    </script>
+</body>
+</html>

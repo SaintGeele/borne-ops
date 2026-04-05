@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agent Dashboard - Borne Systems</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0b0f14;--surface:#141b22;--muted:#97a3ab;--text:#e8f0f5;--accent:#4f9af6;--card:#0f151c;--success:#2bd29f;--warning:#f6c243;--danger:#f87171;--shadow:0 10px 25px rgba(0,0,0,.35);--radius:14px}
+    html,body{height:100%}
+    body{margin:0;font-family:"Outfit",system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:radial-gradient(circle at 20% -10%,rgba(79,154,246,.15),transparent 40%),radial-gradient(circle at 100% 0%,rgba(66,196,234,.12),transparent 40%),var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+    header.brand{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(20,26,34,.7);position:sticky;top:0;z-index:5;backdrop-filter:saturate(1.2) blur(6px)}
+    .brand-title{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.4px;font-size:1.05rem}
+    .brand-title .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);display:inline-block;box-shadow:0 0 0 3px rgba(79,154,246,.15);animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+    .status-bar{display:flex;gap:10px;align-items:center;font-size:.85rem;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;padding:20px}
+    .card{background:linear-gradient(180deg,rgba(18,22,30,.96),rgba(14,18,26,.92));border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:16px;position:relative;overflow:hidden;box-shadow:var(--shadow);transition:transform .25s ease,box-shadow .25s ease}
+    .card:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(0,0,0,.45)}
+    .card.working{border-color:rgba(43,210,159,.3)}
+    .card.blocked{border-color:rgba(248,113,113,.3)}
+    .agent-header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-bottom:8px;border-bottom:1px dashed rgba(255,255,255,.08)}
+    .agent-name{display:flex;align-items:center;gap:10px;font-weight:600;font-size:1rem}
+    .avatar{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#fff;font-weight:700}
+    .status-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px}
+    .status-working{background:var(--success)}
+    .status-idle{background:var(--accent);opacity:.8}
+    .status-blocked{background:var(--danger)}
+    .metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+    .metric{padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.04);font-size:.85rem;display:flex;justify-content:space-between;align-items:center}
+    .time{font-variant-numeric:tabular-nums;color:#d6e6f7}
+    .task{margin-top:6px;color:#cbdde8;font-size:.92rem;min-height:1.2em}
+    .accent-bar{position:absolute;top:0;left:0;height:4px;width:100%;background:linear-gradient(90deg,var(--accent),rgba(79,154,246,.2));border-top-left-radius:calc(var(--radius)-2px);border-top-right-radius:calc(var(--radius)-2px)}
+    @media(max-width:700px){.grid{padding:12px;gap:12px}.card{padding:14px;border-radius:12px}}
+  </style>
+</head>
+<body>
+  <header class="brand">
+    <div class="brand-title"><span class="dot"></span>Borne Systems - Command Center</div>
+    <div class="status-bar">
+      <span id="agentCount">8 Agents</span>
+      <span id="liveIndicator">● Static</span>
+    </div>
+  </header>
+  <main class="grid" id="agentGrid">
+    <!-- Atlas Card -->
+    <section class="card" aria-label="Atlas card">
+      <span class="accent-bar"></span>
+      <div class="agent-header">
+        <div class="agent-name"><span class="avatar">A</span><span>Atlas</span></div>
+        <span style="font-size:.8rem;color:#a8b7c4;"><span class="status-dot status-working"></span>Working</span>
+      </div>
+      <div class="task">Coordinating CEO briefing</div>
+      <div class="metrics"><div class="metric"><span>Time</span><span class="time">12m</span></div><div class="metric"><span>Progress</span><span class="time">62%</span></div></div>
+    </section>
+    <section class="card"><span class="accent-bar"></span><div class="agent-header"><div class="agent-name"><span class="avatar">N</span><span>Nexus</span></div><span style="font-size:.8rem;color:#a8b7c4;"><span class="status-dot status-idle"></span>Idle</span></div><div class="task">Ready</div><div class="metrics"><div class="metric"><span>Time</span><span class="time">0m</span></div><div class="metric"><span>Progress</span><span class="time">--</span></div></div></section>
+    <section class="card"><span class="accent-bar"></span><div class="agent-header"><div class="agent-name"><span class="avatar">F</span><span>Forge</span></div><span style="font-size:.8rem;color:#a8b7c4;"><span class="status-dot status-idle"></span>Idle</span></div><div class="task">Ready</div><div class="metrics"><div class="metric"><span>Time</span><span class="time">0m</span></div><div class="metric"><span>Progress</span><span class="time">--</span></div></div></section>
+    <section class="card"><span class="accent-bar"></span><div class="agent-header"><div class="agent-name"><span class="avatar">X</span><span>MrX</span></div><span style="font-size:.8rem;color:#a8b7c4;"><span class="status-dot status-idle"></span>Idle</span></div><div class="task">Ready</div><div class="metrics"><div class="metric"><span>Time</span><span class="time">0m</span></div><div class="metric"><span>Progress</span><span class="time">--</span></div></div></section>
+    <section class="card"><span class="accent-bar"></span><div class="agent-header"><div class="agent-name"><span class="avatar">I</span><span>Ivy</span></div><span style="font-size:.8rem;color:#a8b7c4;"><span class="status-dot status-idle"></span>Idle</span></div><div class="task">Ready</div><div class="metrics"><div class="metric"><span>Time</span><span class="time">0m</span></div><div class="metric"><span>Progress</span><span class="time">--</span></div></div></section>
+    <section class="card"><span class="accent-bar"></span><div class="agent-header"><div class="agent-name"><span class="avatar">K</span><span>Knox</span></div><span style="font-size:.8rem;color:#a8b7c4;"><span class="status-dot status-idle"></span>Idle</span></div><div class="task">Ready</div><div class="metrics"><div class="metric"><span>Time</span><span class="time">0m</span></div><div class="metric"><span>Progress</span><span class="time">--</span></div></div></section>
+    <section class="card"><span class="accent-bar"></span><div class="agent-header"><div class="agent-name"><span class="avatar">P</span><span>Professor</span></div><span style="font-size:.8rem;color:#a8b7c4;"><span class="status-dot status-idle"></span>Idle</span></div><div class="task">Ready</div><div class="metrics"><div class="metric"><span>Time</span><span class="time">0m</span></div><div class="metric"><span>Progress</span><span class="time">--</span></div></div></section>
+    <section class="card"><span class="accent-bar"></span><div class="agent-header"><div class="agent-name"><span class="avatar">C</span><span>Chronicle</span></div><span style="font-size:.8rem;color:#a8b7c4;"><span class="status-dot status-idle"></span>Idle</span></div><div class="task">Ready</div><div class="metrics"><div class="metric"><span>Time</span><span class="time">0m</span></div><div class="metric"><span>Progress</span><span class="time">--</span></div></div></section>
+  </main>
+  <div class="last-updated">Last updated: --</div>
+  <script>
+    const AGENT_MAP = { atlas: {name: 'Atlas', initial: 'A', role: 'Coordinator'}, nexus: {name: 'Nexus', initial: 'N', role: 'Engineering'}, forge: {name: 'Forge', initial: 'F', role: 'Website Builder'}, mrx: {name: 'MrX', initial: 'X', role: 'Content'}, ivy: {name: 'Ivy', initial: 'I', role: 'Research'}, knox: {name: 'Knox', initial: 'K', role: 'Security'}, professor: {name: 'Professor', initial: 'P', role: 'Education'}, chronicle: {name: 'Chronicle', initial: 'C', role: 'Documentation'}, 'mission-control': {name: 'Mission Control', initial: 'M', role: 'Operations'}, borneai: {name: 'BorneAI', initial: 'B', role: 'Chief of Staff'}};
+    function getStatus(session) { if (!session) return 'idle'; const status = session.status || ''; if (status === 'running') return 'working'; if (status === 'blocked') return 'blocked'; return 'idle'; }
+    function formatTime(ms) { if (!ms) return '0m'; const mins = Math.floor(ms / 60000); return mins + 'm'; }
+    async function fetchStatus() {
+      try { const resp = await fetch('http://100.67.83.108:8888/api/status'); const data = await resp.json(); updateDashboard(data); } catch(e) { console.error('Fetch error:', e); document.getElementById('agentGrid').innerHTML = '<div class="card"><div class="task">Connection error. Retrying...</div></div>'; }
+    }
+    function updateDashboard(data) {
+      const sessions = data.sessions || []; const grid = document.getElementById('agentGrid'); const now = new Date().toLocaleTimeString();
+      const activeSessions = sessions.filter(s => s.kind !== 'system' && s.childSessions?.length > 0); document.getElementById('agentCount').textContent = `${activeSessions.length} Agents Active`; document.getElementById('lastUpdated').textContent = `Last updated: ${now}`;
+      if (activeSessions.length === 0) { grid.innerHTML = '<div class="card"><span class="accent-bar"></span><div class="agent-header"><div class="agent-name"><span class="avatar">✓</span><span>All Clear</span></div><span style="font-size:.8rem;color:#a8b7c4;"><span class="status-dot status-idle"></span>Idle</span></div><div class="task">No active tasks</div></div>'; return; }
+      const childKeys = new Set(); activeSessions.forEach(s => { (s.childSessions || []).forEach(cs => childKeys.add(cs)); });
+      let html = ''; childKeys.forEach(key => { const match = key.match(/agent:([^:]+)/); if (!match) return; const agentId = match[1]; const info = AGENT_MAP[agentId] || {name: agentId, initial: agentId[0].toUpperCase(), role: 'Agent'}; const session = activeSessions.find(s => key.includes(s.sessionId)) || {}; const status = session.status === 'running' ? 'working' : 'idle'; const task = session.lastChannel ? `Active: ${session.lastChannel}` : 'Processing...'; const time = session.updatedAt ? formatTime(Date.now() - session.updatedAt) : '--'; html += `<section class="card ${status === 'working' ? 'working' : ''}"><span class="accent-bar"></span><div class="agent-header"><div class="agent-name"><span class="avatar">${info.initial}</span><span>${info.name}</span></div><span style="font-size:.8rem;color:#a8b7c4;"><span class="status-dot status-${status}"></span>${status.charAt(0).toUpperCase() + status.slice(1)}</span></div><div class="task">${task}</div><div class="metrics"><div class="metric"><span>Time</span><span class="time">${time}</span></div><div class="metric"><span>Role</span><span class="time">${info.role}</span></div></div></section>`; }); if (!html) html = '<div class="card"><div class="task">No active agents</div></div>'; grid.innerHTML = html; }
+    fetchStatus(); setInterval(fetchStatus, 5000);
+  </script>
+</body>
+</html>

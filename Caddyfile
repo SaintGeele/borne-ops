@@ -1,0 +1,4 @@
+command.bornesystems.com {
+    root * /home/saint/.openclaw/workspace/saint-ai-command-center/dist
+    file_server
+}

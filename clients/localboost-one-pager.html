@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LocalBoost by Borne Systems</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  @page { size: letter; margin: 0; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: #1a1a2e;
+    background: #fff;
+    width: 8.5in;
+    min-height: 11in;
+    margin: 0 auto;
+    padding: 0.55in 0.6in 0.4in;
+    display: flex;
+    flex-direction: column;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.3in;
+    padding-bottom: 0.15in;
+    border-bottom: 2px solid #e8e8ec;
+  }
+  .brand { font-size: 11px; font-weight: 600; color: #6b7280; letter-spacing: 2px; text-transform: uppercase; }
+  .service-name { font-size: 32px; font-weight: 800; color: #1a1a2e; margin-top: 2px; line-height: 1.1; }
+  .service-name span { color: #d97706; }
+  .tagline { font-size: 13px; color: #6b7280; margin-top: 4px; font-weight: 500; }
+
+  /* PROBLEM SECTION */
+  .problem {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    color: #fff;
+    padding: 20px 24px;
+    border-radius: 10px;
+    margin-bottom: 0.22in;
+  }
+  .problem h2 { font-size: 14px; font-weight: 700; color: #f59e0b; margin-bottom: 10px; letter-spacing: 1px; text-transform: uppercase; }
+  .problem-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .problem-item .stat { font-size: 28px; font-weight: 800; color: #f59e0b; line-height: 1; }
+  .problem-item .desc { font-size: 11.5px; color: #cbd5e1; margin-top: 4px; line-height: 1.4; }
+
+  /* SOLUTION SECTION */
+  .solution { margin-bottom: 0.22in; }
+  .solution h2 { font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 12px; letter-spacing: 1px; text-transform: uppercase; }
+  .solution-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .solution-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .solution-card .icon { font-size: 18px; margin-bottom: 4px; }
+  .solution-card h3 { font-size: 12.5px; font-weight: 700; color: #1e293b; margin-bottom: 3px; }
+  .solution-card p { font-size: 11px; color: #64748b; line-height: 1.45; }
+
+  /* PRICING TABLE */
+  .pricing { margin-bottom: 0.22in; }
+  .pricing h2 { font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 12px; letter-spacing: 1px; text-transform: uppercase; }
+  .pricing-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .pricing-card {
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px 14px;
+    text-align: center;
+    position: relative;
+  }
+  .pricing-card.featured {
+    border-color: #d97706;
+    background: linear-gradient(180deg, #fffbeb 0%, #fff 40%);
+  }
+  .pricing-card.featured::after {
+    content: 'MOST POPULAR';
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #d97706;
+    color: #fff;
+    font-size: 8px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 10px;
+    letter-spacing: 1px;
+  }
+  .pricing-card .tier { font-size: 13px; font-weight: 700; color: #1e293b; }
+  .pricing-card .price { font-size: 26px; font-weight: 800; color: #d97706; margin: 4px 0; line-height: 1; }
+  .pricing-card .price span { font-size: 12px; font-weight: 500; color: #94a3b8; }
+  .pricing-card ul { list-style: none; text-align: left; margin-top: 10px; }
+  .pricing-card li {
+    font-size: 10.5px;
+    color: #475569;
+    padding: 3px 0;
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.4;
+  }
+  .pricing-card li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #16a34a;
+    font-weight: 700;
+    font-size: 11px;
+  }
+
+  /* WHY US */
+  .why {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 0.2in;
+  }
+  .why-item {
+    text-align: center;
+    padding: 10px 6px;
+  }
+  .why-item .icon { font-size: 20px; margin-bottom: 4px; }
+  .why-item h4 { font-size: 10.5px; font-weight: 700; color: #1e293b; line-height: 1.3; }
+  .why-item p { font-size: 9.5px; color: #64748b; margin-top: 2px; }
+
+  /* CTA */
+  .cta {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    color: #fff;
+    padding: 18px 24px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+  }
+  .cta h2 { font-size: 18px; font-weight: 800; }
+  .cta p { font-size: 11px; opacity: 0.9; margin-top: 2px; }
+  .cta-contact { text-align: right; }
+  .cta-contact div { font-size: 11px; margin: 2px 0; font-weight: 500; }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 9px;
+    color: #94a3b8;
+  }
+
+  @media print {
+    body { padding: 0.5in 0.55in 0.35in; }
+    .problem, .cta { -webkit-print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <div class="brand">Borne Systems</div>
+      <div class="service-name">Local<span>Boost</span></div>
+      <div class="tagline">Get Found. Get Reviews. Get Customers.</div>
+    </div>
+    <div style="text-align:right; font-size:10px; color:#94a3b8; padding-top:4px;">
+      bornesystems.com<br>
+      AI-Powered Local Growth
+    </div>
+  </div>
+
+  <!-- PROBLEM -->
+  <div class="problem">
+    <h2>The Problem</h2>
+    <div class="problem-grid">
+      <div class="problem-item">
+        <div class="stat">97%</div>
+        <div class="desc">of customers search online before visiting a local business</div>
+      </div>
+      <div class="problem-item">
+        <div class="stat">&lt;10</div>
+        <div class="desc">Google reviews? You're losing to competitors with worse service</div>
+      </div>
+      <div class="problem-item">
+        <div class="stat">46%</div>
+        <div class="desc">of all Google searches have local intent — are you showing up?</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOLUTION -->
+  <div class="solution">
+    <h2>The Solution</h2>
+    <div class="solution-grid">
+      <div class="solution-card">
+        <div class="icon">🔍</div>
+        <h3>AI-Powered Local SEO</h3>
+        <p>Technical audits, keyword tracking, Google Business Profile optimization — automated monthly</p>
+      </div>
+      <div class="solution-card">
+        <div class="icon">⭐</div>
+        <h3>Automated Review Generation</h3>
+        <p>SMS & email campaigns that generate 20+ new Google reviews in 60 days</p>
+      </div>
+      <div class="solution-card">
+        <div class="icon">💬</div>
+        <h3>Smart Review Management</h3>
+        <p>AI-drafted responses, monitoring across Google, Yelp & Facebook</p>
+      </div>
+      <div class="solution-card">
+        <div class="icon">📊</div>
+        <h3>Performance Dashboard</h3>
+        <p>Clear monthly reports — rankings, reviews gained, visibility score, competitor analysis</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRICING -->
+  <div class="pricing">
+    <h2>Simple Pricing</h2>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="tier">Starter</div>
+        <div class="price">$149<span>/mo</span></div>
+        <ul>
+          <li>Single location</li>
+          <li>5 keywords tracked</li>
+          <li>5 review requests/mo</li>
+          <li>Basic SEO audit</li>
+          <li>Monthly report</li>
+        </ul>
+      </div>
+      <div class="pricing-card featured">
+        <div class="tier">Growth</div>
+        <div class="price">$297<span>/mo</span></div>
+        <ul>
+          <li>Multi-location ready</li>
+          <li>15 keywords tracked</li>
+          <li>20 review requests/mo</li>
+          <li>Full audit + citations</li>
+          <li>Bi-weekly report</li>
+        </ul>
+      </div>
+      <div class="pricing-card">
+        <div class="tier">Pro</div>
+        <div class="price">$497<span>/mo</span></div>
+        <ul>
+          <li>Aggressive growth</li>
+          <li>25 keywords tracked</li>
+          <li>50 review requests/mo</li>
+          <li>Full audit + competitors</li>
+          <li>Weekly report + strategy call</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHY US -->
+  <div class="why">
+    <div class="why-item">
+      <div class="icon">🤖</div>
+      <h4>AI-Powered</h4>
+      <p>Works 24/7 so you don't have to</p>
+    </div>
+    <div class="why-item">
+      <div class="icon">⚡</div>
+      <h4>Fast Results</h4>
+      <p>Reviews in weeks, rankings in months</p>
+    </div>
+    <div class="why-item">
+      <div class="icon">🔓</div>
+      <h4>No Contracts</h4>
+      <p>Cancel anytime, keep your data</p>
+    </div>
+    <div class="why-item">
+      <div class="icon">🏪</div>
+      <h4>Built for SMBs</h4>
+      <p>Enterprise tools at small biz prices</p>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <div>
+      <h2>Ready to get found?</h2>
+      <p>Book a free Google visibility audit — see exactly where you stand</p>
+    </div>
+    <div class="cta-contact">
+      <div>📧 geele@bornesystems.com</div>
+      <div>🌐 bornesystems.com</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">© 2026 Borne Systems LLC · AI-Powered Business Solutions</div>
+
+</body>
+</html>

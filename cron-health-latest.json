@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-03-17T21:28:00Z",
+  "totals": {
+    "healthy": 18,
+    "warning": 2,
+    "dead": 0,
+    "disabled": 7
+  },
+  "critical_dead": [],
+  "jobs": [
+    {"name": "Evening reflection", "status": "WARNING", "consecutiveErrors": 1, "error": "timeout"},
+    {"name": "Reddit Warm-up Reminder", "status": "WARNING", "consecutiveErrors": 1, "error": "message failed"}
+  ],
+  "critical_jobs_status": {
+    "Morning Brief": "disabled",
+    "Security Audit": "HEALTHY",
+    "Security Fix": "HEALTHY",
+    "API Health Check": "HEALTHY",
+    "Cron Health Monitor": "HEALTHY"
+  }
+}
