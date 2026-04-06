@@ -2,107 +2,94 @@
 
 ## The Problem
 Both Mercury and MrX had "content" in their descriptions. The line was unclear.
-This fixes that.
+This is the complete, mechanical solution.
 
 ---
 
-## Mercury — Content Strategy (Owns the What)
+## Mercury — Content Strategy
 
-**Mercury decides WHAT content gets made and WHY.**
+**Owns: WHAT gets made and WHY.**
 
-### What Mercury owns:
-- Content calendar — what to post, when, and on what platform
-- Brand positioning — how Borne Systems is perceived
-- Campaign strategy — product launches, seasonal pushes
-- Product messaging — what to say about each service
-- Content priorities — what to focus on this week/month
-- Market insights — what customers care about, what competitors say
-- X/Twitter strategy — what the voice sounds like, what topics to own
+### Every Monday 8am — Post Content Brief
+1. Post brief to Supabase `content_briefs` table:
+   - week, topic, platforms, audience, outcome, must_haves, brand_notes
+2. Set status='open', assigned_to='MrX'
+3. Message MrX on Telegram: "Brief is ready: [topic]. Check Supabase."
 
-### What Mercury does NOT do:
-- Write individual posts
-- Write email sequences
-- Write landing page copy
-- Write social captions
-
-### Mercury's output:
-- Content briefs for MrX
-- Campaign plans
-- Positioning statements
-- Topic priorities
-- Brand voice guidelines
+### After MrX Delivers
+1. Review MrX's drafts against the brief
+2. On-brand → approve, move to Inspector for QA
+3. Off-brand → send back with specific notes, MrX revises
 
 ---
 
-## MrX — Content Execution (Owns the How)
+## MrX — Content Execution
 
-**MrX takes Mercury's brief and CREATES the actual content.**
+**Owns: CREATING what Mercury briefs.**
 
-### What MrX owns:
-- All copy — posts, emails, captions, CTAs, landing pages
-- Content repurposing — take one piece and make it work across platforms
-- A/B copy variants — multiple versions of the same message
-- Editing and iterating — refine based on performance
-- Delivery — posts go live via Mercury-approved tools
+### Every Monday Morning
+1. Check Supabase `content_briefs` for assigned briefs
+2. If none → message Mercury on Telegram: "No brief this week?"
+3. Once assigned → create content per brief
 
-### What MrX does NOT do:
-- Decide what content to make
-- Set brand strategy
-- Plan campaigns
-- Own positioning
-
-### MrX's input:
-- Clear briefs from Mercury (topic, platform, audience, CTA)
-
-### MrX's output:
-- Draft copy
-- Post variants
-- Email sequences
-- Landing page copy
+### Creating Content
+1. Read brief: topic, platforms, audience, outcome, must_haves
+2. Create content to spec
+3. Save to Supabase `content_bank` with:
+   - status='draft'
+   - brief_id (links back to the brief)
+4. Update brief's content_ids array
 
 ---
 
-## The Workflow
+## The Full Pipeline
 
 ```
-Mercury: "This week we post 3x about AI receptionists for dental offices"
-         ↓ briefs MrX
-MrX: "Here are 3 posts + 1 email sequence for dental outreach"
-      ↓
-Mercury: reviews for brand fit
-      ↓
-MrX: publishes via social-ops bot
+Monday 8am: Mercury posts brief to Supabase
+             ↓ messages MrX
+Monday: MrX creates content → content_bank (draft)
+             ↓
+Mercury: Brand review
+  ✓ on-brand → status=approved → Inspector
+  ✗ off-brand → notes → MrX revises
+             ↓
+Inspector: QA → status=approved
+             ↓
+Published
 ```
+
+**Rule: Nothing goes to Inspector without Mercury's brand approval.**
+
+---
+
+## Supabase Tables
+
+| Table | Owner | Purpose |
+|-------|-------|---------|
+| `content_briefs` | Mercury | Briefs from Mercury to MrX |
+| `content_brief_comments` | Both | Discussion on briefs |
+| `content_bank` | MrX | Content MrX creates |
 
 ---
 
 ## Escalation
 
-| Question | Goes to |
-|----------|---------|
-| What should we post about this week? | Mercury |
-| Write the post | MrX |
-| What should we charge? | Geele |
-| What does our brand sound like? | Mercury |
-| Write the email sequence | MrX |
-| Something broken in the bot? | Nexus |
-| This post isn't performing | Mercury (re-thinks) + MrX (iterates) |
+| Issue | Goes to |
+|-------|---------|
+| No brief posted by Monday 9am | MrX → message Mercury |
+| Brief is unclear | MrX → message Mercury |
+| MrX not delivering | Mercury → Atlas |
+| Technical issue | Atlas → Nexus |
+| Brand crisis | Geele immediately |
 
 ---
 
-## Naming conventions
+## Naming
 
-When briefing MrX, Mercury uses:
-- Topic
-- Platform(s)
-- Audience
-- Desired outcome
-- Any must-haves (keywords, links, CTAs)
+Brief: "brief-[product]-[campaign]-[v#]"
+Example: "brief-ai-receptionist-dental-outreach-v1"
 
-Example:
-```
-Brief: dental AI receptionist, X/Twitter, dental office owners
-CTA: link to booking page
-Must include: "never miss a call"
-Platforms: X only
-```
+Content: "tweet-ai-receptionist-dental-outreach-v1"
+Example: "email-ai-receptionist-follow-up-v2"
+
+Both link back to the same brief_id.
