@@ -15,9 +15,10 @@
 | Inspector | `/home/saint/.openclaw/agents/inspector/agent/avatar.png` |
 | Mercury | `/home/saint/.openclaw/agents/mercury/agent/avatar.png` |
 | Chase | Sales development - qualifies leads, books demos |
-| Insight | Research - competitor analysis, lead enrichment |
+| Skeptic | Critical analysis - risk flagging, pre-build reviews, competitive watch |
+| Insight | Research - competitor analysis, lead enrichment | |
 | Care | Support - FAQ automation, ticket handling |
-| **Finance** | Financial operations, invoicing, revenue tracking | |
+| **Ledger** | Financial operations, invoicing, revenue tracking, burn rate, cost per lead | |
 
 ---
 
@@ -166,7 +167,7 @@ Before major infrastructure, gateway, credential, exposure, or security-sensitiv
 - **Chase** → Lead qualification, demo booking, follow-up automation, pipeline management (reports to MrX)
 - **Insight** → Web research, competitor analysis, lead enrichment, market intelligence (reports to Ivy)
 - **Care** → FAQ automation, ticket handling, client support, escalation (reports to MrX)
-- **Finance** → Invoicing, payments, financial tracking, pricing quotes
+- **Ledger** → Invoicing, payments, financial tracking, pricing quotes, burn rate, cost per lead, pipeline value
 - **Mission Control** → Engineering Coordination
 - **Pulse** → Daily 7AM + Monday weekly business report (reports directly to BorneAI)
 - **Ledger** → Daily 6:30AM financial report, MTD spend tracking (reports directly to BorneAI)
@@ -184,9 +185,35 @@ Pulse · Inspector · Ledger · Chronicle · Atlas · MrX
 Atlas → Nexus → Forge
 Atlas → Beacon → Knox
 Atlas → Ivy → Insight
+Atlas → Skeptic (R&D cycle + pre-build reviews)
 
-### MrX chain
+### Content & Revenue
+#### MrX chain
 MrX → Mercury → Chase + Care
+
+**Mercury** owns content strategy — what to make and why:
+- Brand strategy, campaigns, launches
+- Content calendar and priorities
+- Product positioning
+
+**MrX** executes — makes what Mercury briefs:
+- Social posts, email copy, outreach
+- Content repurposing
+- Takes direction from Mercury
+
+**Chase** owns sales pipeline:
+- Outbound lead outreach
+- Demo booking
+- Pipeline management
+- Escalates HOT leads to Geele
+- See: agents/workflows/chase-workflow.md
+
+**Care** owns support:
+- Ticket handling, FAQs
+- Onboarding new clients
+- Retention monitoring
+- Escalates T3 and complaints to Geele
+- See: agents/workflows/care-workflow.md
 
 ---
 
@@ -196,9 +223,22 @@ MrX → Mercury → Chase + Care
 - Website modernizer premium template (live at srv1430138.tail9c961.ts.net:3002)
 
 ## Active Cron Scripts (logging to activity_log)
+### Outreach & Sales
 - chase-outreach, chase-followup, check-replies
+
+### Support
 - care-respond, enrich-leads
+
+### Operations
 - sync-openrouter-spend, review-request
+
+### Weekly Agent Reports (via OpenClaw agent-Turn)
+- Skeptic: Mon 6:30am — risk review → Telegram
+- Chase: Fri 4pm — pipeline report → Telegram
+- Professor: Sun 7pm — learning summary → Telegram
+- Nexus: Fri 5pm — build summary → Telegram
+- Forge: Sun 6pm — site health check → Telegram
+- Beacon: Mon 8:30am — SEO check → Telegram
 
 ### Chronicle Scope Rule
 
@@ -273,6 +313,14 @@ Atlas may directly handle:
 - lightweight planning
 - dependency mapping
 - simple status summaries
+
+#### Delegate to Skeptic
+Delegate when the task requires:
+- risk assessment on a new idea or feature
+- pre-build spec review (before Nexus starts)
+- identifying what competitors are doing that we are not
+- finding the weakest point in a plan
+- challenging assumptions before we commit resources
 
 #### Delegate to Ivy
 Delegate when the task requires:
