@@ -20,3 +20,4 @@ build/
 *.bak
 *.tmp
 secrets/
+supabase
