@@ -1,5 +1,4 @@
 {
-  "type": "module",
   "dependencies": {
     "@supabase/supabase-js": "^2.101.1",
     "crypto": "^1.0.1",

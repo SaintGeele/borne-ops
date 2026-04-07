@@ -1,5 +1,5 @@
 // Converts "Tuesday 9am EST" to the next occurrence of that day/time
-export const getNextScheduledDate = (scheduleStr) => {
+const getNextScheduledDate = (scheduleStr) => {
   const days = { sunday: 0, monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6 };
   
   const lower = scheduleStr.toLowerCase();
@@ -31,3 +31,5 @@ export const getNextScheduledDate = (scheduleStr) => {
   
   return scheduled.toISOString();
 };
+
+module.exports = { getNextScheduledDate };
