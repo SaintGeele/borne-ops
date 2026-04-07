@@ -16,9 +16,12 @@
 | Mercury | `/home/saint/.openclaw/agents/mercury/agent/avatar.png` |
 | Chase | Sales development - qualifies leads, books demos |
 | Skeptic | Critical analysis - risk flagging, pre-build reviews, competitive watch |
-| Insight | Research - competitor analysis, lead enrichment | |
+| Insight | Research - competitor analysis, lead enrichment |
 | Care | Support - FAQ automation, ticket handling |
-| **Ledger** | Financial operations, invoicing, revenue tracking, burn rate, cost per lead | |
+| **Ledger** | Financial operations, invoicing, revenue tracking, burn rate, cost per lead |
+| Nova | Social publishing - content distribution, platform posting (reports to Mercury) |
+| Closer | Sales cycle - proposal follow-through, contract negotiations (reports to MrX) |
+| Relay | Pipeline orchestrator - cross-team workflow coordination (reports to Atlas) | |
 
 ---
 
@@ -169,6 +172,10 @@ Before major infrastructure, gateway, credential, exposure, or security-sensitiv
 - **Care** → FAQ automation, ticket handling, client support, escalation (reports to MrX)
 - **Ledger** → Invoicing, payments, financial tracking, pricing quotes, burn rate, cost per lead, pipeline value
 - **Mission Control** → Engineering Coordination
+- **Nova** → Social publishing, content distribution across platforms (reports to Mercury)
+- **Closer** → Sales cycle management, proposal follow-through, contract negotiations (reports to MrX)
+- **Relay** → Pipeline orchestration across Chase, Closer, Care; cross-team workflow coordination (reports to Atlas)
+- **Skeptic** → Critical analysis, risk flagging, pre-build reviews, competitive gap identification (reports to Atlas)
 - **Pulse** → Daily 7AM + Monday weekly business report (reports directly to BorneAI)
 - **Ledger** → Daily 6:30AM financial report, MTD spend tracking (reports directly to BorneAI)
 - **Chronicle** → Midnight digest, logs all agent activity to Supabase activity_log (reports directly to BorneAI)
@@ -186,10 +193,15 @@ Atlas → Nexus → Forge
 Atlas → Beacon → Knox
 Atlas → Ivy → Insight
 Atlas → Skeptic (R&D cycle + pre-build reviews)
+Atlas → Relay (pipeline orchestration)
 
 ### Content & Revenue
 #### MrX chain
 MrX → Mercury → Chase + Care
+MrX → Closer (sales cycle)
+
+#### Mercury chain
+Mercury → Nova (social publishing)
 
 **Mercury** owns content strategy — what to make and why:
 - Brand strategy, campaigns, launches
@@ -234,6 +246,8 @@ MrX → Mercury → Chase + Care
 
 ### Weekly Agent Reports (via OpenClaw agent-Turn)
 - Skeptic: Mon 6:30am — risk review → Telegram
+- Relay: Tue 8am — pipeline orchestration summary → Atlas
+- Nova: Fri 4pm — social publishing report → Mercury
 - Chase: Fri 4pm — pipeline report → Telegram
 - Professor: Sun 7pm — learning summary → Telegram
 - Nexus: Fri 5pm — build summary → Telegram
