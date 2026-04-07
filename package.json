@@ -3,6 +3,8 @@
     "@supabase/supabase-js": "^2.101.1",
     "crypto": "^1.0.1",
     "dotenv": "^17.4.0",
-    "oauth-1.0a": "^2.2.6"
+    "oauth-1.0a": "^2.2.6",
+    "resend": "^6.10.0",
+    "twilio": "^5.13.1"
   }
 }
