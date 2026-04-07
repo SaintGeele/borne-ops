@@ -233,13 +233,10 @@ async function main() {
 
   // Log activity
   await logToSupabase({
-    agent: 'chase',
-    action: 'pipeline_check',
-    lead_id: null,
-    lead_name: null,
-    stage_from: null,
-    stage_to: null,
-    notes: `Pipeline check: ${leads.length} total, ${hot.length} HOT, ${warm.length} WARM, ${newLeads.length} NEW`
+    agent_id: 'chase',
+    action_type: 'pipeline_check',
+    title: `Pipeline check: ${leads.length} total`,
+    description: `HOT: ${hot.length} | WARM: ${warm.length} | NEW: ${newLeads.length} | DEMO: ${demoScheduled.length}`
   });
 
   // Print pipeline report

@@ -15,7 +15,7 @@ const path = require('path');
 // === CONFIG ===
 const CONFIG = {
   supabaseUrl: process.env.SUPABASE_URL,
-  supabaseKey: process.env.SUPABASE_KEY,
+  supabaseKey: process.env.SUPABASE_SERVICE_KEY,
   twitterApiKey: process.env.TWITTER_API_KEY,
   twitterApiSecret: process.env.TWITTER_API_SECRET,
   twitterAccessToken: process.env.TWITTER_ACCESS_TOKEN,
