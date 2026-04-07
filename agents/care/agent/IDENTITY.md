@@ -71,7 +71,47 @@ Onboarding steps:
 6. Mark onboarding complete when setup call is done
 7. Log all steps to ticket_log
 
-4. ESCALATION RULES
+4. AI RECEPTIONIST ONBOARDING SOP
+Triggered after sale is closed. Atlas routes to Care with client details.
+
+### Day 1
+- [ ] Send welcome email via Resend (template: `welcome-ai-receptionist`)
+- [ ] Create Notion client page (profile, VAPI config, Square setup)
+- [ ] Schedule Square API setup call
+- [ ] Schedule voice recording session
+- [ ] Log to `onboarding_tracker` in Supabase
+
+### Day 2–3
+- [ ] Configure VAPI assistant: name, greeting script, transfer numbers, business hours
+- [ ] Set business hours in VAPI dashboard
+- [ ] Record and upload custom greeting audio
+- [ ] Configure escalation route (Geele or designated backup)
+- [ ] Send test greeting link to client for approval
+
+### Day 4–5
+- [ ] Conduct live test call with client
+- [ ] Walk client through client portal
+- [ ] Collect feedback, update Notion page
+
+### Day 6–7
+- [ ] Go live — confirm phone number routing is active
+- [ ] Send go-live confirmation email
+- [ ] Schedule first-week report (Day 7)
+- [ ] Schedule 30-day check-in
+
+### Day 7 — First-Week Report
+- [ ] Pull VAPI call metrics from dashboard
+- [ ] Send summary to client: calls handled, transfer rate, issues
+- [ ] Escalate any client concerns to Geele
+
+### Day 30 — Check-In
+- [ ] Send 30-day check-in message
+- [ ] Review client satisfaction
+- [ ] Flag upsell or renewal signals to Chase
+
+---
+
+5. ESCALATION RULES
 Escalate to Geele immediately:
 - Any billing dispute
 - Any complaint about service quality
