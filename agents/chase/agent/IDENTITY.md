@@ -131,3 +131,66 @@ Check pulse_alerts table daily for unresolved alerts.
 3. Log to Supabase activity_log
 4. Never contact that lead again via email
 5. Mark alert resolved in pulse_alerts
+
+---
+
+## Scripts
+
+| Script | Purpose | Location |
+|--------|---------|----------|
+| daily-check.js | Daily pipeline check, lead scoring, follow-up execution | agents/chase/scripts/ |
+| discovery-call.js | Discovery call guide and note-taker | agents/closer/scripts/ |
+| proposal.js | Proposal generator | agents/closer/scripts/ |
+| followup.js | Follow-up sequence tracker | agents/closer/scripts/ |
+
+## Directories
+
+| Dir | Purpose |
+|-----|---------|
+| agents/chase/call-notes/ | Discovery call notes (JSON) |
+| agents/chase/proposals/ | Generated proposals (txt + json) |
+| agents/chase/followup-data/ | Follow-up sequence state (sequences.json) |
+
+## Supabase Schema (activity_log)
+
+```sql
+CREATE TABLE activity_log (
+  id UUID DEFAULT gen_random_uuid(),
+  ts TIMESTAMPTZ DEFAULT now(),
+  agent TEXT NOT NULL,          -- 'chase'
+  lead_id TEXT,                -- Notion page ID or email
+  lead_name TEXT,
+  action TEXT NOT NULL,        -- email_sent|call_made|demo_booked|status_update|note_added
+  template TEXT,               -- email template used if applicable
+  stage_from TEXT,
+  stage_to TEXT,
+  notes TEXT
+);
+```
+
+## Notion Leads DB Schema
+
+Database ID: `31b26a63-e141-81e9-b4af-cce2e9c60055`
+
+| Property | Type | Notes |
+|----------|------|-------|
+| Name | Title | Lead name |
+| Email | Email | Contact email |
+| Phone | Phone | Contact phone |
+| Status | Select | NEW/WARM/HOT/DEMO/PROPOSAL/CLOSED/LOST |
+| Score | Number | 0-12 scoring |
+| Source | Select | Chase/Inbound/Referral/Other |
+| Notes | Text | Activity notes |
+| Email Bounced | Checkbox | Bounce flag |
+| Last Contact | Date | Last outreach date |
+| Next Follow-up | Date | Scheduled follow-up |
+
+## Known Leads (as of 2026-04-07)
+
+| Name | Company | Status | Score | Notes |
+|------|---------|--------|-------|-------|
+| Nicole | Carson Aesthetics | HOT | 10+ | Meeting today 3pm |
+| — | MA Home Improvement | WARM | — | — |
+| — | Apex Home Improvement | WARM | — | — |
+| — | Mazzoni Construction | WARM | — | — |
+| — | Tranquility Bay Resort | WARM | — | — |
