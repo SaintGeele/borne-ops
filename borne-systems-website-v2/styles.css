@@ -611,6 +611,52 @@ ul {
   letter-spacing: 0.05em;
 }
 
+.product-card__pricing {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  align-items: center;
+}
+
+.pricing-tier {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255,107,53,0.1);
+  border: 1px solid rgba(255,107,53,0.3);
+  border-radius: 6px;
+  padding: 0.35rem 0.6rem;
+  text-align: center;
+}
+
+.tier-name {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.5);
+  font-weight: 600;
+}
+
+.tier-price {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.tier-price span {
+  font-size: 0.65rem;
+  font-weight: 400;
+  color: rgba(255,255,255,0.5);
+}
+
+.pricing-setup {
+  width: 100%;
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.4);
+  margin-top: 0.25rem;
+  font-style: italic;
+}
+
 /* ============================================
    ABOUT
    ============================================ */
