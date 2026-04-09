@@ -88,6 +88,7 @@ const AGENT_TOKENS = {
   governance: process.env.DISCORD_GOVERNANCE_TOKEN,
   aiageogeo: process.env.DISCORD_AI_AEO_GEO_TOKEN,
   newscurator: process.env.DISCORD_NEWS_CURATOR_TOKEN,
+  inspector: process.env.DISCORD_INSPECTOR_TOKEN,
   // add new agents here as DISCORD_[NAME]_TOKEN is added to .env
 };
 
