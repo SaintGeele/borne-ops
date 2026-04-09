@@ -84,6 +84,7 @@ const AGENT_TOKENS = {
   ghostprotocol: process.env.DISCORD_GHOST_PROTOCOL_TOKEN,
   selfhealing: process.env.DISCORD_SELF_HEALING_TOKEN,
   salesengineer: process.env.DISCORD_SALES_ENGINEER_TOKEN,
+  pipeline: process.env.DISCORD_PIPELINE_TOKEN,
   // add new agents here as DISCORD_[NAME]_TOKEN is added to .env
 };
 
