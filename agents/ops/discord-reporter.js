@@ -81,6 +81,7 @@ const AGENT_TOKENS = {
   chase:       process.env.DISCORD_CHASE_TOKEN,
   nova:        process.env.DISCORD_NOVA_TOKEN,
   care:        process.env.DISCORD_CARE_TOKEN,
+  ghostprotocol: process.env.DISCORD_GHOST_PROTOCOL_TOKEN,
   // add new agents here as DISCORD_[NAME]_TOKEN is added to .env
 };
 
