@@ -11,64 +11,45 @@
 import { config } from "dotenv";
 config({ path: "/home/saint/.openclaw/.env" });
 
-// Real Discord channel IDs — verified accessible
-// Update these if channels are renamed or IDs change
+// Real Discord channel IDs — ONLY these 5 channels are verified accessible to the BorneAI bot
+// All other channels are denied (Missing Permissions error 50013)
+// To fix: grant BorneAI bot role access to those channels in Discord server settings
 const CHANNELS = {
-  // Leadership — use errors-and-alerts until bot has #chief-of-staff access
-  "borneai":       "1482611166349103166", // errors-and-alerts (chief-of-staff is DENIED)
-  
-  // Engineering
-  "nexus":         "1480000721469444158", // mission-control (development is DENIED)
-  
-  // Operations
+  // All leadership, sales, outreach, content, security, research agents → research-archive
+  "borneai":       "1482611329465454745", // research-archive
   "atlas":         "1482611132077314088", // atlas-coordination ✓
   "relay":         "1482611132077314088", // atlas-coordination ✓
+  "nexus":         "1482611329465454745", // research-archive
+  "knox":          "1482611132077314088", // atlas-coordination ✓
+  "ghost-protocol": "1482611132077314088", // atlas-coordination ✓
+  "ivy":           "1482611329465454745", // research-archive
+  "insight":       "1482611329465454745", // research-archive
+  "news-curator":  "1482611329465454745", // research-archive
+  "mrx":           "1482611329465454745", // research-archive
+  "chase":         "1482611329465454745", // research-archive
+  "closer":        "1482611329465454745", // research-archive
+  "leadgen":       "1482611329465454745", // research-archive
+  "pipeline":      "1482611329465454745", // research-archive
+  "sales-engineer": "1482611329465454745", // research-archive
+  "mercury":       "1482611132077314088", // atlas-coordination ✓
+  "nova":          "1482611132077314088", // atlas-coordination ✓
+  "care":          "1482611329465454745", // research-archive
+  "forge":         "1482611329465454745", // research-archive
+  "beacon":        "1482611329465454745", // research-archive
+  "aeogeo":        "1482611329465454745", // research-archive
+  "chronicle":     "1482611329465454745", // research-archive
+  "pulse":         "1482611329465454745", // research-archive
+  "ledger":        "1482611329465454745", // research-archive
   
-  // Security
-  "knox":          "1480000802302202061", // vulnerability-scanning ✓
-  "ghost-protocol": "1480000802302202061", // vulnerability-scanning ✓
-  
-  // Research
-  "ivy":           "1480000762988728393", // lead-research ✓
-  "insight":       "1480000762988728393", // lead-research ✓
-  "news-curator":  "1480000762988728393", // lead-research ✓
-  
-  // Sales & Outreach
-  "mrx":           "1480000844672794876", // cold-outreach ✓
-  "chase":         "1480000844672794876", // cold-outreach ✓
-  "closer":        "1480000844672794876", // cold-outreach ✓
-  "leadgen":       "1480000844672794876", // cold-outreach ✓
-  "pipeline":      "1482611166349103166", // errors-and-alerts (ceo-update is DENIED)
-  "sales-engineer": "1480000844672794876", // cold-outreach ✓
-  
-  // Content
-  "mercury":       "1482611132077314088", // atlas-coordination (content-automation is DENIED)
-  "nova":          "1482611132077314088", // atlas-coordination (content-automation is DENIED)
-  
-  // Client Management — cold-outreach for now (client-management is DENIED)
-  "care":          "1480000844672794876", // cold-outreach ✓
-  "forge":         "1480000844672794876", // cold-outreach ✓
-  
-  // SEO & Documentation — research-archive for now (documentation is DENIED)
-  "beacon":        "1482611329465454745", // research-archive ✓
-  "aeogeo":        "1482611329465454745", // research-archive ✓
-  "chronicle":     "1482611329465454745", // research-archive ✓
-  
-  // Ops & Monitoring
+  // Ops monitoring → agent-status
   "inspector":     "1482611004507685044", // agent-status ✓
-  "governance":    "1482611004507685044", // agent-status ✓
+  "governance":     "1482611004507685044", // agent-status ✓
   "self-healing":  "1482611004507685044", // agent-status ✓
-  
-  // Finance — errors-and-alerts for now (ceo-update is DENIED)
-  "ledger":        "1482611166349103166", // errors-and-alerts
-  
-  // Pulse/Reports — errors-and-alerts for now (ceo-update is DENIED)
-  "pulse":        "1482611166349103166", // errors-and-alerts
   
   // R&D
   "skeptic":       "1486178157290848349", // skeptic ✓
   
-  // Errors — always accessible
+  // Errors — always errors-and-alerts
   "errors":        "1482611166349103166", // errors-and-alerts ✓
 };
 
