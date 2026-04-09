@@ -8,9 +8,10 @@
  *   node post.js --brief "Post text" --platforms x,linkedin --image "optional image path" --schedule "2026-04-07T10:00:00Z"
  */
 
-const https = require('https');
-const fs = require('fs');
-const path = require('path');
+import https from 'https';
+import fs from 'fs';
+import path from 'path';
+import { report, reportError } from '../../ops/discord-reporter.js';
 
 // === CONFIG ===
 const CONFIG = {
@@ -266,10 +267,23 @@ async function main() {
     platform: 'all',
   });
 
+  const status = failed === 0 ? 'success' : failed < successful ? 'warning' : 'error';
+  const platforms = args.platforms.join(', ');
+  const scheduleNote = args.schedule ? ` (scheduled: ${new Date(args.schedule).toLocaleString()})` : ' (immediate)';
+
+  await report('nova', {
+    title: `Social Publish — ${successful} posted${failed > 0 ? `, ${failed} failed` : ''}`,
+    summary: `Posted to ${platforms}${scheduleNote}. ${successful} successful, ${failed} failed.`,
+    details: results.map(r => `${r.success ? '✅' : '❌'} ${r.platform}: ${r.success ? (r.id || 'OK') : r.reason}`).join('\n'),
+    status,
+    nextAction: failed > 0 ? `Review ${failed} failed posts` : 'Track engagement tomorrow'
+  }).catch(() => {});
+
   process.exit(failed > 0 ? 1 : 0);
 }
 
-main().catch(err => {
+main().catch(async (err) => {
   console.error('[Nova] Fatal error:', err);
+  await reportError('nova', err.message, 'post.js — social publish job').catch(() => {});
   process.exit(1);
 });

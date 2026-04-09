@@ -3,6 +3,7 @@ config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { report, reportError } from '../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
@@ -182,9 +183,19 @@ const runOutreach = async () => {
 
   await sendTelegram(msg);
   console.log(`[Chase Outreach] Complete: ${sent} sent, ${failed} failed.`);
+
+  const status = failed === 0 ? 'success' : failed < sent ? 'warning' : 'error';
+  await report('chase', {
+    title: `Daily Outreach — ${sent} sent, ${failed} failed`,
+    summary: `${sent} emails sent to hot leads. ${failed} failed.`,
+    details: results.slice(0, 10).join('\n') + (results.length > 10 ? `\n… and ${results.length - 10} more` : ''),
+    status,
+    nextAction: failed > 0 ? `Review ${failed} failed emails` : 'Follow-up in 3 days'
+  }).catch(() => {});
 };
 
-runOutreach().catch(e => {
+runOutreach().catch(async (e) => {
   console.error('[Chase Outreach] Fatal:', e.message);
+  await reportError('chase', e.message, 'outreach.js — daily outreach batch').catch(() => {});
   process.exit(1);
 });

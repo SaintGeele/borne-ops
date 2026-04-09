@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
@@ -127,9 +128,19 @@ const runTicketHandler = async () => {
 
   console.log(msg);
   await sendTelegram(msg);
+
+  const status = drafted === 0 ? 'warning' : 'success';
+  await report('care', {
+    title: `Ticket Handler — ${drafted} drafts, ${skipped} skipped`,
+    summary: `${drafted} ticket drafts generated from ${tickets.length} tickets.`,
+    details: results.slice(0, 8).map(r => `${r.status === 'failed' ? '❌' : '✅'} ${r.name}`).join('\n'),
+    status,
+    nextAction: drafted > 0 ? 'Review and send drafts to customers' : 'No tickets need response'
+  }).catch(() => {});
 };
 
-runTicketHandler().catch(e => {
+runTicketHandler().catch(async (e) => {
   console.error('[Care Ticket] Fatal:', e.message);
+  await reportError('care', e.message, 'ticket.js — ticket handler').catch(() => {});
   process.exit(1);
 });

@@ -3,6 +3,7 @@ config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
+import { report, reportError } from '../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const TAVILY_API_KEY = process.env.TAVILY_API_KEY;
@@ -157,9 +158,19 @@ const runRankTracker = async () => {
 
   console.log(msg);
   await sendTelegram(msg);
+
+  const status = declined > improved ? 'warning' : improved > 0 ? 'success' : 'info';
+  await report('beacon', {
+    title: `Rank Tracker — ${report.summary.found}/${report.summary.tracked} found`,
+    summary: `Tracked ${report.summary.tracked} keywords. ${improved} improved, ${declined} declined.`,
+    details: rows.slice(0, 10).join('\n'),
+    status,
+    nextAction: declined > 0 ? `Review ${declined} keywords that lost position` : 'Continue monitoring'
+  }).catch(() => {});
 };
 
-runRankTracker().catch(e => {
+runRankTracker().catch(async (e) => {
   console.error('[Rank Tracker] Fatal:', e.message);
+  await reportError('beacon', e.message, 'rank-tracker.js — SEO rank tracking').catch(() => {});
   process.exit(1);
 });
