@@ -82,6 +82,7 @@ const AGENT_TOKENS = {
   nova:        process.env.DISCORD_NOVA_TOKEN,
   care:        process.env.DISCORD_CARE_TOKEN,
   ghostprotocol: process.env.DISCORD_GHOST_PROTOCOL_TOKEN,
+  selfhealing: process.env.DISCORD_SELF_HEALING_TOKEN,
   // add new agents here as DISCORD_[NAME]_TOKEN is added to .env
 };
 
