@@ -1,19 +1,15 @@
 /**
  * Discord Reporter — Borne Systems Agent Reporting Layer
  * All agent scripts should call report() after execution.
- * Reports go to the agent's assigned Discord channel.
- * Errors go to errors-and-alerts (1482611166349103166).
+ * Each agent uses its own Discord bot for visual identity.
  */
-
-import { config } from "dotenv";
-config({ path: "/home/saint/.openclaw/.env" });
 
 // Verified channel IDs — only channels with active agents
 const CHANNELS = {
   // Leadership
   "borneai":       "1480000668021428415", // chief-of-staff
 
-  // Engineering — no active scripts (nexus reserved)
+  // Engineering
   "nexus":         "1480000719724482744", // development
 
   // Operations
@@ -61,15 +57,40 @@ const CHANNELS = {
   "errors":        "1482611166349103166", // errors-and-alerts
 };
 
-const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 const GUILD_ID = "1479519793378885894";
+
+// Per-agent Discord bot tokens — each agent uses its own bot for identity
+// Falls back to DISCORD_BOT_TOKEN if agent-specific token not set
+const AGENT_TOKENS = {
+  boreanaai:   process.env.DISCORD_BORNEAI_TOKEN,
+  nexus:       process.env.DISCORD_NEXUS_TOKEN,
+  ivy:         process.env.DISCORD_IVY_TOKEN,
+  knox:        process.env.DISCORD_KNOX_TOKEN,
+  mrx:         process.env.DISCORD_MRX_TOKEN,
+  professor:   process.env.DISCORD_PROFESSOR_TOKEN,
+  chronicle:   process.env.DISCORD_CHRONICLE_TOKEN,
+  atlas:       process.env.DISCORD_ATLAS_TOKEN,
+  gauge:       process.env.DISCORD_GAUGE_TOKEN,
+  forge:       process.env.DISCORD_FORGE_TOKEN,
+  tutor:       process.env.DISCORD_TUTOR_TOKEN,
+  mrrobot:     process.env.DISCORD_MRROBOT_TOKEN,
+  elliot:      process.env.DISCORD_ELLIOT_TOKEN,
+  missioncontrol: process.env.DISCORD_MISSION_CONTROL_TOKEN,
+  beacon:      process.env.DISCORD_BEACON_TOKEN,
+  leadgen:     process.env.DISCORD_LEAD_GEN_TOKEN,
+  // add new agents here as DISCORD_[NAME]_TOKEN is added to .env
+};
+
+const getBotToken = (agentName) => {
+  return AGENT_TOKENS[agentName?.toLowerCase()] || process.env.DISCORD_BOT_TOKEN;
+};
 
 const STATUS_COLOR = { success: 0x22C55E, warning: 0xEAB308, error: 0xEF4444, info: 0x3B82F6 };
 const STATUS_EMOJI = { success: "✅", warning: "⚠️", error: "🚨", info: "ℹ️" };
 
 /** @param {string} agentName @param {{ title: string, summary: string, details?: string, status?: string, nextAction?: string }} report */
 export async function report(agentName, { title, summary, details, status = "info", nextAction }) {
-  const channelId = CHANNELS[agentName.toLowerCase()] || CHANNELS["borneai"];
+  const channelId = CHANNELS[agentName?.toLowerCase()] || CHANNELS["borneai"];
   const color = STATUS_COLOR[status] || 0x3B82F6;
   const emoji = STATUS_EMOJI[status] || "ℹ️";
   const fields = [
@@ -79,7 +100,6 @@ export async function report(agentName, { title, summary, details, status = "inf
   ];
   const payload = {
     channel_id: channelId,
-    guild_id: GUILD_ID,
     content: `${emoji} **[${agentName}]** ${title}`,
     embeds: [{
       color,
@@ -90,14 +110,13 @@ export async function report(agentName, { title, summary, details, status = "inf
       timestamp: new Date().toISOString(),
     }],
   };
-  return sendToDiscord(payload);
+  return sendToDiscord(agentName, payload);
 }
 
 /** @param {string} agentName @param {string} errorMessage @param {string} [context] */
 export async function reportError(agentName, errorMessage, context) {
   const payload = {
     channel_id: CHANNELS["errors"],
-    guild_id: GUILD_ID,
     content: `🚨 **[${agentName}] Error** — \`${errorMessage.substring(0, 120)}\``,
     embeds: [{
       color: 0xEF4444,
@@ -109,14 +128,13 @@ export async function reportError(agentName, errorMessage, context) {
       ],
     }],
   };
-  return sendToDiscord(payload);
+  return sendToDiscord(agentName, payload);
 }
 
 /** @param {string} agentName @param {{ tasksRun: number, successes: number, failures: number, highlights?: string, nextUp?: string }} summaryData */
 export async function reportDailySummary(agentName, summaryData) {
   const payload = {
     channel_id: CHANNELS["borneai"],
-    guild_id: GUILD_ID,
     content: `📊 **${agentName} Daily Summary — ${new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}**`,
     embeds: [{
       color: 0x3B82F6,
@@ -130,18 +148,24 @@ export async function reportDailySummary(agentName, summaryData) {
       timestamp: new Date().toISOString(),
     }],
   };
-  return sendToDiscord(payload);
+  return sendToDiscord(agentName, payload);
 }
 
-async function sendToDiscord(payload) {
-  if (!BOT_TOKEN) {
-    console.warn("[Discord Reporter] BOT_TOKEN not set — skipping Discord report");
+/**
+ * Send a payload to Discord using the agent's own bot token.
+ * @param {string} agentName
+ * @param {object} payload
+ */
+async function sendToDiscord(agentName, payload) {
+  const token = getBotToken(agentName);
+  if (!token) {
+    console.warn(`[Discord Reporter] No bot token for ${agentName} — skipping Discord report`);
     return { ok: false, reason: "no token" };
   }
   try {
     const res = await fetch(`https://discord.com/api/v10/channels/${payload.channel_id}/messages`, {
       method: "POST",
-      headers: { "Authorization": `Bot ${BOT_TOKEN}`, "Content-Type": "application/json" },
+      headers: { "Authorization": `Bot ${token}`, "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
     if (!res.ok) {
