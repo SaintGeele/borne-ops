@@ -86,6 +86,7 @@ const AGENT_TOKENS = {
   salesengineer: process.env.DISCORD_SALES_ENGINEER_TOKEN,
   pipeline: process.env.DISCORD_PIPELINE_TOKEN,
   governance: process.env.DISCORD_GOVERNANCE_TOKEN,
+  aiageogeo: process.env.DISCORD_AI_AEO_GEO_TOKEN,
   // add new agents here as DISCORD_[NAME]_TOKEN is added to .env
 };
 
