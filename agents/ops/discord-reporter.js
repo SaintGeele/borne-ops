@@ -80,6 +80,7 @@ const AGENT_TOKENS = {
   leadgen:     process.env.DISCORD_LEAD_GEN_TOKEN,
   chase:       process.env.DISCORD_CHASE_TOKEN,
   nova:        process.env.DISCORD_NOVA_TOKEN,
+  care:        process.env.DISCORD_CARE_TOKEN,
   // add new agents here as DISCORD_[NAME]_TOKEN is added to .env
 };
 
