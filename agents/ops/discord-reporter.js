@@ -89,6 +89,7 @@ const AGENT_TOKENS = {
   aiageogeo: process.env.DISCORD_AI_AEO_GEO_TOKEN,
   newscurator: process.env.DISCORD_NEWS_CURATOR_TOKEN,
   inspector: process.env.DISCORD_INSPECTOR_TOKEN,
+  mercury: process.env.DISCORD_MERCURY_TOKEN,
   // add new agents here as DISCORD_[NAME]_TOKEN is added to .env
 };
 
