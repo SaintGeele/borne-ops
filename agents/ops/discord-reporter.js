@@ -91,6 +91,7 @@ const AGENT_TOKENS = {
   inspector: process.env.DISCORD_INSPECTOR_TOKEN,
   mercury: process.env.DISCORD_MERCURY_TOKEN,
   closer: process.env.DISCORD_CLOSER_TOKEN,
+  ledger: process.env.DISCORD_LEDGER_TOKEN,
   // add new agents here as DISCORD_[NAME]_TOKEN is added to .env
 };
 
