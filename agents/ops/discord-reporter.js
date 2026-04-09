@@ -3,41 +3,73 @@
  * All agent scripts should call report() after execution.
  * Reports go to the agent's assigned Discord channel.
  * Errors go to errors-and-alerts (1482611166349103166).
+ * 
+ * NOTE: Some channels are denied to the bot role (see DENIED_CHANNELS below).
+ * Reports to denied channels will fall back to errors-and-alerts.
  */
 
-import dotenv from "dotenv";
-dotenv({ path: "/home/saint/.openclaw/.env" });
+import { config } from "dotenv";
+config({ path: "/home/saint/.openclaw/.env" });
 
+// Real Discord channel IDs — verified accessible
+// Update these if channels are renamed or IDs change
 const CHANNELS = {
-  "borneai":       "1480000668021428415", // chief-of-staff
-  "atlas":         "1482611132077314088", // atlas-coordination
-  "nexus":         "1480000719724482744", // development
-  "knox":          "1480000802302202061", // vulnerability-scanning
-  "ivy":           "1480000762988728393", // lead-research
-  "mrx":           "1480000844672794876", // cold-outreach
-  "mercury":       "1480000846065307732", // content-automation
-  "nova":          "1480000846065307732", // content-automation
-  "chase":         "1480000844672794876", // cold-outreach
-  "care":          "1480000803321155759", // client-management
-  "beacon":        "1480000766428188763", // documentation
-  "forge":         "1480000803321155759", // client-management
-  "inspector":     "1482611004507685044", // agent-status
-  "pulse":         "1480000667392147568", // ceo-update
-  "ledger":        "1480000667392147568", // ceo-update
-  "chronicle":     "1480000766428188763", // documentation
-  "insight":       "1480000762988728393", // lead-research
-  "relay":         "1482611132077314088", // atlas-coordination
-  "closer":        "1480000844672794876", // cold-outreach
-  "skeptic":       "1486178157290848349", // skeptic
-  "leadgen":       "1480000844672794876", // cold-outreach
-  "pipeline":      "1480000667392147568", // ceo-update
-  "sales-engineer":"1480000844672794876", // cold-outreach
-  "ghost-protocol": "1480000802302202061", // vulnerability-scanning
-  "governance":    "1482611004507685044", // agent-status
-  "self-healing":  "1482611004507685044", // agent-status
-  "aeogeo":       "1480000766428188763", // documentation
-  "news-curator":  "1480000762988728393", // lead-research
-  "errors":        "1482611166349103166", // errors-and-alerts
+  // Leadership — use errors-and-alerts until bot has #chief-of-staff access
+  "borneai":       "1482611166349103166", // errors-and-alerts (chief-of-staff is DENIED)
+  
+  // Engineering
+  "nexus":         "1480000721469444158", // mission-control (development is DENIED)
+  
+  // Operations
+  "atlas":         "1482611132077314088", // atlas-coordination ✓
+  "relay":         "1482611132077314088", // atlas-coordination ✓
+  
+  // Security
+  "knox":          "1480000802302202061", // vulnerability-scanning ✓
+  "ghost-protocol": "1480000802302202061", // vulnerability-scanning ✓
+  
+  // Research
+  "ivy":           "1480000762988728393", // lead-research ✓
+  "insight":       "1480000762988728393", // lead-research ✓
+  "news-curator":  "1480000762988728393", // lead-research ✓
+  
+  // Sales & Outreach
+  "mrx":           "1480000844672794876", // cold-outreach ✓
+  "chase":         "1480000844672794876", // cold-outreach ✓
+  "closer":        "1480000844672794876", // cold-outreach ✓
+  "leadgen":       "1480000844672794876", // cold-outreach ✓
+  "pipeline":      "1482611166349103166", // errors-and-alerts (ceo-update is DENIED)
+  "sales-engineer": "1480000844672794876", // cold-outreach ✓
+  
+  // Content
+  "mercury":       "1482611132077314088", // atlas-coordination (content-automation is DENIED)
+  "nova":          "1482611132077314088", // atlas-coordination (content-automation is DENIED)
+  
+  // Client Management — cold-outreach for now (client-management is DENIED)
+  "care":          "1480000844672794876", // cold-outreach ✓
+  "forge":         "1480000844672794876", // cold-outreach ✓
+  
+  // SEO & Documentation — research-archive for now (documentation is DENIED)
+  "beacon":        "1482611329465454745", // research-archive ✓
+  "aeogeo":        "1482611329465454745", // research-archive ✓
+  "chronicle":     "1482611329465454745", // research-archive ✓
+  
+  // Ops & Monitoring
+  "inspector":     "1482611004507685044", // agent-status ✓
+  "governance":    "1482611004507685044", // agent-status ✓
+  "self-healing":  "1482611004507685044", // agent-status ✓
+  
+  // Finance — errors-and-alerts for now (ceo-update is DENIED)
+  "ledger":        "1482611166349103166", // errors-and-alerts
+  
+  // Pulse/Reports — errors-and-alerts for now (ceo-update is DENIED)
+  "pulse":        "1482611166349103166", // errors-and-alerts
+  
+  // R&D
+  "skeptic":       "1486178157290848349", // skeptic ✓
+  
+  // Errors — always accessible
+  "errors":        "1482611166349103166", // errors-and-alerts ✓
 };
 
 const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
@@ -124,8 +156,9 @@ async function sendToDiscord(payload) {
       body: JSON.stringify(payload),
     });
     if (!res.ok) {
-      console.error(`[Discord Reporter] ${res.status}: ${await res.text()}`);
-      return { ok: false, status: res.status };
+      const text = await res.text();
+      console.error(`[Discord Reporter] ${res.status}: ${text}`);
+      return { ok: false, status: res.status, body: text };
     }
     return { ok: true };
   } catch (err) {
