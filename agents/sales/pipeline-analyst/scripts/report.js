@@ -62,7 +62,7 @@ const STAGE_BENCHMARKS = {
 const getStaleDeals = async (leads) => {
   const now = new Date();
   return leads.filter(lead => {
-    const lastActivity = lead.outreach_sent_at ? new Date(lead.outreach_sent_at) : new Date(lead.created_at);
+    const lastActivity = lead.outreach_sent_at ? new Date(lead.outreach_sent_at) : (lead.enriched_at ? new Date(lead.enriched_at) : new Date(lead.created_at));
     const daysSince = (now - lastActivity) / (1000 * 60 * 60 * 24);
     const stageBenchmark = STAGE_BENCHMARKS[lead.status] || 7;
     return daysSince > stageBenchmark * 2; // 2x benchmark = stalled
@@ -73,8 +73,8 @@ const getAtRiskDeals = async (leads) => {
   return leads.filter(lead => {
     const isLateStage = ['demo', 'proposal', 'negotiation'].includes(lead.status);
     const hasLowScore = lead.score < 8;
-    const isStale = lead.outreach_sent_at && 
-      (new Date() - new Date(lead.outreach_sent_at)) > 14 * 24 * 60 * 60 * 1000;
+    const lastActivity = lead.outreach_sent_at ? new Date(lead.outreach_sent_at) : (lead.enriched_at ? new Date(lead.enriched_at) : new Date(lead.created_at));
+    const isStale = (new Date() - lastActivity) > 14 * 24 * 60 * 60 * 1000;
     return isLateStage && (hasLowScore || isStale);
   });
 };
