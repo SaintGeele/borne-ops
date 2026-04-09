@@ -153,6 +153,22 @@ const runProspecting = async () => {
     await new Promise(r => setTimeout(r, 500));
   }
 
+  // Fire lead.new events for each inserted lead
+  if (inserted > 0) {
+    const eventInserts = filtered.slice(0, inserted).map(lead => ({
+      source: 'lead-gen',
+      event_type: lead.score >= 80 ? 'lead.hot' : 'lead.new',
+      payload: { lead_id: lead.email, company: lead.company_name, score: lead.score, industry: icp.industry, trigger: lead.trigger },
+      status: 'pending'
+    }));
+    const { error: eventError } = await supabase.from('events').insert(eventInserts);
+    if (eventError) {
+      console.warn('[Lead Gen] Failed to fire events:', eventError.message);
+    } else {
+      console.log(`[Lead Gen] Fired ${eventInserts.length} events to relay`);
+    }
+  }
+
   console.log(`[Lead Gen] Inserted ${inserted}/${filtered.length} leads`);
 
   await supabase.from('activity_log').insert({

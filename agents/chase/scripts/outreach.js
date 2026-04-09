@@ -42,6 +42,25 @@ const callOpenRouter = async (prompt) => {
 };
 
 const getUncontactedLeads = async () => {
+  // First: consume any pending lead.new / lead.hot events from Relay
+  const { data: events } = await supabase
+    .from('events')
+    .select('*')
+    .in('event_type', ['lead.new', 'lead.hot'])
+    .eq('status', 'pending')
+    .order('ts', { ascending: true })
+    .limit(10);
+
+  if (events?.length) {
+    console.log(`[Chase] Consuming ${events.length} lead events from Relay`);
+    for (const ev of events) {
+      await supabase.from('events').update({ status: 'processing' }).eq('id', ev.id);
+      // Don't wait — mark processed and continue
+      await supabase.from('events').update({ status: 'processed', processed_by: 'chase', processed_at: new Date().toISOString() }).eq('id', ev.id);
+    }
+  }
+
+  // Then: fetch leads that are new and uncontacted, hot leads first
   const { data, error } = await supabase
     .from('leads')
     .select('*')
@@ -55,6 +74,19 @@ const getUncontactedLeads = async () => {
 
 const updateLeadStatus = async (id, status, stage) => {
   await supabase.from('leads').update({ status, stage }).eq('id', id);
+};
+
+const fireEvent = async (eventType, payload) => {
+  try {
+    await supabase.from('events').insert({
+      source: 'chase',
+      event_type: eventType,
+      payload,
+      status: 'pending'
+    });
+  } catch (e) {
+    console.warn('[Chase] Event fire failed:', e.message);
+  }
 };
 
 const updateNotionLead = async (pageId, status, stage) => {
@@ -148,6 +180,14 @@ const runOutreach = async () => {
       await sendEmail(lead.email, subject, `<p>${body.replace(/\n\n/g, '</p><p>')}</p>`);
       await updateLeadStatus(lead.id, 'contacted', 'outreach_sent');
       if (lead.notion_page_id) await updateNotionLead(lead.notion_page_id, 'contacted', 'outreach_sent');
+
+      // Fire event so downstream agents know outreach was sent
+      await fireEvent('chase.outreach_sent', {
+        lead_id: lead.id,
+        email: lead.email,
+        company: lead.company,
+        name: lead.name
+      });
 
       sent++;
       results.push(`✅ ${lead.name} <${lead.email}>`);
