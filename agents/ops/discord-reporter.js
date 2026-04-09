@@ -92,6 +92,7 @@ const AGENT_TOKENS = {
   mercury: process.env.DISCORD_MERCURY_TOKEN,
   closer: process.env.DISCORD_CLOSER_TOKEN,
   ledger: process.env.DISCORD_LEDGER_TOKEN,
+  pulse: process.env.DISCORD_PULSE_TOKEN,
   // add new agents here as DISCORD_[NAME]_TOKEN is added to .env
 };
 
