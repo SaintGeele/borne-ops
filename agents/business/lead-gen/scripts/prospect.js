@@ -198,7 +198,7 @@ const runProspecting = async () => {
 
   // Filter by ICP industry
   const filtered = sampleLeads.filter(l => 
-    l.industry.toLowerCase() === icpIndustry.toLowerCase()
+    l.industry.toLowerCase() === icp.industry.toLowerCase()
   ).slice(0, limit);
 
   let inserted = 0;
