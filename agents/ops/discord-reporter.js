@@ -90,6 +90,7 @@ const AGENT_TOKENS = {
   newscurator: process.env.DISCORD_NEWS_CURATOR_TOKEN,
   inspector: process.env.DISCORD_INSPECTOR_TOKEN,
   mercury: process.env.DISCORD_MERCURY_TOKEN,
+  closer: process.env.DISCORD_CLOSER_TOKEN,
   // add new agents here as DISCORD_[NAME]_TOKEN is added to .env
 };
 
