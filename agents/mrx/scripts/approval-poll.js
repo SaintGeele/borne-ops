@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../ops/discord-reporter.js';
 import fs from 'fs';
 import path from 'path';
 
@@ -104,4 +105,15 @@ const poll = async () => {
   }
 };
 
-poll().then(() => process.exit(0));
+poll().then(async () => {
+  await report('mrx', {
+    title: `Approval Poll — complete`,
+    summary: `Approval poll ran successfully.`,
+    status: 'info',
+    nextAction: 'Review any remaining pending approvals'
+  }).catch(() => {});
+  process.exit(0);
+}).catch(async (e) => {
+  await reportError('mrx', e.message, 'approval-poll.js — MrX approval poll').catch(() => {});
+  process.exit(1);
+});

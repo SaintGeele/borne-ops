@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { spawn } from 'child_process';
+import { report, reportError } from '../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -125,9 +126,17 @@ const processQueue = async () => {
 
   console.log(msg);
   await sendTelegram(msg);
+
+  await report('nova', {
+    title: `Queue — ${processed} posted, ${failed} failed`,
+    summary: `${due.length} posts checked. ${processed} posted, ${failed} failed.`,
+    status: failed === 0 ? 'success' : failed < processed ? 'warning' : 'error',
+    nextAction: failed > 0 ? `Review ${failed} failed posts` : 'Queue running on schedule'
+  }).catch(() => {});
 };
 
-processQueue().catch(e => {
+processQueue().catch(async (e) => {
   console.error('[Nova Queue] Fatal:', e.message);
+  await reportError('nova', e.message, 'queue.js — Nova queue processor').catch(() => {});
   process.exit(1);
 });

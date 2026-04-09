@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
@@ -150,9 +151,18 @@ const runDemoConfirm = async () => {
 
   await sendTelegram(msg);
   console.log(`[Chase Demo Confirm] Complete: ${sent} confirmed.`);
+
+  await report('chase', {
+    title: `Demo Confirm — ${sent} confirmed, ${skipped} skipped`,
+    summary: `${sent} demo confirmations sent.`,
+    details: results.slice(0, 8).join('\n'),
+    status: sent > 0 ? 'success' : skipped > 0 ? 'warning' : 'info',
+    nextAction: 'Await demo confirmations from leads'
+  }).catch(() => {});
 };
 
-runDemoConfirm().catch(e => {
+runDemoConfirm().catch(async (e) => {
   console.error('[Chase Demo Confirm] Fatal:', e.message);
+  await reportError('chase', e.message, 'demo-confirm.js — Chase demo confirmation').catch(() => {});
   process.exit(1);
 });

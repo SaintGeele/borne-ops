@@ -10,6 +10,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -175,9 +176,18 @@ const runProspecting = async () => {
 
   await sendTelegram(msg);
   console.log('[Lead Gen] Complete.');
+
+  await report('leadgen', {
+    title: `Prospecting — ${filtered.length} leads, ${inserted} inserted`,
+    summary: `ICP: ${icp.industry} | ${filtered.length} leads generated | ${inserted} inserted to Supabase`,
+    details: results.slice(0, 8).join('\n'),
+    status: inserted > 0 ? 'success' : filtered.length > 0 ? 'warning' : 'info',
+    nextAction: inserted > 0 ? `${inserted} new leads ready for Chase outreach` : 'No new leads inserted'
+  }).catch(() => {});
 };
 
-runProspecting().catch(e => {
+runProspecting().catch(async (e) => {
   console.error('[Lead Gen] Fatal:', e.message);
+  await reportError('leadgen', e.message, 'prospect.js — Lead Gen prospecting').catch(() => {});
   process.exit(1);
 });

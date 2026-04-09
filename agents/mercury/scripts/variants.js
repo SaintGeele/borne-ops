@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../ops/discord-reporter.js';
 import { writeFileSync } from 'fs';
 import { join } from 'path';
 
@@ -130,11 +131,21 @@ Rules:
   console.log(msg);
   await sendTelegram(msg);
   console.log('\n=== VARIANTS OUTPUT ===\n' + JSON.stringify(variants, null, 2));
+
+  await report('mercury', {
+    title: `Content Variants — ${brief.substring(0, 50)}…`,
+    summary: `Generated variants for X, LinkedIn, Instagram.`,
+    details: `X: ${variants.x?.character_count} chars | LinkedIn: ${variants.linkedin?.word_count} words`,
+    status: 'success',
+    nextAction: 'Review variants and publish via Nova'
+  }).catch(() => {});
+
   return variants;
 };
 
 const { brief } = parseArgs();
-generateVariants(brief).catch(e => {
+generateVariants(brief).catch(async (e) => {
   console.error('[Mercury Variants] Fatal:', e.message);
+  await reportError('mercury', e.message, 'variants.js — Mercury content variants').catch(() => {});
   process.exit(1);
 });

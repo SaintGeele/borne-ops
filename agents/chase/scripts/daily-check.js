@@ -3,14 +3,21 @@
  * daily-check.js — Chase Daily Pipeline Check
  * Fetches leads from Notion, scores uncontacted leads,
  * executes follow-up sequences, and reports to Geele.
- * 
+ *
  * Usage: node daily-check.js
  */
 
-const https = require('https');
-const fs = require('fs');
-const path = require('path');
-const readline = require('readline');
+import https from 'https';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import { config } from 'dotenv';
+config({ path: '/home/saint/.openclaw/.env' });
+import { report, reportError } from '../../ops/discord-reporter.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const DATA_DIR = path.join(__dirname, '..');
 const LOG_FILE = path.join(DATA_DIR, 'activity-log.json');
@@ -40,7 +47,6 @@ function writeLocalLog(entry) {
       logs = JSON.parse(fs.readFileSync(LOG_FILE, 'utf8'));
     }
     logs.push(entry);
-    // Keep last 500 entries
     if (logs.length > 500) logs = logs.slice(-500);
     fs.writeFileSync(LOG_FILE, JSON.stringify(logs, null, 2));
   } catch (e) {
@@ -123,11 +129,9 @@ function parseLead(page) {
 }
 
 // ─── Scoring ────────────────────────────────────────────────────────────────
-// Score: 1-3 per category, max 12
 function scoreLead(lead) {
-  // If already scored (Score > 0), use existing
   if (lead.score > 0) return lead.score;
-  return lead.score; // Will be computed by caller if needed
+  return lead.score;
 }
 
 // ─── Supabase logging ────────────────────────────────────────────────────────
@@ -178,7 +182,7 @@ function getTemplateForStage(stage, daysSinceContact) {
     if (daysSinceContact >= 14) return 'nurture-touch-4.md';
     if (daysSinceContact >= 7) return 'nurture-touch-3.md';
     if (daysSinceContact >= 3) return 'nurture-touch-2.md';
-    return null; // No action needed yet
+    return null;
   }
   if (stage === 'HOT') return 'demo-request.md';
   return null;
@@ -225,13 +229,11 @@ async function main() {
     closed: closed.length
   });
 
-  // Score uncontacted leads
   const unscored = leads.filter(l => (l.score === 0 || l.score == null) && l.status === 'NEW');
   if (unscored.length > 0) {
     log('info', 'Unscored leads found — manual qualification needed', { count: unscored.length });
   }
 
-  // Log activity
   await logToSupabase({
     agent_id: 'chase',
     action_type: 'pipeline_check',
@@ -239,7 +241,6 @@ async function main() {
     description: `HOT: ${hot.length} | WARM: ${warm.length} | NEW: ${newLeads.length} | DEMO: ${demoScheduled.length}`
   });
 
-  // Print pipeline report
   console.log('\n===========================================');
   console.log('  CHASE PIPELINE REPORT — ' + today);
   console.log('===========================================');
@@ -254,9 +255,18 @@ async function main() {
   console.log('===========================================\n');
 
   log('info', 'Daily pipeline check complete');
+
+  await report('chase', {
+    title: `Pipeline Check — ${today}`,
+    summary: `Total: ${leads.length} | HOT: ${hot.length} | WARM: ${warm.length} | NEW: ${newLeads.length} | DEMO: ${demoScheduled.length} | PROPOSAL: ${proposal.length}`,
+    details: `HOT leads:\n${hot.map(l => '• ' + l.name).join('\n') || 'None'}`,
+    status: hot.length > 0 ? 'success' : 'info',
+    nextAction: hot.length > 0 ? `Follow up with ${hot.length} HOT leads` : 'Continue nurturing warm and new leads'
+  }).catch(() => {});
 }
 
-main().catch(e => {
+main().catch(async (e) => {
   log('fatal', 'Daily check failed: ' + e.message);
+  await reportError('chase', e.message, 'daily-check.js — Chase daily pipeline check').catch(() => {});
   process.exit(1);
 });

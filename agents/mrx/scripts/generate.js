@@ -2,6 +2,7 @@ import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
 import { getNextScheduledDate } from './schedule-helper.js';
+import { report, reportError } from '../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -423,6 +424,18 @@ Angle: ${brief.angle}`;
   console.log(msg);
   await sendTelegram(msg);
   console.log('MrX content generation complete.');
+
+  await report('mrx', {
+    title: `Content Generation — ${brief.platforms?.linkedin?.posts_count + brief.platforms?.twitter?.posts_count} posts generated`,
+    summary: `Generated content for theme: ${brief.theme}`,
+    details: `LinkedIn: ${brief.platforms?.linkedin?.posts_count} | Twitter: ${brief.platforms?.twitter?.posts_count} | Threads: ${brief.platforms?.threads?.posts_count}`,
+    status: 'success',
+    nextAction: 'Review generated content in Mission Control and approve for publishing'
+  }).catch(() => {});
 };
 
-generateContent();
+generateContent().catch(async (e) => {
+  console.error('[MrX] Content generation failed:', e.message);
+  await reportError('mrx', e.message, 'generate.js — MrX content generation').catch(() => {});
+  process.exit(1);
+});

@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../ops/discord-reporter.js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -111,6 +112,18 @@ const runDigest = async () => {
   );
 
   console.log('Chronicle digest complete.');
+
+  await report('chronicle', {
+    title: `Midnight Digest — ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
+    summary: `Active agents: ${activeAgents}, Silent agents: ${silentAgents}, Total actions: ${logs.length}, Anomalies: ${anomalies.length}`,
+    details: `Anomalies: ${anomalies.length}\nSilent agents: ${silentAgents}`,
+    status: anomalies.length > 0 ? 'warning' : 'success',
+    nextAction: anomalies.length > 0 ? `Investigate ${anomalies.length} anomalies` : 'System nominal'
+  }).catch(() => {});
 };
 
-runDigest();
+runDigest().catch(async (e) => {
+  console.error('[Chronicle] Digest failed:', e.message);
+  await reportError('chronicle', e.message, 'digest.js — Chronicle midnight digest').catch(() => {});
+  process.exit(1);
+});

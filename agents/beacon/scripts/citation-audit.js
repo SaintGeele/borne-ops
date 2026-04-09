@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const TAVILY_API_KEY = process.env.TAVILY_API_KEY;
@@ -141,9 +142,18 @@ const runCitationAudit = async () => {
   ].join('\n'));
 
   console.log('[Citation Audit] Complete.');
+
+  await report('beacon', {
+    title: `Citation Audit — ${passed} pass, ${failed + notFound} issues`,
+    summary: `${passed}/${CITATION_SOURCES.length} sources passed. Failed: ${failed}, Not found: ${notFound}`,
+    details: `Total: ${CITATION_SOURCES.length}\nPassed: ${passed}\nFailed: ${failed}\nNot found: ${notFound}`,
+    status: failed + notFound === 0 ? 'success' : failed + notFound < CITATION_SOURCES.length / 2 ? 'warning' : 'error',
+    nextAction: failed + notFound > 0 ? `Fix ${failed + notFound} citation issues` : 'All citations healthy'
+  }).catch(() => {});
 };
 
-runCitationAudit().catch(e => {
+runCitationAudit().catch(async (e) => {
   console.error('[Citation Audit] Fatal:', e.message);
+  await reportError('beacon', e.message, 'citation-audit.js — Beacon citation audit').catch(() => {});
   process.exit(1);
 });

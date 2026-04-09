@@ -3,6 +3,7 @@ config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
 import { writeFileSync } from 'fs';
 import { join } from 'path';
+import { report, reportError } from '../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const TAVILY_API_KEY = process.env.TAVILY_API_KEY;
@@ -133,9 +134,18 @@ const runGbpOptimization = async () => {
 
   console.log(msg);
   await sendTelegram(msg);
+
+  await report('beacon', {
+    title: `GBP Optimization — ${report.total_actionable} actionable items`,
+    summary: `${issues.length} issues found. ${recommendations.length} recommendations. Listing ${found ? 'found' : 'NOT FOUND'}.`,
+    details: `Actionable: ${report.total_actionable}\n${issueLines.slice(0, 3).join('\n')}`,
+    status: issues.length === 0 ? 'success' : issues.length < 5 ? 'warning' : 'error',
+    nextAction: issues.length > 0 ? `Address ${issues.length} GBP issues` : 'GBP listing healthy'
+  }).catch(() => {});
 };
 
-runGbpOptimization().catch(e => {
+runGbpOptimization().catch(async (e) => {
   console.error('[GBP] Fatal:', e.message);
+  await reportError('beacon', e.message, 'gbp.js — Beacon GBP optimization').catch(() => {});
   process.exit(1);
 });

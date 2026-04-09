@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
@@ -178,6 +179,15 @@ const runRouter = async (item) => {
 
   console.log(msg);
   await sendTelegram(msg);
+
+  await report('nova', {
+    title: `Router — ${posted.length}/${results.length} posted`,
+    summary: `${results.length} items processed. ${posted.length} posted.`,
+    details: results.map(r => `${r.posted ? '✅' : '⚠️'} ${r.platform}: ${r.variant?.substring(0, 50)}…`).join('\n'),
+    status: posted.length === results.length ? 'success' : posted.length > 0 ? 'warning' : 'error',
+    nextAction: posted.length < results.length ? `${results.length - posted.length} posts failed` : 'All posts successful'
+  }).catch(() => {});
+
   return results;
 };
 

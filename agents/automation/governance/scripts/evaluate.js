@@ -13,6 +13,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -111,9 +112,18 @@ const runEvaluation = async () => {
 
   await sendTelegram(msg);
   console.log(`[Automation Governance] Complete. Verdict: ${verdict}`);
+
+  await report('governance', {
+    title: `Governance Eval — ${automationName}: Score ${total}/16 (${verdict})`,
+    summary: `${automationName} scored ${total}/16. Verdict: ${verdict}`,
+    details: breakdown.map(b => `• ${b}`).join('\n'),
+    status: verdict === 'APPROVED' ? 'success' : verdict === 'REJECTED' ? 'error' : 'warning',
+    nextAction: verdict === 'REJECTED' ? 'Do not proceed — fix governance issues' : verdict === 'REVIEW' ? 'Review flagged criteria' : 'Automation approved'
+  }).catch(() => {});
 };
 
-runEvaluation().catch(e => {
+runEvaluation().catch(async (e) => {
   console.error('[Automation Governance] Fatal:', e.message);
+  await reportError('governance', e.message, 'evaluate.js — Automation Governance evaluation').catch(() => {});
   process.exit(1);
 });

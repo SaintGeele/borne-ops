@@ -3,6 +3,7 @@ config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
 import { execSync } from 'child_process';
 import fs from 'fs';
+import { report, reportError } from '../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -135,6 +136,18 @@ Copy and paste this reply. Reply APPROVE or REJECT to this message.`;
   console.log('\nREPLY GENERATED:\n');
   console.log(reply);
   console.log('\nSent to Telegram for approval.');
+
+  await report('mrx', {
+    title: `Reply Draft — ${platform.toUpperCase()}`,
+    summary: `Reply draft generated for ${platform}: "${comment.slice(0, 60)}..."`,
+    details: `Reply: ${reply.slice(0, 200)}…`,
+    status: 'success',
+    nextAction: 'Approve or reject reply draft via Telegram'
+  }).catch(() => {});
 };
 
-run();
+run().catch(async (e) => {
+  console.error('[MrX] Reply draft failed:', e.message);
+  await reportError('mrx', e.message, 'reply-draft.js — MrX reply draft').catch(() => {});
+  process.exit(1);
+});

@@ -3,7 +3,7 @@ config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
-
+import { report, reportError } from '../../ops/discord-reporter.js';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -121,9 +121,17 @@ const runEngage = async () => {
 
   console.log(msg);
   await sendTelegram(msg);
+
+  await report('nova', {
+    title: `Engage — ${processed} replied, ${failed} failed`,
+    summary: `${pending.length} replies processed. ${processed} sent, ${failed} failed.`,
+    status: failed === 0 ? 'success' : failed < processed ? 'warning' : 'error',
+    nextAction: failed > 0 ? `Review ${failed} failed replies` : 'Track engagement'
+  }).catch(() => {});
 };
 
-runEngage().catch(e => {
+runEngage().catch(async (e) => {
   console.error('[Nova Engage] Fatal:', e.message);
+  await reportError('nova', e.message, 'engage.js — Nova engagement replies').catch(() => {});
   process.exit(1);
 });

@@ -10,6 +10,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -158,9 +159,18 @@ const runReport = async () => {
 
   await sendTelegram(msg);
   console.log('[Pipeline Analyst] Report sent.');
+
+  await report('pipeline', {
+    title: `Pipeline Report — ${forecast.commitAmount.toFixed(0)} commit`,
+    summary: `Pipeline: ${forecast.commitAmount.toFixed(0)} commit, ${forecast.bestCaseAmount.toFixed(0)} best case. ${atRiskDeals.length} at-risk deals.`,
+    details: `Commit: $${forecast.commitAmount.toFixed(0)}\nBest Case: $${forecast.bestCaseAmount.toFixed(0)}\nUpside: $${forecast.upsideAmount.toFixed(0)}\nAt-risk: ${atRiskDeals.length}\nStale: ${staleDeals.length}`,
+    status: atRiskDeals.length > 0 ? 'warning' : 'success',
+    nextAction: atRiskDeals.length > 0 ? `Rescue ${atRiskDeals.length} at-risk deals` : 'Pipeline healthy'
+  }).catch(() => {});
 };
 
-runReport().catch(e => {
+runReport().catch(async (e) => {
   console.error('[Pipeline Analyst] Fatal:', e.message);
+  await reportError('pipeline', e.message, 'report.js — Pipeline Analyst weekly report').catch(() => {});
   process.exit(1);
 });

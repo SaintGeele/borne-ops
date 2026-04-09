@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../ops/discord-reporter.js';
 import { execSync } from 'child_process';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
@@ -120,6 +121,18 @@ const runHardening = async () => {
   }
 
   console.log('Knox hardening audit complete.');
+
+  await report('knox', {
+    title: `Hardening Audit — Score ${pct}/100`,
+    summary: `${passed}/${checks.length} checks passed. Score: ${pct}/100.`,
+    details: report,
+    status: pct < 70 ? 'error' : pct < 85 ? 'warning' : 'success',
+    nextAction: pct < 70 ? 'Urgent: review hardening failures immediately' : pct < 85 ? `Fix ${failed.length} failed checks` : 'Hardening on track'
+  }).catch(() => {});
 };
 
-runHardening();
+runHardening().catch(async (e) => {
+  console.error('[Knox] Hardening audit failed:', e.message);
+  await reportError('knox', e.message, 'hardening.js — Knox hardening audit').catch(() => {});
+  process.exit(1);
+});

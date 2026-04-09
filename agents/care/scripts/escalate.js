@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -97,9 +98,18 @@ const runEscalationTrigger = async () => {
   }
 
   console.log(`[Care Escalate] Done. Escalated ${escalated.length} tickets.`);
+
+  await report('care', {
+    title: `Escalation Scan — ${escalated.length} escalated`,
+    summary: `Scanned ${tickets.length} open tickets. ${escalated.length} escalated.`,
+    details: escalated.slice(0, 8).map(e => `• ${e.requester}: ${e.reason}`).join('\n'),
+    status: escalated.length > 0 ? 'warning' : 'success',
+    nextAction: escalated.length > 0 ? `Review ${escalated.length} escalated tickets` : 'No escalations needed'
+  }).catch(() => {});
 };
 
-runEscalationTrigger().catch(e => {
+runEscalationTrigger().catch(async (e) => {
   console.error('[Care Escalate] Fatal:', e.message);
+  await reportError('care', e.message, 'escalate.js — Care escalation trigger').catch(() => {});
   process.exit(1);
 });

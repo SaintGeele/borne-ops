@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -67,6 +68,18 @@ const runDailyCare = async () => {
   });
 
   console.log('Care daily report complete.');
+
+  await report('care', {
+    title: `Daily Report — ${dateStr}`,
+    summary: `New: ${(tickets||[]).length}, Open: ${(openTickets||[]).length}, Responded: ${responded.length}, Escalated: ${escalated.length}`,
+    details: report,
+    status: escalated.length > 0 ? 'warning' : 'success',
+    nextAction: escalated.length > 0 ? `Review ${escalated.length} escalations` : 'Support queue is clear'
+  }).catch(() => {});
 };
 
-runDailyCare();
+runDailyCare().catch(async (e) => {
+  console.error('[Care] Daily report failed:', e.message);
+  await reportError('care', e.message, 'daily.js — Care daily report').catch(() => {});
+  process.exit(1);
+});

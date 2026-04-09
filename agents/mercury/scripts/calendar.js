@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../ops/discord-reporter.js';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
@@ -186,10 +187,20 @@ Generate 15-21 total entries. Make briefs actionable and specific.`;
 
   console.log(msg);
   await sendTelegram(msg);
+
+  await report('mercury', {
+    title: `7-Day Calendar — ${enriched.length} posts queued`,
+    summary: `Generated ${enriched.length} posts: X: ${byPlatform.x || 0}, LinkedIn: ${byPlatform.linkedin || 0}, Instagram: ${byPlatform.instagram || 0}`,
+    details: msg,
+    status: enriched.length > 0 ? 'success' : 'warning',
+    nextAction: 'Nova to execute queued posts'
+  }).catch(() => {});
+
   return enriched;
 };
 
-generateCalendar().catch(e => {
+generateCalendar().catch(async (e) => {
   console.error('[Mercury Calendar] Fatal:', e.message);
+  await reportError('mercury', e.message, 'calendar.js — Mercury 7-day calendar').catch(() => {});
   process.exit(1);
 });

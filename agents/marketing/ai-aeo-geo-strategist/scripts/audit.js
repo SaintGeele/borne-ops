@@ -10,6 +10,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -209,9 +210,18 @@ const runAudit = async () => {
 
   await sendTelegram(msg);
   console.log('[AI AEO/GEO] Audit complete.');
+
+  await report('aeogeo', {
+    title: `AI AEO/GEO — Citation Rate ${citationRate}%`,
+    summary: `${brand} cited ${brandCited}/${results.length} times. Competitor wins: ${competitorWins}.`,
+    details: compRows,
+    status: citationRate < 50 ? 'error' : citationRate < 75 ? 'warning' : 'success',
+    nextAction: citationRate < 75 ? 'Improve citation rate with fix pack recommendations' : 'Citation rate healthy'
+  }).catch(() => {});
 };
 
-runAudit().catch(e => {
+runAudit().catch(async (e) => {
   console.error('[AI AEO/GEO] Fatal:', e.message);
+  await reportError('aeogeo', e.message, 'audit.js — AI AEO/GEO citation audit').catch(() => {});
   process.exit(1);
 });

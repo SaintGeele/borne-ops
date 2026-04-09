@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../ops/discord-reporter.js';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
@@ -186,9 +187,18 @@ const runFaqUpdate = async () => {
 
   console.log(msg);
   await sendTelegram(msg);
+
+  await report('care', {
+    title: `FAQ Update — ${newEntries.length} new entries`,
+    summary: `${newEntries.length} FAQ entries added from ${tickets.length} tickets analyzed.`,
+    details: `Clusters: ${clusters.length}\n${previews.join('\n')}`,
+    status: newEntries.length > 0 ? 'success' : 'info',
+    nextAction: 'Review new FAQ entries for accuracy'
+  }).catch(() => {});
 };
 
-runFaqUpdate().catch(e => {
+runFaqUpdate().catch(async (e) => {
   console.error('[Care FAQ Update] Fatal:', e.message);
+  await reportError('care', e.message, 'faq-update.js — Care FAQ update').catch(() => {});
   process.exit(1);
 });

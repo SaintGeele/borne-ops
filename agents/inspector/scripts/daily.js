@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../ops/discord-reporter.js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -178,6 +179,18 @@ const runInspector = async () => {
   }
 
   console.log('Inspector QA complete.');
+
+  await report('inspector', {
+    title: `Daily QA — ${dateStr}`,
+    summary: `Reviewed: ${passes.length + issues.length}, Passed: ${passes.length}, Failed: ${fails.length}, Criticals: ${criticals.length}`,
+    details: report,
+    status: criticals.length > 0 ? 'error' : fails.length > 0 ? 'warning' : 'success',
+    nextAction: criticals.length > 0 ? `Fix ${criticals.length} critical issues immediately` : fails.length > 0 ? `Review ${fails.length} failures` : 'All checks passed'
+  }).catch(() => {});
 };
 
-runInspector();
+runInspector().catch(async (e) => {
+  console.error('[Inspector] QA failed:', e.message);
+  await reportError('inspector', e.message, 'daily.js — Inspector daily QA').catch(() => {});
+  process.exit(1);
+});

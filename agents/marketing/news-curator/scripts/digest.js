@@ -10,6 +10,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -153,9 +154,18 @@ const runDigest = async () => {
 
   await sendTelegram(msg);
   console.log('[News Curator] Digest complete.');
+
+  await report('news-curator', {
+    title: `News Digest — ${queued} stories queued`,
+    summary: `${queued} stories queued for Nova. Top: ${top3[0]?.title?.substring(0, 50)}…`,
+    details: storyLines.join('\n'),
+    status: queued > 0 ? 'success' : 'warning',
+    nextAction: queued > 0 ? 'Nova to publish queued stories' : 'No stories met threshold'
+  }).catch(() => {});
 };
 
-runDigest().catch(e => {
+runDigest().catch(async (e) => {
   console.error('[News Curator] Fatal:', e.message);
+  await reportError('news-curator', e.message, 'digest.js — News Curator daily digest').catch(() => {});
   process.exit(1);
 });

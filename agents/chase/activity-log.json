@@ -1,0 +1,266 @@
+[
+  {
+    "ts": "2026-04-07T11:26:28.705Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Daily pipeline check started",
+    "date": "2026-04-07"
+  },
+  {
+    "ts": "2026-04-07T11:26:30.262Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Fetched leads from Notion",
+    "count": 100
+  },
+  {
+    "ts": "2026-04-07T11:26:30.262Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Pipeline snapshot",
+    "total": 100,
+    "hot": 0,
+    "warm": 0,
+    "new": 0,
+    "demo": 0,
+    "proposal": 0,
+    "closed": 0
+  },
+  {
+    "ts": "2026-04-07T11:26:30.915Z",
+    "level": "warn",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Supabase insert failed, using local log"
+  },
+  {
+    "ts": "2026-04-07T11:26:30.916Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Daily pipeline check complete"
+  },
+  {
+    "ts": "2026-04-07T11:33:41.687Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Daily pipeline check started",
+    "date": "2026-04-07"
+  },
+  {
+    "ts": "2026-04-07T11:33:42.877Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Fetched leads from Notion",
+    "count": 100
+  },
+  {
+    "ts": "2026-04-07T11:33:42.878Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Pipeline snapshot",
+    "total": 100,
+    "hot": 0,
+    "warm": 0,
+    "new": 0,
+    "demo": 0,
+    "proposal": 0,
+    "closed": 0
+  },
+  {
+    "ts": "2026-04-07T11:33:43.141Z",
+    "level": "warn",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Supabase insert failed, using local log"
+  },
+  {
+    "ts": "2026-04-07T11:33:43.142Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Daily pipeline check complete"
+  },
+  {
+    "ts": "2026-04-07T11:35:38.722Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Daily pipeline check started",
+    "date": "2026-04-07"
+  },
+  {
+    "ts": "2026-04-07T11:35:39.652Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Fetched leads from Notion",
+    "count": 100
+  },
+  {
+    "ts": "2026-04-07T11:35:39.653Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Pipeline snapshot",
+    "total": 100,
+    "hot": 0,
+    "warm": 0,
+    "new": 0,
+    "demo": 0,
+    "proposal": 0,
+    "closed": 0
+  },
+  {
+    "ts": "2026-04-07T11:35:40.229Z",
+    "level": "warn",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Supabase insert failed, using local log"
+  },
+  {
+    "ts": "2026-04-07T11:35:40.230Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Daily pipeline check complete"
+  },
+  {
+    "ts": "2026-04-07T11:36:07.462Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Daily pipeline check started",
+    "date": "2026-04-07"
+  },
+  {
+    "ts": "2026-04-07T11:36:08.096Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Fetched leads from Notion",
+    "count": 100
+  },
+  {
+    "ts": "2026-04-07T11:36:08.097Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Pipeline snapshot",
+    "total": 100,
+    "hot": 0,
+    "warm": 0,
+    "new": 0,
+    "demo": 0,
+    "proposal": 0,
+    "closed": 0
+  },
+  {
+    "ts": "2026-04-07T11:36:08.251Z",
+    "level": "warn",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Supabase insert failed, using local log"
+  },
+  {
+    "ts": "2026-04-07T11:36:08.252Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Daily pipeline check complete"
+  },
+  {
+    "ts": "2026-04-07T11:36:27.536Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Daily pipeline check started",
+    "date": "2026-04-07"
+  },
+  {
+    "ts": "2026-04-07T11:36:28.084Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Fetched leads from Notion",
+    "count": 100
+  },
+  {
+    "ts": "2026-04-07T11:36:28.085Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Pipeline snapshot",
+    "total": 100,
+    "hot": 0,
+    "warm": 0,
+    "new": 0,
+    "demo": 0,
+    "proposal": 0,
+    "closed": 0
+  },
+  {
+    "ts": "2026-04-07T11:36:28.226Z",
+    "level": "warn",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Supabase insert failed, using local log"
+  },
+  {
+    "ts": "2026-04-07T11:36:28.227Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Daily pipeline check complete"
+  },
+  {
+    "ts": "2026-04-07T11:38:13.072Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Daily pipeline check started",
+    "date": "2026-04-07"
+  },
+  {
+    "ts": "2026-04-07T11:38:13.682Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Fetched leads from Notion",
+    "count": 100
+  },
+  {
+    "ts": "2026-04-07T11:38:13.684Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Pipeline snapshot",
+    "total": 100,
+    "hot": 0,
+    "warm": 0,
+    "new": 0,
+    "demo": 0,
+    "proposal": 0,
+    "closed": 0
+  },
+  {
+    "ts": "2026-04-07T11:38:13.864Z",
+    "level": "warn",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Supabase insert failed, using local log"
+  },
+  {
+    "ts": "2026-04-07T11:38:13.865Z",
+    "level": "info",
+    "agent": "chase",
+    "script": "daily-check.js",
+    "message": "Daily pipeline check complete"
+  }
+]

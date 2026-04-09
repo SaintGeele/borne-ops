@@ -3,6 +3,7 @@ config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
 import { writeFileSync, existsSync, readFileSync } from 'fs';
 import { join } from 'path';
+import { report, reportError } from '../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const TAVILY_API_KEY = process.env.TAVILY_API_KEY;
@@ -147,9 +148,18 @@ const runAiMonitor = async () => {
 
   console.log(msg);
   await sendTelegram(msg);
+
+  await report('beacon', {
+    title: `AI Monitor — Citation Rate ${report.summary.citation_rate}%`,
+    summary: `${report.summary.cited}/${report.summary.total} citations found. Rate: ${report.summary.citation_rate}%`,
+    details: `Cited: ${cited.length}\nNot cited: ${notCited.length}\nRate change: ${rateDelta > 0 ? '+' : ''}${rateDelta}%`,
+    status: report.summary.citation_rate < 50 ? 'error' : report.summary.citation_rate < 75 ? 'warning' : 'success',
+    nextAction: notCited.length > 0 ? `Improve ${notCited.length} uncited sources` : 'Citation rate healthy'
+  }).catch(() => {});
 };
 
-runAiMonitor().catch(e => {
+runAiMonitor().catch(async (e) => {
   console.error('[AI Monitor] Fatal:', e.message);
+  await reportError('beacon', e.message, 'ai-monitor.js — Beacon AI citation monitor').catch(() => {});
   process.exit(1);
 });

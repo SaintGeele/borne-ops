@@ -3,6 +3,7 @@ config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
 import path from 'path';
+import { report, reportError } from '../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -173,6 +174,18 @@ ${results.failed.map(p => `❌ ${p.platform}: ${p.reason}`).join('\n')}`;
   console.log(msg);
   await sendTelegram(msg);
   console.log('Publisher complete.');
+
+  await report('mrx', {
+    title: `Publisher — ${results.published.length} posted, ${results.failed.length} failed`,
+    summary: `${results.published.length} posts published. ${results.failed.length} failed.`,
+    details: results.failed.length > 0 ? results.failed.map(p => `❌ ${p.platform}: ${p.reason}`).join('\n') : 'No failures',
+    status: results.failed.length === 0 ? 'success' : results.failed.length < results.published.length ? 'warning' : 'error',
+    nextAction: results.failed.length > 0 ? `Review ${results.failed.length} failed posts` : 'All posts published'
+  }).catch(() => {});
 };
 
-publish();
+publish().catch(async (e) => {
+  console.error('[MrX] Publisher failed:', e.message);
+  await reportError('mrx', e.message, 'publish.js — MrX publisher').catch(() => {});
+  process.exit(1);
+});

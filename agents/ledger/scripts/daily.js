@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../ops/discord-reporter.js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -134,6 +135,18 @@ const runDailyLedger = async () => {
   );
 
   console.log('Ledger daily complete.');
+
+  await report('ledger', {
+    title: `Daily Ledger — ${dateStr}`,
+    summary: `MTD: $${mtdTotal.toFixed(2)}, Projected: $${projectedTotal.toFixed(2)}, Alerts: ${alerts.length}`,
+    details: report,
+    status: alerts.length > 0 ? 'warning' : 'success',
+    nextAction: alerts.length > 0 ? `Review ${alerts.length} financial alerts` : 'On track'
+  }).catch(() => {});
 };
 
-runDailyLedger();
+runDailyLedger().catch(async (e) => {
+  console.error('[Ledger] Daily ledger failed:', e.message);
+  await reportError('ledger', e.message, 'daily.js — Ledger daily financial report').catch(() => {});
+  process.exit(1);
+});

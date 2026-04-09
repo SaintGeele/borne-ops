@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -239,7 +240,19 @@ NOTES: ${brief.notes}`;
   await sendTelegram(msg);
   console.log('Mercury brief complete.');
 
+  await report('mercury', {
+    title: `Weekly Brief — ${weekStr}`,
+    summary: `Theme: ${brief.theme} | Angle: ${brief.angle}`,
+    details: `Focus: ${brief.content_focus}\nLinkedIn: ${brief.platforms?.linkedin?.posts_count} posts\nTwitter: ${brief.platforms?.twitter?.posts_count} posts`,
+    status: 'success',
+    nextAction: 'MrX to execute content plan from brief'
+  }).catch(() => {});
+
   return brief;
 };
 
-generateBrief();
+generateBrief().catch(async (e) => {
+  console.error('[Mercury] Brief failed:', e.message);
+  await reportError('mercury', e.message, 'brief.js — Mercury weekly brief').catch(() => {});
+  process.exit(1);
+});

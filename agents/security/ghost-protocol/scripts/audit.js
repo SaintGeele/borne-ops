@@ -12,6 +12,7 @@ config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
 import { readdirSync, readFileSync, existsSync } from 'fs';
 import { join } from 'path';
+import { report, reportError } from '../../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -167,9 +168,18 @@ const runAudit = async () => {
   console.log('[Ghost Protocol] Audit complete.');
   
   if (critical.length > 0) process.exit(1);
+
+  await report('ghost-protocol', {
+    title: `Ghost Protocol Audit — ${violations.length} violations, ${warnings.length} warnings`,
+    summary: `Scanned ${Object.keys(filesReviewed || {}).length} files. ${violations.length} violations, ${warnings.length} warnings.`,
+    details: violations.length > 0 ? violations.slice(0, 5).map(v => `🔴 ${v.file}: ${v.pattern}`).join('\n') : 'No violations found',
+    status: violations.length > 0 ? 'error' : warnings.length > 0 ? 'warning' : 'success',
+    nextAction: violations.length > 0 ? `Fix ${violations.length} data boundary violations` : warnings.length > 0 ? `Review ${warnings.length} warnings` : 'Data boundaries clean'
+  }).catch(() => {});
 };
 
-runAudit().catch(e => {
+runAudit().catch(async (e) => {
   console.error('[Ghost Protocol] Fatal:', e.message);
+  await reportError('ghost-protocol', e.message, 'audit.js — Ghost Protocol data audit').catch(() => {});
   process.exit(1);
 });

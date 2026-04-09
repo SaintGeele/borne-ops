@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -79,6 +80,18 @@ Format as a numbered list. No fluff.`;
   });
 
   console.log('Ivy weekly brief complete.');
+
+  await report('ivy', {
+    title: `Weekly Brief — ${dateStr}`,
+    summary: `Brief generated for Mercury. Pipeline: ${(leads||[]).length} leads. Top: ${topIndustries}`,
+    details: brief,
+    status: 'success',
+    nextAction: 'Mercury to review and act on content opportunities'
+  }).catch(() => {});
 };
 
-runWeeklyBrief();
+runWeeklyBrief().catch(async (e) => {
+  console.error('[Ivy] Weekly brief failed:', e.message);
+  await reportError('ivy', e.message, 'weekly-brief.js — Ivy weekly intelligence brief').catch(() => {});
+  process.exit(1);
+});

@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../ops/discord-reporter.js';
 import { spawn } from 'child_process';
 import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
@@ -142,11 +143,21 @@ const launchCampaign = async ({ campaign, brief }) => {
 
   console.log(msg);
   await sendTelegram(msg);
+
+  await report('mercury', {
+    title: `Campaign Launch — ${campaign}: ${status}`,
+    summary: `Campaign: ${campaign} | Status: ${status} | Posts: ${postCount}`,
+    details: errors.length > 0 ? errors.map(e => `❌ ${e.step}: ${e.error}`).join('\n') : 'No errors',
+    status: errors.length > 0 ? 'warning' : 'success',
+    nextAction: errors.length > 0 ? `Fix ${errors.length} errors before launching` : 'Campaign ready to launch'
+  }).catch(() => {});
+
   return manifest;
 };
 
 const { campaign, brief } = parseArgs();
-launchCampaign({ campaign, brief }).catch(e => {
+launchCampaign({ campaign, brief }).catch(async (e) => {
   console.error('[Mercury Launch] Fatal:', e.message);
+  await reportError('mercury', e.message, 'launch.js — Mercury campaign launch').catch(() => {});
   process.exit(1);
 });

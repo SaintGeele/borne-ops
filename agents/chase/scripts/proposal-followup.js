@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
@@ -168,9 +169,18 @@ const runProposalFollowup = async () => {
 
   await sendTelegram(msg);
   console.log(`[Chase Proposal Followup] Complete: ${sent} sent.`);
+
+  await report('chase', {
+    title: `Proposal Followup — ${sent} sent, ${skipped} skipped`,
+    summary: `${sent} proposal follow-ups sent.`,
+    details: results.slice(0, 8).join('\n'),
+    status: sent > 0 ? 'success' : skipped > 0 ? 'warning' : 'info',
+    nextAction: 'Await proposal decisions from leads'
+  }).catch(() => {});
 };
 
-runProposalFollowup().catch(e => {
+runProposalFollowup().catch(async (e) => {
   console.error('[Chase Proposal Followup] Fatal:', e.message);
+  await reportError('chase', e.message, 'proposal-followup.js — Chase proposal follow-up').catch(() => {});
   process.exit(1);
 });

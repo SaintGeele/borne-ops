@@ -12,6 +12,7 @@ config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
 import { execSync } from 'child_process';
 import { existsSync } from 'fs';
+import { report, reportError } from '../../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -204,6 +205,14 @@ const runHealthCheck = async () => {
 
   await sendTelegram(msg);
   console.log(`[Self-Healing] Health check complete: ${status}`);
+
+  await report('self-healing', {
+    title: `Health Check — ${status}`,
+    summary: `CPU: ${cpu.toFixed(1)}% | Memory: ${memory.toFixed(1)}% | Disk: ${disk.toFixed(1)}% | Alerts: ${alerts.length}`,
+    details: alerts.length > 0 ? alerts.join('\n') : 'All metrics nominal',
+    status: alerts.length === 0 ? 'success' : alerts.length < 3 ? 'warning' : 'error',
+    nextAction: alerts.length > 0 ? `Review ${alerts.length} alerts` : 'Server healthy'
+  }).catch(() => {});
 };
 
 // CLI action dispatch
@@ -218,5 +227,5 @@ if (action === 'cleanup') {
   const containers = getContainerStatus();
   sendTelegram(`📊 <b>Weekly Report</b>\nCPU: ${cpu.toFixed(1)}%\nMemory: ${memory.toFixed(1)}%\nDisk: ${disk.toFixed(1)}%\nContainers: ${containers.length}`).then(() => process.exit(0));
 } else {
-  runHealthCheck().then(() => process.exit(0)).catch(e => { console.error(e); process.exit(1); });
+  runHealthCheck().then(() => process.exit(0)).catch(async (e) => { console.error(e); await reportError('self-healing', e.message, 'health-check.js — Self-Healing health check').catch(() => {}); process.exit(1); });
 }

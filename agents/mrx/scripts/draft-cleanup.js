@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -85,6 +86,17 @@ const runCleanup = async () => {
   } else {
     console.log('No pending drafts.');
   }
+
+  await report('mrx', {
+    title: `Draft Cleanup — ${expired?.length || 0} archived, ${pending?.length || 0} pending`,
+    summary: `${expired?.length || 0} drafts auto-archived. ${pending?.length || 0} still pending approval.`,
+    status: (expired?.length || 0) > 0 ? 'warning' : 'success',
+    nextAction: (pending?.length || 0) > 0 ? `Review ${pending.length} pending drafts` : 'No action needed'
+  }).catch(() => {});
 };
 
-runCleanup();
+runCleanup().catch(async (e) => {
+  console.error('[MrX] Draft cleanup failed:', e.message);
+  await reportError('mrx', e.message, 'draft-cleanup.js — MrX draft cleanup').catch(() => {});
+  process.exit(1);
+});

@@ -10,6 +10,7 @@ import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
 import { writeFileSync, existsSync, mkdirSync } from 'fs';
+import { report, reportError } from '../../../ops/discord-reporter.js';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -162,9 +163,18 @@ const runBattlecard = async () => {
 
   await sendTelegram(msg);
   console.log('[Sales Engineer] Battlecard complete.');
+
+  await report('sales-engineer', {
+    title: `Battlecard — ${competitor}`,
+    summary: `Competitive battlecard generated for ${competitor}.`,
+    details: `Output: ${filename}`,
+    status: 'success',
+    nextAction: 'Share battlecard with Chase for competitive positioning'
+  }).catch(() => {});
 };
 
-runBattlecard().catch(e => {
+runBattlecard().catch(async (e) => {
   console.error('[Sales Engineer] Fatal:', e.message);
+  await reportError('sales-engineer', e.message, 'battlecard.js — Sales Engineer battlecard').catch(() => {});
   process.exit(1);
 });

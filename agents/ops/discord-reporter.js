@@ -43,35 +43,19 @@ const CHANNELS = {
 const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 const GUILD_ID = "1479519793378885894";
 
-const STATUS_COLOR = {
-  success: 0x22C55E,
-  warning: 0xEAB308,
-  error:   0xEF4444,
-  info:    0x3B82F6,
-};
+const STATUS_COLOR = { success: 0x22C55E, warning: 0xEAB308, error: 0xEF4444, info: 0x3B82F6 };
+const STATUS_EMOJI = { success: "✅", warning: "⚠️", error: "🚨", info: "ℹ️" };
 
-const STATUS_EMOJI = {
-  success: "✅",
-  warning: "⚠️",
-  error:   "🚨",
-  info:    "ℹ️",
-};
-
-/**
- * @param {string} agentName
- * @param {{ title: string, summary: string, details?: string, status?: string, nextAction?: string }} report
- */
+/** @param {string} agentName @param {{ title: string, summary: string, details?: string, status?: string, nextAction?: string }} report */
 export async function report(agentName, { title, summary, details, status = "info", nextAction }) {
   const channelId = CHANNELS[agentName.toLowerCase()] || CHANNELS["borneai"];
   const color = STATUS_COLOR[status] || 0x3B82F6;
   const emoji = STATUS_EMOJI[status] || "ℹ️";
-
   const fields = [
     { name: "Summary", value: summary || "—", inline: false },
+    ...(details ? [{ name: "Details", value: details, inline: false }] : []),
+    ...(nextAction ? [{ name: "Next Action", value: nextAction, inline: false }] : []),
   ];
-  if (details) fields.push({ name: "Details", value: details, inline: false });
-  if (nextAction) fields.push({ name: "Next Action", value: nextAction, inline: false });
-
   const payload = {
     channel_id: channelId,
     guild_id: GUILD_ID,
@@ -85,15 +69,10 @@ export async function report(agentName, { title, summary, details, status = "inf
       timestamp: new Date().toISOString(),
     }],
   };
-
   return sendToDiscord(payload);
 }
 
-/**
- * @param {string} agentName
- * @param {string} errorMessage
- * @param {string} [context]
- */
+/** @param {string} agentName @param {string} errorMessage @param {string} [context] */
 export async function reportError(agentName, errorMessage, context) {
   const payload = {
     channel_id: CHANNELS["errors"],
@@ -109,14 +88,10 @@ export async function reportError(agentName, errorMessage, context) {
       ],
     }],
   };
-
   return sendToDiscord(payload);
 }
 
-/**
- * @param {string} agentName
- * @param {{ tasksRun: number, successes: number, failures: number, highlights?: string, nextUp?: string }} summaryData
- */
+/** @param {string} agentName @param {{ tasksRun: number, successes: number, failures: number, highlights?: string, nextUp?: string }} summaryData */
 export async function reportDailySummary(agentName, summaryData) {
   const payload = {
     channel_id: CHANNELS["borneai"],
@@ -134,7 +109,6 @@ export async function reportDailySummary(agentName, summaryData) {
       timestamp: new Date().toISOString(),
     }],
   };
-
   return sendToDiscord(payload);
 }
 
@@ -143,23 +117,16 @@ async function sendToDiscord(payload) {
     console.warn("[Discord Reporter] BOT_TOKEN not set — skipping Discord report");
     return { ok: false, reason: "no token" };
   }
-
   try {
     const res = await fetch(`https://discord.com/api/v10/channels/${payload.channel_id}/messages`, {
       method: "POST",
-      headers: {
-        "Authorization": `Bot ${BOT_TOKEN}`,
-        "Content-Type": "application/json",
-      },
+      headers: { "Authorization": `Bot ${BOT_TOKEN}`, "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
-
     if (!res.ok) {
-      const text = await res.text();
-      console.error(`[Discord Reporter] ${res.status}: ${text}`);
+      console.error(`[Discord Reporter] ${res.status}: ${await res.text()}`);
       return { ok: false, status: res.status };
     }
-
     return { ok: true };
   } catch (err) {
     console.error(`[Discord Reporter] Fetch failed: ${err.message}`);

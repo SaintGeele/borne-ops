@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 config({ path: '/home/saint/.openclaw/.env' });
 import { createClient } from '@supabase/supabase-js';
+import { report, reportError } from '../../ops/discord-reporter.js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -140,6 +141,18 @@ const runDailyPulse = async () => {
   });
 
   console.log('Pulse daily report complete.');
+
+  await report('pulse', {
+    title: `Daily Pulse — ${dateStr}`,
+    summary: `Agents: ${agentCounts.total}, Emails: ${emailStats.sent}, Content: ${content?.length || 0}, Alerts: ${alerts?.length || 0}`,
+    details: report,
+    status: (alerts || []).length > 0 ? 'warning' : 'success',
+    nextAction: (alerts || []).length > 0 ? `Review ${(alerts || []).length} open alerts` : 'All clear'
+  }).catch(() => {});
 };
 
-runDailyPulse();
+runDailyPulse().catch(async (e) => {
+  console.error('[Pulse] Daily pulse failed:', e.message);
+  await reportError('pulse', e.message, 'daily.js — Pulse daily pulse').catch(() => {});
+  process.exit(1);
+});
