@@ -8,17 +8,16 @@
 import { config } from "dotenv";
 config({ path: "/home/saint/.openclaw/.env" });
 
-// Verified channel IDs — all accessible as of 2026-04-08
+// Verified channel IDs — only channels with active agents
 const CHANNELS = {
   // Leadership
   "borneai":       "1480000668021428415", // chief-of-staff
 
-  // Engineering
+  // Engineering — no active scripts (nexus reserved)
   "nexus":         "1480000719724482744", // development
 
   // Operations
   "atlas":         "1482611132077314088", // atlas-coordination
-  "relay":         "1480000720479715534", // task-orchestration
 
   // Security
   "knox":          "1480000802302202061", // vulnerability-scanning
@@ -26,16 +25,15 @@ const CHANNELS = {
 
   // Research
   "ivy":           "1480000762988728393", // lead-research
-  "insight":       "1480000762988728393", // lead-research
   "news-curator":  "1480000762988728393", // lead-research
 
   // Sales & Outreach
-  "mrx":           "1480000844672794876", // cold-outreach
   "chase":         "1480000844672794876", // cold-outreach
+  "mrx":           "1480000844672794876", // cold-outreach
   "closer":        "1480000844672794876", // cold-outreach
   "leadgen":       "1480000844672794876", // cold-outreach
-  "pipeline":      "1480000667392147568", // ceo-update
   "sales-engineer": "1480000844672794876", // cold-outreach
+  "pipeline":      "1480000667392147568", // ceo-update
 
   // Content
   "mercury":       "1480000846065307732", // content-automation
@@ -55,14 +53,9 @@ const CHANNELS = {
   "governance":    "1482611004507685044", // agent-status
   "self-healing":  "1482611004507685044", // agent-status
 
-  // Finance
+  // Finance & Reports
   "ledger":        "1480000667392147568", // ceo-update
-
-  // Pulse & Reports
   "pulse":         "1480000667392147568", // ceo-update
-
-  // R&D
-  "skeptic":       "1486178157290848349", // skeptic
 
   // Errors — always errors-and-alerts
   "errors":        "1482611166349103166", // errors-and-alerts

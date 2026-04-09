@@ -31,24 +31,21 @@ try {
 | `error` | Script failed | Red |
 | `info` | Informational | Blue |
 
-## Channel Map
+## Channel Map (active agents only)
 
 | Agent | Channel |
 |-------|---------|
 | borneai | #chief-of-staff |
 | atlas | #atlas-coordination |
 | nexus | #development |
-| knox | #vulnerability-scanning |
-| ivy, insight | #lead-research |
-| mrx, chase, closer, leadgen | #cold-outreach |
+| knox, ghost-protocol | #vulnerability-scanning |
+| ivy, news-curator | #lead-research |
+| chase, mrx, closer, leadgen, sales-engineer | #cold-outreach |
 | mercury, nova | #content-automation |
-| care | #client-management |
-| forge | #client-management |
+| care, forge | #client-management |
 | beacon, aeogeo, chronicle | #documentation |
 | inspector, governance, self-healing | #agent-status |
 | pulse, ledger, pipeline | #ceo-update |
-| ghost-protocol | #vulnerability-scanning |
-| news-curator | #lead-research |
 | errors | #errors-and-alerts |
 
 ## Error Reporting
