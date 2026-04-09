@@ -62,6 +62,48 @@ const ICP_CONFIGS = {
     sizeRange: '10-100 employees',
     pain: 'call overflow, scheduling gaps, customer follow-up',
     trigger_events: ['seasonal surge hiring', 'new service line', 'Google Business complaints']
+  },
+  real_estate: {
+    industry: 'Real Estate',
+    titles: ['Broker Owner', 'Team Lead', 'Office Manager', 'Operations Director'],
+    sizeRange: '5-50 agents',
+    pain: 'slow lead response, showing scheduling conflicts, client follow-up',
+    trigger_events: ['market listing surge', 'new agent hired', 'lead volume spike']
+  },
+  veterinary: {
+    industry: 'Veterinary',
+    titles: ['Practice Manager', 'Veterinarian Owner', 'Clinic Director'],
+    sizeRange: '5-30 employees',
+    pain: 'client intake calls, appointment reminders, follow-up calls',
+    trigger_events: ['new vet hired', 'clinic expansion', 'online review decline']
+  },
+  automotive: {
+    industry: 'Automotive',
+    titles: ['Dealer Principal', 'Service Manager', 'Fixed Operations Director'],
+    sizeRange: '10-100 employees',
+    pain: 'service call overflow, booking gaps, customer follow-up',
+    trigger_events: ['new service promotions', 'seasonal maintenance surge', 'Google Business rating drop']
+  },
+  accounting: {
+    industry: 'Accounting',
+    titles: ['Managing Partner', 'Firm Administrator', 'Office Manager'],
+    sizeRange: '5-40 employees',
+    pain: 'seasonal call surges (tax season), client onboarding, follow-up',
+    trigger_events: ['tax season prep', 'new client onboarding', 'staff turnover']
+  },
+  construction: {
+    industry: 'Construction',
+    titles: ['Owner', 'Project Manager', 'Operations Manager', 'General Contractor'],
+    sizeRange: '10-100 employees',
+    pain: 'bid follow-up, client intake calls, project communication',
+    trigger_events: ['new project won', 'subcontractor hired', 'lead volume increase']
+  },
+  retail: {
+    industry: 'Retail',
+    titles: ['Store Manager', 'Owner', 'Operations Manager'],
+    sizeRange: '10-50 employees',
+    pain: 'customer inquiries, repeat business follow-up, appointment booking',
+    trigger_events: ['new product launch', 'seasonal hiring', 'Google rating decline']
   }
 };
 
@@ -89,11 +131,11 @@ const scoreLead = (lead) => {
   return { fit, intent, total: fit + intent };
 };
 
-// Insert or update lead in Supabase
+// Insert lead in Supabase (ignore if email already exists)
 const upsertLead = async (lead) => {
   const { data, error } = await supabase
     .from('leads')
-    .upsert({
+    .insert({
       name: lead.name,
       email: lead.email || null,
       company: lead.company_name,
@@ -101,12 +143,16 @@ const upsertLead = async (lead) => {
       score: lead.score,
       status: 'new',
       source: 'lead-gen-prospector',
-      trigger_event: lead.trigger || null,
-      enriched_at: new Date().toISOString()
-    }, { onConflict: 'email' });
+      enriched: true
+    });
 
-  if (error) console.warn(`[Lead Gen] Failed to upsert ${lead.company_name}: ${error.message}`);
-  return !error;
+  if (error) {
+    // Ignore duplicate email errors — lead already exists
+    if (error.code === '23505') return true;
+    console.warn(`[Lead Gen] Failed to insert ${lead.company_name}: ${error.message}`);
+    return false;
+  }
+  return true;
 };
 
 const runProspecting = async () => {
@@ -119,7 +165,7 @@ const runProspecting = async () => {
     { name: 'Marcus Webb', company_name: 'Webb Family Dentistry', email: 'marcus@webbdental.com', trigger: 'Hiring front desk', industry: 'Dental' },
     { name: 'Dr. Priya Nair', company_name: 'Pearl Dental Associates', email: 'pnair@pearldental.com', trigger: 'New location opening', industry: 'Dental' },
     { name: 'Tom Gallagher', company_name: 'Gallagher Dental Partners', email: 'tgallagher@gallagherdental.com', trigger: 'Staff turnover reported', industry: 'Dental' },
-    { name: 'Dr. Sarah Kim', company_name: 'Kim & Associates Dental', email: 'skim@kimdental.com', trigger: 'Positive Yelp reviews mentioning wait times', industry: 'Dental' },
+    { name: 'Dr. Sarah Kim', company_name: 'Kim & Associates Dental', email: 'skim@kimdental.com', trigger: 'Yelp reviews mention wait times', industry: 'Dental' },
     // Medical
     { name: 'Jennifer Walsh', company_name: 'Walsh Family Medicine', email: 'jwalsh@walshmed.com', trigger: 'Clinic expansion announced', industry: 'Medical' },
     { name: 'Dr. Ravi Patel', company_name: 'Patel Medical Center', email: 'ravi@patelmedical.com', trigger: 'New physician hired', industry: 'Medical' },
@@ -130,6 +176,24 @@ const runProspecting = async () => {
     // Home Services
     { name: 'Carlos Rivera', company_name: 'Rivera HVAC Services', email: 'carlos@riverahvac.com', trigger: 'Seasonal hiring surge', industry: 'Home Services' },
     { name: 'Michelle Brooks', company_name: 'Brooks Plumbing Group', email: 'michelle@brooksplumbing.com', trigger: 'New service line launch', industry: 'Home Services' },
+    // Real Estate
+    { name: 'Sandra Bell', company_name: 'Bell Realty Group', email: 'sandra@bellrealty.com', trigger: 'New agent onboarding surge', industry: 'Real Estate' },
+    { name: 'James Choi', company_name: 'Choi Properties LLC', email: 'james@choiproperties.com', trigger: 'Market listing spike noted', industry: 'Real Estate' },
+    // Veterinary
+    { name: 'Dr. Natalie Cruz', company_name: 'Cruz Veterinary Care', email: 'ncruz@cruzvet.com', trigger: 'Online review decline noted', industry: 'Veterinary' },
+    { name: 'Mark Stevens', company_name: 'Stevens Animal Hospital', email: 'mstevens@stevensvet.com', trigger: 'New vet hired', industry: 'Veterinary' },
+    // Automotive
+    { name: 'Frank Moretti', company_name: 'Moretti Auto Group', email: 'frank@morettiauto.com', trigger: 'Service promotion launched', industry: 'Automotive' },
+    { name: 'Diana Flores', company_name: 'Flores Automotive Services', email: 'diana@floresauto.com', trigger: 'Google rating drop noted', industry: 'Automotive' },
+    // Accounting
+    { name: 'Robert Kim', company_name: 'Kim & Park Accounting', email: 'rkim@kimparkcpa.com', trigger: 'Tax season hiring surge', industry: 'Accounting' },
+    { name: 'Patricia Wells', company_name: 'Wells Financial Group', email: 'pwells@wellsfinancial.com', trigger: 'New client onboarding wave', industry: 'Accounting' },
+    // Construction
+    { name: 'Tom Nguyen', company_name: 'Nguyen Construction LLC', email: 'tom@nguyenconst.com', trigger: 'New project awarded', industry: 'Construction' },
+    { name: 'Angela Davis', company_name: 'Davis Build Group', email: 'angela@davisbuild.com', trigger: 'Subcontractor hired', industry: 'Construction' },
+    // Retail
+    { name: 'Kevin Park', company_name: 'Park Home Goods', email: 'kevin@parkhomegoods.com', trigger: 'Seasonal product launch', industry: 'Retail' },
+    { name: 'Nicole Martin', company_name: 'Martin Boutique', email: 'nicole@martinboutique.com', trigger: 'Google rating decline noted', industry: 'Retail' },
   ];
 
   // Filter by ICP industry
