@@ -47,7 +47,42 @@ Add whatever helps you do your job. This is your cheat sheet.
 - **Guild ID:** `1479519793378885894`
 - **Server Name:** Borne Systems
 
-### Channel Map
+### Channel Map (pruned 2026-04-08)
+
+#### 🏠 General
+| Channel | ID |
+|---------|----|
+| welcome | `1479906695252545596` |
+| announcements | `1479906695898730597` |
+| rules | `1479906696263368705` |
+
+#### 🛡️ Borne Security
+| Channel | ID |
+|---------|----|
+| general | `1479906697861664900` |
+| vuln-reports | `1479906698398273588` |
+| client-updates | `1479906699190982999` |
+
+#### 🤖 Borne AI
+| Channel | ID |
+|---------|----|
+| general | `1479906700143362189` |
+| projects | `14800006790797677648` |
+| integrations | `1480006701212909581` |
+
+#### 🧪 Borne Labs
+| Channel | ID |
+|---------|----|
+| general | `1479906752588677324` |
+| beta-tests | `1479906753490452703` |
+| ideas | `1479906754522517646` |
+
+#### 🎫 Client Portal
+| Channel | ID |
+|---------|----|
+| tickets | `1479906755411578971` |
+| faq | `1479906756082667542` |
+| carson-aesthetics | `1479943172124839936` |
 
 #### 👔 Leadership
 | Channel | ID |
@@ -68,8 +103,6 @@ Add whatever helps you do your job. This is your cheat sheet.
 |---------|----|
 | lead-research | `1480000762988728393` |
 | documentation | `1480000766428188763` |
-| industry-news | `1480000767476760617` |
-| infrastructure-checks | `1480000768185733310` |
 
 #### 🛡️ Security & Ops
 | Channel | ID |
@@ -81,23 +114,17 @@ Add whatever helps you do your job. This is your cheat sheet.
 | Channel | ID |
 |---------|----|
 | cold-outreach | `1480000844672794876` |
-| metrics-reporting | `1480000845411254354` |
 | content-automation | `1480000846065307732` |
-
-#### 🎓 Education
-| Channel | ID |
-|---------|----|
-| academic-training | `1480000913954439228` |
-| nyit-courses | `1480000914596298883` |
-| red-team-training | `1480000915296620675` |
-| red-team-research | `1480000916458438668` |
 
 #### AI Operations
 | Channel | ID |
 |---------|----|
 | agent-status | `1482611004507685044` |
 | task-board | `1482611094114537535` |
-### Agent → Channel Routing (active agents only)
+| atlas-coordination | `1482611132077314088` |
+| errors-and-alerts | `1482611166349103166` |
+
+### Agent → Channel Routing
 | Agent | Discord Channel | Channel ID |
 |-------|----------------|------------|
 | borneai | #chief-of-staff | `1480000668021428415` |
